@@ -1,4 +1,4 @@
-const StoryDao = require('@ss/daoMongo/storyDao');
+const StoryDao = require('@ss/daoMongo/StoryDao');
 const ReqStoryList = require('@ss/models/cmsController/ReqStoryList');
 
 
