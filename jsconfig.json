@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@ss/*": [
+                "./node_storyself/*"
+            ],
+        }
+    }
+}
