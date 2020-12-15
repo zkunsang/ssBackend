@@ -53,7 +53,9 @@
     "apiLive": "env NODE_ENV=apiLive pm2 start apps/api-server/app.js -i max",
     "cmsLocal": "env NODE_ENV=cmsLocal pm2 start apps/cms-server/app.js",
     "cmsDev": "env NODE_ENV=cmsDev pm2 start apps/cms-server/app.js",
-    "umsDev": "env NODE_ENV=umsDev pm2 start apps/ums-server/app.js"
+    "cmsLive": "env NODE_ENV=cmsLive pm2 start apps/cms-server/app.js --name [Live]cms",
+    "umsDev": "env NODE_ENV=umsDev pm2 start apps/ums-server/app.js",
+    "umsLive": "env NODE_ENV=umsLive pm2 start apps/ums-server/app.js --name [Live]ums"
   },
   "author": "",
   "license": "ISC"
