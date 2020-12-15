@@ -1,4 +1,4 @@
-const shortId = require("shortId");
+const shortid = require("shortid");
 const dbMongo = require('@ss/dbMongo');
 
 const UserEdit = require('@ss/models/mongo/UserEdit');
@@ -51,7 +51,7 @@ module.exports = async (ctx, next) => {
     InventoryService.validModel(inventoryService);
 
     const adminId = ctx.$adminInfo.adminId;
-    const editKey = shortId.generate();
+    const editKey = shortid.generate();
     const adminInfo = { adminId, editKey };
 
     const userEdit = new UserEdit({ uid, adminId, editKey, reason, updateDate });
