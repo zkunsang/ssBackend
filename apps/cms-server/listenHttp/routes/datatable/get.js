@@ -1,6 +1,6 @@
 const ReqDataTableGet = require('@ss/models/cmsController/ReqDataTableGet');
 
-const DataTableVersionHelper = require('@ss/helper/dataTableVersionHelper');
+const DataTableVersionHelper = require('@ss/helper/DataTableVersionHelper');
 
 module.exports = async (ctx, next) => {
     const reqDataTableGet = new ReqDataTableGet(ctx.request.body);
