@@ -8,7 +8,7 @@ const Schema = {
     UPDATE_LIST: { key: 'updateList', required: true, type: ValidType.ARRAY },
 }
 
-class ReqDNNResourceUpdate extends Model {
+class ReqCommonResourceUpdate extends Model {
     constructor({ insertList, updateList }) {
         super();
         this[Schema.INSERT_LIST.key] = insertList;
@@ -24,5 +24,5 @@ class ReqDNNResourceUpdate extends Model {
     }
 }
 
-module.exports = ReqDNNResourceUpdate;
+module.exports = ReqCommonResourceUpdate;
 module.exports.Schema = Schema;
