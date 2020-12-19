@@ -30,6 +30,8 @@ const code = {
     shopReceiptFail: { code: 36001, name: 'shopReceiptFail', message: 'shopReceiptFail' },
     shopAlreadyPurchased: { code: 36002, name: 'shopAlreadyPurchased', message: 'shopAlreadyPurchased' },
     shopNoExistProduct: { code: 36003, name: 'shopNoExistProduct', message: 'shopNoExistProduct' },
+
+    storyNoExist: { code: 37001, name: 'storyNoExist', message: 'storyNoExist' },
     
 }
 

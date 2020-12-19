@@ -25,19 +25,22 @@ const PUT_ACTION = {
     },
     ADMIN: [1001, 1],
     CHEAT: [1002, 1],
-    EXCHANGE: { 
+    EXCHANGE: {
         STORY: [1003, 1],
         ACCESSORY: [1003, 2],
         SLOT: [1003, 3],
     },
     USER_INIT: [1004, 1],
-    COUPON: [1005, 1]
+    COUPON: [1005, 1],
+    EVENT: {
+        BETA_EVENT: [1006, 1]
+    }
 };
 
 const USE_ACTION = {
     ADMIN: [2001, 1],
     CHEAT: [2002, 1],
-    EXCHANGE: { 
+    EXCHANGE: {
         STORY: [2003, 1],
         ACCESSORY: [2003, 2],
         SLOT: [2003, 3],
@@ -273,18 +276,18 @@ class InventoryService extends Service {
                 continue;
             }
 
-            const changeMap = new InventoryChangeUpdate( 
-                adminInfo ? 
-                { beforeInven, afterInven, action, adminInfo } : 
-                { beforeInven, afterInven, action });
+            const changeMap = new InventoryChangeUpdate(
+                adminInfo ?
+                    { beforeInven, afterInven, action, adminInfo } :
+                    { beforeInven, afterInven, action });
             changeList.push(changeMap);
         }
 
         for (const deleteInven of deleteList) {
             const changeMap = new InventoryChangeDelete(
-                adminInfo ? 
-                { deleteInven, action, adminInfo } :
-                { deleteInven, action });
+                adminInfo ?
+                    { deleteInven, action, adminInfo } :
+                    { deleteInven, action });
             changeList.push(changeMap);
         }
 
@@ -435,7 +438,7 @@ class InventoryService extends Service {
     }
 
     static checkItemUseable(itemData, itemId, action) {
-        if(action[0] == USE_ACTION.ADMIN[0]) return;
+        if (action[0] == USE_ACTION.ADMIN[0]) return;
 
         if (!itemData.getUseable()) {
             throw new SSError.Service(SSError.Service.Code.useItemNoUseableItem, `${itemId} - not useable`);
@@ -547,7 +550,7 @@ class InventoryService extends Service {
     }
 
     static removeObjectIdList(inventoryList) {
-        for(const inventory of inventoryList) {
+        for (const inventory of inventoryList) {
             delete inventory[Inventory.Schema.OBJECT_ID.key];
             delete inventory[Inventory.Schema.CREATE_DATE.key];
             delete inventory[Inventory.Schema.UPDATE_DATE.key];
