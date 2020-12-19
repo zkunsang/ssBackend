@@ -46,6 +46,7 @@ const AppStore = {
 }
 
 const StoryStatus = {
+    READY_PURCHASE: 2,
     ACTIVATE: 1,
     DEACTIVATE: 0
 }
