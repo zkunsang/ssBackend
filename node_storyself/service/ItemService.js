@@ -65,7 +65,7 @@ class ItemService extends Service {
 
     applyCouponInventory(inventory, couponId) {
         // TODO: 할인 쿠폰
-        if(couponId === "defaultSalenot") {
+        if(couponId === "defaultSale") {
             inventory.setItemQny(parseInt(inventory.getItemQny() * 0.9));
         }
     }

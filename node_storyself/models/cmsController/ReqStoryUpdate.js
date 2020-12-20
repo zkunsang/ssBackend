@@ -7,12 +7,12 @@ const StoryStatus = ValidateUtil.StoryStatus;
 const Schema = {
     STORY_ID: { key: 'storyId', required: true, type: ValidType.STRING },
     STATUS: { key: 'status', required: true, type: ValidType.NUMBER, validRange: Object.values(StoryStatus) },
-    THUMBNAIL: { key: 'thumbnail', required: true, type: ValidType.STRING },
-    THUMBNAIL_CRC32: { key: 'thumbnailCrc32', required: true, type: ValidType.STRING },
-    THUMBNAIL_VERSION: { key: 'thumbnailVersion', required: true, type: ValidType.NUMBER },
-    TEXTFILE: { key: 'textFile', required: true, type: ValidType.STRING },
-    TEXTFILE_CRC32: { key: 'textFileCrc32', required: true, type: ValidType.STRING },
-    TEXTFILE_VERSION: { key: 'textFileVersion', required: true, type: ValidType.NUMBER },
+    THUMBNAIL: { key: 'thumbnail', required: false, type: ValidType.STRING },
+    THUMBNAIL_CRC32: { key: 'thumbnailCrc32', required: false, type: ValidType.STRING },
+    THUMBNAIL_VERSION: { key: 'thumbnailVersion', required: false, type: ValidType.NUMBER },
+    TEXTFILE: { key: 'textFile', required: false, type: ValidType.STRING },
+    TEXTFILE_CRC32: { key: 'textFileCrc32', required: false, type: ValidType.STRING },
+    TEXTFILE_VERSION: { key: 'textFileVersion', required: false, type: ValidType.NUMBER },
     FACE_TAG: { key: 'faceTag', required: true, type: ValidType.STRING },
 }
 
