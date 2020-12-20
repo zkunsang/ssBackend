@@ -5,8 +5,10 @@ const helper = require('@ss/helper');
 
 const UserDao = require('@ss/daoMongo/UserDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
+const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
 const SessionDao = require('@ss/daoRedis/SessionDao');
 const UserCountDao = require('@ss/daoRedis/UserCountDao');
+
 
 const InventoryService =require('@ss/service/InventoryService');
 
@@ -42,6 +44,7 @@ module.exports = async (ctx, next) => {
     const sessionId = shortid.generate();
 
     let isNewUser = false;
+    let showEvent = true;
 
     if (userInfo) {
         const oldSessionId = userInfo.getSessionId();
@@ -49,6 +52,12 @@ module.exports = async (ctx, next) => {
         userInfo.setLastLoginDate(loginDate);
         await userDao.updateOne({ uid: userInfo.getUID() }, { sessionId, lastLoginDate: loginDate });
         await sessionDao.del(oldSessionId);
+
+        // TODO: 이벤트 데이터
+        const storyTempEventDao = new StoryTempEventDao();
+        const eventInfo = await storyTempEventDao.findOne({uid: userInfo.getUID()});
+        showEvent = eventInfo ? false : true;
+        
     }
     else {
         isNewUser = true;
@@ -65,7 +74,7 @@ module.exports = async (ctx, next) => {
         userInfo.setProvider(provider, providerId);
 
         await userDao.insertOne(userInfo);
-    }    
+    }
 
     const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate);
 
@@ -85,7 +94,8 @@ module.exports = async (ctx, next) => {
         sessionId,
         inventoryList: userInventoryList,
         policyVersion,
-        fcmToken
+        fcmToken,
+        showEvent
     });
 
     helper.fluent.sendLog('login', new LoginLog(reqAuthLogin, { ip: ctx.$res.clientIp, loginDate }));

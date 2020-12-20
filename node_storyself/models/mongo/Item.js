@@ -13,11 +13,12 @@ const Schema = {
     MAX_QNY: { key: 'maxQny', required: true, type: ValidType.NUMBER },
     VOLATILE_SECONDS: { key: 'volatileSeconds', required: true, type: ValidType.NUMBER },
     PRIORITY: { key: 'priority', required: true, type: ValidType.NUMBER },
+    STATUS: { key: 'status', required: true, type: ValidType.NUMBER },
     UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP }
 }
 
 class Item extends Model {
-    constructor({ itemId, itemCategory, groupId, useable, overlap, maxQny, volatileSeconds, priority }) {
+    constructor({ itemId, itemCategory, groupId, useable, overlap, maxQny, volatileSeconds, priority, status }) {
         super();
         this[Schema.ITEM_ID.key] = ValidateUtil.setNullUndefined(itemId);
         this[Schema.ITEM_CATEGORY.key] = ValidateUtil.setNullUndefined(itemCategory);
@@ -26,6 +27,7 @@ class Item extends Model {
         this[Schema.OVERLAP.key] = ValidateUtil.setNullUndefined(overlap);
         this[Schema.MAX_QNY.key] = ValidateUtil.setNullUndefined(maxQny);
         this[Schema.VOLATILE_SECONDS.key] = ValidateUtil.setNullUndefined(volatileSeconds);
+        this[Schema.STATUS.key] = ValidateUtil.setNullUndefined(status);
         this[Schema.PRIORITY.key] = ValidateUtil.setNullUndefined(priority);
     }
 
