@@ -1,6 +1,7 @@
 const ReqShopItem = require('@ss/models/controller/ReqShopItem');
 
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 
 const ItemService = require('@ss/service/ItemService');
 const InventoryService = require('@ss/service/InventoryService');
@@ -23,7 +24,8 @@ module.exports = async (ctx, next) => {
     const { putInventoryList, useInventoryList } 
         = itemService.getExchangeInventoryInfo([itemInventory]);
 
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 
     await inventoryService.processExchange(

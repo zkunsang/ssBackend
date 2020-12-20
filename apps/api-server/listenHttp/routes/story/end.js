@@ -1,5 +1,6 @@
 const ReqStoryEnd = require('@ss/models/controller/ReqStoryEnd');
 
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 const StoryLogDao = require('@ss/daoMongo/StoryLogDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
@@ -45,7 +46,8 @@ module.exports = async (ctx, next) => {
 
         if(!eventInfo) {
             const inventoryDao = new InventoryDao(ctx.$dbMongo);
-            const result = await processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate);
+            const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+            const result = await processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, invenLogDao);
             inventoryList = result.userInventoryList;
             eventRewardCode = result.eventRewardCode;
         }
@@ -55,11 +57,11 @@ module.exports = async (ctx, next) => {
     await next();
 }
 
-async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate) {
+async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, invenLogDao) {
     const eventRewardCode = 100;
     
     const uid = userInfo.uid;
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
 
     const itemList = [];
 

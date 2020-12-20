@@ -1,8 +1,12 @@
 const moment = require('moment')
 const DateUtil = require('../../util/DateUtil');
+const Model = require('../')
 
-class NetworkLog {
+const Schema = {}
+
+class NetworkLog extends Model {
     constructor(ctx, startDate, endDate) {
+        super();
         this.pathname = ctx.path;
         this.ip = ctx.$req.clientIp;
 
@@ -23,3 +27,4 @@ class NetworkLog {
 }
 
 module.exports = NetworkLog;
+module.exports.Schema = Schema;

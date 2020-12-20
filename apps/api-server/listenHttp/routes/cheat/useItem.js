@@ -1,5 +1,6 @@
 const ReqCheatUseItem = require('@ss/models/controller/ReqCheatUseItem');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 
 const InventoryService = require('@ss/service/InventoryService');
 
@@ -12,7 +13,8 @@ module.exports = async (ctx, next) => {
     
     const inventoryDao = new InventoryDao(ctx.$dbMongo);
 
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 
     await inventoryService.processUse(InventoryService.USE_ACTION.CHEAT, reqCheatUseItem.getInventoryList(), );

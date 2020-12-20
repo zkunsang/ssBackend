@@ -3,14 +3,16 @@ const dbRedis = require('@ss/dbRedisSS');
 
 const helper = require('@ss/helper');
 
+const LoginLogDao = require("@ss/daoMongo/LoginLogDao");
+const InvenLogDao = require("@ss/daoMongo/InvenLogDao");
+
 const UserDao = require('@ss/daoMongo/UserDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
 const SessionDao = require('@ss/daoRedis/SessionDao');
 const UserCountDao = require('@ss/daoRedis/UserCountDao');
 
-
-const InventoryService =require('@ss/service/InventoryService');
+const InventoryService = require('@ss/service/InventoryService');
 
 const User = require('@ss/models/mongo/User');
 const Item = require('@ss/models/mongo/Item');
@@ -48,16 +50,18 @@ module.exports = async (ctx, next) => {
 
     if (userInfo) {
         const oldSessionId = userInfo.getSessionId();
+        
         userInfo.setSessionId(sessionId);
         userInfo.setLastLoginDate(loginDate);
         await userDao.updateOne({ uid: userInfo.getUID() }, { sessionId, lastLoginDate: loginDate });
         await sessionDao.del(oldSessionId);
 
+        reqAuthLogin.uid = userInfo.getUID();
+
         // TODO: 이벤트 데이터
         const storyTempEventDao = new StoryTempEventDao(dbMongo);
         const eventInfo = await storyTempEventDao.findOne({uid: userInfo.getUID()});
-        showEvent = eventInfo ? false : true;
-        
+        showEvent = eventInfo ? 1 : 0;
     }
     else {
         isNewUser = true;
@@ -74,9 +78,10 @@ module.exports = async (ctx, next) => {
         userInfo.setProvider(provider, providerId);
 
         await userDao.insertOne(userInfo);
+        showEvent = 0;
     }
-
-    const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate);
+    const invenLogDao = new InvenLogDao(dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate, invenLogDao);
 
     const userInventoryList = await inventoryService.getUserInventoryList();
 
@@ -98,7 +103,11 @@ module.exports = async (ctx, next) => {
         showEvent
     });
 
-    helper.fluent.sendLog('login', new LoginLog(reqAuthLogin, { ip: ctx.$res.clientIp, loginDate }));
+    const loginLog = new LoginLog(reqAuthLogin, { ip: ctx.$req.clientIp, loginDate });
+    helper.fluent.sendLog('login', loginLog);
+
+    const loginLogDao = new LoginLogDao(dbMongo);
+    await loginLogDao.insertOne(loginLog);
 
     await next();
 };

@@ -1,7 +1,9 @@
 const ReqShopProduct = require('@ss/models/controller/ReqShopProduct');
 
+const ProductLogDao = require('@ss/daoMongo/ProductLogDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const ReceiptDao = require('@ss/daoMongo/ReceiptDao');
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 
 const ProductService = require('@ss/service/ProductService');
 
@@ -16,6 +18,7 @@ const PurchaseStatus = ValidateUtil.PurchaseStatus;
 const InventoryService = require('@ss/service/InventoryService');
 const helper = require('@ss/helper');
 const SSError = require('@ss/error');
+const dbMongo = require('@ss/dbMongo');
 
 function makeInventoryList(productRewardList) {
     return productRewardList.map((item) => item.makeInventoryObject());
@@ -69,7 +72,8 @@ module.exports = async (ctx, next) => {
     
     const productRewardList = ProductRewardCache.get(productId);
     
-    const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate, invenLogDao);
 
     const inventoryList = makeInventoryList(productRewardList);
     await inventoryService.processPut(
@@ -78,7 +82,11 @@ module.exports = async (ctx, next) => {
 
     await receiptDao.insertOne(receipt);
 
-    helper.fluent.sendProductLog(createProductLog(userInfo, productInfo, purchaseDate));
+    const productLog = createProductLog(userInfo, productInfo, purchaseDate);
+    helper.fluent.sendProductLog();
+
+    const productLogDao = new ProductLogDao(ctx.$dbMongo);
+    await productLogDao.insertOne(productLog);
     
     const userInventoryList = await inventoryService.getUserInventoryList();
     InventoryService.removeObjectIdList(userInventoryList);

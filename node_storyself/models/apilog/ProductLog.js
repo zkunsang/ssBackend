@@ -7,10 +7,10 @@ const ValidType = ValidateUtil.ValidType;
 const moment = require('moment')
 
 const Schema = {
-    UID: { key: 'uid', required: true, type: ValidType.STRING },
-    PURCHASE_DATE: { key: 'purchaseDate', required: true, type: ValidType.UNIX_TIMESTAMP },
-    PRODUCT_ID: { key: 'productId', required: true, type: ValidType.STRING },
-    COST: { key: 'cost', required: true, type: ValidType.NUMBER },
+    UID: { key: 'uid', required: false, type: ValidType.STRING },
+    PURCHASE_DATE: { key: 'purchaseDate', required: false, type: ValidType.UNIX_TIMESTAMP },
+    PRODUCT_ID: { key: 'productId', required: false, type: ValidType.STRING },
+    COST: { key: 'cost', required: false, type: ValidType.NUMBER },
 }
 
 class ProductLog extends Model {
@@ -19,7 +19,8 @@ class ProductLog extends Model {
         this[Schema.UID.key] = uid;
         this[Schema.PRODUCT_ID.key] = productId;
         this[Schema.COST.key] = cost;
-        this[Schema.PURCHASE_DATE.key] = moment(purchaseDate).format(DateUtil.DEFAULT_FORMAT);
+        this[Schema.PURCHASE_DATE.key] = purchaseDate
+        this.purchaseDateTZ = moment(purchaseDate).format(DateUtil.DEFAULT_FORMAT);
     }
 }
 

@@ -1,5 +1,6 @@
 const moment = require('moment')
 const NetworkLog = require('@ss/models/apilog/NetworkLog.js')
+const NetworkLogDao = require('@ss/daoMongo/NetworkLogDao');
 
 const helper = require('@ss/helper');
 const SSError = require('@ss/error');
@@ -7,6 +8,7 @@ const SSError = require('@ss/error');
 const dbRedisPB = require('@ss/dbRedisPB');
 const DateUtil = require('@ss/util/DateUtil');
 
+const dbMongo = require('@ss/dbMongo');
 
 const ReqContext = require('@ss/context/ReqContext');
 const ResContext = require('@ss/context/ResContext');
@@ -70,7 +72,10 @@ module.exports = async (ctx, next) => {
         }
     }
 
-    helper.fluent.sendNetworkLog(new NetworkLog(ctx, ctx.$date, moment().valueOf()));
+    const networkLogDao = new NetworkLogDao(dbMongo);
+    const networkLog = new NetworkLog(ctx, ctx.$date, moment().valueOf());
+    helper.fluent.sendNetworkLog(networkLog);
+    await networkLogDao.insertOne(networkLog);
 };
 
 function uncaughtError(ctx, err) {

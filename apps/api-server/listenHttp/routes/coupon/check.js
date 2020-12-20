@@ -1,5 +1,6 @@
 const ReqCouponCheck = require('@ss/models/controller/ReqCouponCheck');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 
 const CouponUseDao = require('@ss/daoMongo/CouponUseDao');
 const CouponCodeDao = require('@ss/daoMongo/CouponCodeDao');
@@ -93,7 +94,9 @@ module.exports = async (ctx, next) => {
     await couponUseDao.insertOne(new CouponUse({uid, couponCode, couponId, updateDate}));
     
     const inventoryDao = new InventoryDao(ctx.$dbMongo);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate);
+
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 
     const rewardList = CouponRewardCache.get(couponId);
@@ -111,7 +114,5 @@ module.exports = async (ctx, next) => {
         inventoryList: userInventoryList
     });
     
-    // helper.fluent.sendLog('login', new LoginLog(reqAuthLogin, { ip: ctx.$res.clientIp, loginDate }));
-
     await next();
 }

@@ -7,18 +7,21 @@ const moment = require('moment')
 
 
 const Schema = {
-    UID: { key: 'uid', required: true, type: ValidType.STRING },
-    DEVICE_ID: { key: 'deviceId', required: true, type: ValidType.STRING },
-    DEVICE_NAME: { key: 'deviceName', required: true, type: ValidType.STRING },
-    OS_VERSION: { key: 'osVersion', required: true, type: ValidType.STRING },
-    GAME_LANGUAGE: { key: 'gameLanguage', required: true, type: ValidType.STRING },
-    PLATFORM: { key: 'platform', required: true, type: ValidType.STRING },
-    APPSTORE: { key: 'appstore', required: true, type: ValidType.STRING },
-    PROVIDER: { key: 'provider', required: true, type: ValidType.STRING },
-    CLIENT_VERSION: { key: 'clientVersion', required: true, type: ValidType.STRING },
+    UID: { key: 'uid', required: false, type: ValidType.STRING },
+    PROVIDER: { key: 'provider', required: false, type: ValidType.STRING },
+    PROVIDER_ID: { key: 'providerId', required: false, type: ValidType.STRING },
+    DEVICE_ID: { key: 'deviceId', required: false, type: ValidType.STRING },
+    DEVICE_NAME: { key: 'deviceName', required: false, type: ValidType.STRING },
+    OS_VERSION: { key: 'osVersion', required: false, type: ValidType.STRING },
+    GAME_LANGUAGE: { key: 'gameLanguage', required: false, type: ValidType.STRING },
+    PLATFORM: { key: 'platform', required: false, type: ValidType.STRING },
+    APPSTORE: { key: 'appstore', required: false, type: ValidType.STRING },
+    PROVIDER: { key: 'provider', required: false, type: ValidType.STRING },
+    CLIENT_VERSION: { key: 'clientVersion', required: false, type: ValidType.STRING },
+    
 
-    IP: { key: 'ip', required: true, type: ValidType.STRING },
-    LOGIN_DATE: { key: 'loginDate', required: true, type: ValidType.UNIX_TIMESTAMP },
+    IP: { key: 'ip', required: false, type: ValidType.STRING },
+    LOGIN_DATE: { key: 'loginDate', required: false, type: ValidType.UNIX_TIMESTAMP },
 }
 
 class LoginLog extends Model {
@@ -38,7 +41,8 @@ class LoginLog extends Model {
         this.clientVersion = clientVersion;
 
         this.ip = ip;
-        this.loginDate = moment(loginDate).format(DateUtil.DEFAULT_FORMAT);
+        this.loginDate = loginDate;
+        this.loginDateTZ = moment(loginDate).format(DateUtil.DEFAULT_FORMAT);
     }
 }
 

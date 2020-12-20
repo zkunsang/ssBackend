@@ -5,15 +5,15 @@ const ValidateUtil = require('../../util/ValidateUtil')
 const ValidType = ValidateUtil.ValidType;
 
 const Schema = {
-    UID: { key: 'uid', required: true, type: ValidType.STRING },
-    ITEM_ID: { key: 'itemId', required: true, type: ValidType.STRING },
-    ITEM_CATEGORY: { key: 'itemCategory', required: true, type: ValidType.STRING },
-    BEFORE_QNY: { key: 'beforeQny', required: true, type: ValidType.NUMBER },
-    AFTER_QNY: { key: 'afterQny', required: true, type: ValidType.NUMBER },
-    DIFF_QNY: {key: 'diffQny', required: true, type: ValidType.NUMBER },
-    SUB_ACTION: { key: 'subAction', required: true, type: ValidType.NUMBER },
-    LOG_DATE: { key: 'logDate', required: true, type: ValidType.UNIX_TIMESTAMP },
-    ACTION: { key: 'action', required: true, type: ValidType.ARRAY },
+    UID: { key: 'uid', required: false, type: ValidType.STRING },
+    ITEM_ID: { key: 'itemId', required: false, type: ValidType.STRING },
+    ITEM_CATEGORY: { key: 'itemCategory', required: false, type: ValidType.STRING },
+    BEFORE_QNY: { key: 'beforeQny', required: false, type: ValidType.NUMBER },
+    AFTER_QNY: { key: 'afterQny', required: false, type: ValidType.NUMBER },
+    DIFF_QNY: {key: 'diffQny', required: false, type: ValidType.NUMBER },
+    LOG_DATE: { key: 'logDate', required: false, type: ValidType.UNIX_TIMESTAMP },
+    ACTION: { key: 'action', required: false, type: ValidType.NUMBER },
+    SUB_ACTION: { key: 'subAction', required: false, type: ValidType.NUMBER },
     ADMIN_ID: { key: 'adminId', required: false, type: ValidType.STRING },
     EDIT_KEY: { key: 'editKey', required: false, type: ValidType.STRING },
 }
@@ -29,9 +29,11 @@ class InvenLog extends Model {
         this[Schema.AFTER_QNY.key] = afterQny;
         this[Schema.ACTION.key] = action[0];
         this[Schema.SUB_ACTION.key] = action[1];
-        this[Schema.LOG_DATE.key] = moment.unix(logDate).format("YYYY-MM-DD HH:mm:ss");
+        this[Schema.LOG_DATE.key] = logDate;
         this[Schema.EDIT_KEY.key] = editKey;
         this[Schema.ADMIN_ID.key] = adminId;
+
+        this.logDateTZ = moment.unix(logDate).format("YYYY-MM-DD HH:mm:ss");
     }
 }
 

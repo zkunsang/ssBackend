@@ -51,15 +51,17 @@ const Schema = {
     INVENTORY_DAO: { key: 'inventoryDao', required: true, type: ValidType.OBJECT, validObject: InventoryDao },
     USER_INFO: { key: 'userInfo', required: true, type: ValidType.OBJECT, validObject: User },
     UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
+    INVEN_LOG_DAO: { key: 'invenLogDao', required: true, type: ValidType.OBJECT },
 }
 
 class InventoryService extends Service {
-    constructor(inventoryDao, userInfo, updateDate) {
+    constructor(inventoryDao, userInfo, updateDate, invenLogDao) {
         super();
         // cache system
         this[Schema.INVENTORY_DAO.key] = inventoryDao;
         this[Schema.USER_INFO.key] = userInfo;
         this[Schema.UPDATE_DATE.key] = updateDate;
+        this[Schema.INVEN_LOG_DAO.key] = invenLogDao;
     }
 
     async getUserInventoryList() {
@@ -174,27 +176,29 @@ class InventoryService extends Service {
         const uid = this[Schema.USER_INFO.key].getUID();
         const updateDate = this[Schema.UPDATE_DATE.key];
 
-        this.logPutItem(uid, updateDate, putObject);
+        await this.logPutItem(uid, updateDate, putObject);
     }
 
     /**
      * 
      * @param {InventoryPutObject} putObject 
      */
-    logPutItem(uid, logDate, putObject) {
+    async logPutItem(uid, logDate, putObject) {
         const changeList = this.getPutInventoryChangeList(putObject);
         const changeLogList = this.createChangeLogList(uid, logDate, changeList);
         helper.fluent.sendInvenLog(changeLogList);
+        await this.invenLogDao.insertMany(changeLogList);
     }
 
     /**
      * 
      * @param {InventoryUseObject} useObject 
      */
-    logUseItem(uid, logDate, useObject) {
+    async logUseItem(uid, logDate, useObject) {
         const changeList = this.getUseInventoryChangeList(useObject);
         const changeLogList = this.createChangeLogList(uid, logDate, changeList);
         helper.fluent.sendInvenLog(changeLogList);
+        await this.invenLogDao.insertMany(changeLogList);
     }
 
     createChangeLogList(uid, logDate, changeList) {

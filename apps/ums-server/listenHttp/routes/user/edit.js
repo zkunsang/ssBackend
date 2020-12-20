@@ -5,6 +5,7 @@ const UserEdit = require('@ss/models/mongo/UserEdit');
 const UmsUserEditDao = require('@ss/daoMongo/UmsUserEditDao');
 
 const UserDao = require('@ss/daoMongo/UserDao');
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const InventoryService = require('@ss/service/InventoryService');
 
@@ -47,7 +48,8 @@ module.exports = async (ctx, next) => {
 
     const userInfo = await userDao.findOne({uid});
 
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate);
+    const invenLogDao = new InvenLogDao(dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 
     const adminId = ctx.$adminInfo.adminId;

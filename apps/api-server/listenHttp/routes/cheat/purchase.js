@@ -1,6 +1,7 @@
 const ReqCheatPurchase = require('@ss/models/controller/ReqCheatPurchase');
 
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
+const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 
 const InventoryService = require('@ss/service/InventoryService');
 
@@ -42,7 +43,8 @@ module.exports = async (ctx, next) => {
 
     const productRewardList = ProductRewardCache.get(productId);
     
-    const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate, invenLogDao);
 
     const inventoryList = makeInventoryList(productRewardList);
     await inventoryService.processPut(
