@@ -54,7 +54,7 @@ module.exports = async (ctx, next) => {
         await sessionDao.del(oldSessionId);
 
         // TODO: 이벤트 데이터
-        const storyTempEventDao = new StoryTempEventDao();
+        const storyTempEventDao = new StoryTempEventDao(dbMongo);
         const eventInfo = await storyTempEventDao.findOne({uid: userInfo.getUID()});
         showEvent = eventInfo ? false : true;
         
