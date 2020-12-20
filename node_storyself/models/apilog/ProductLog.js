@@ -20,7 +20,7 @@ class ProductLog extends Model {
         this[Schema.PRODUCT_ID.key] = productId;
         this[Schema.COST.key] = cost;
         this[Schema.PURCHASE_DATE.key] = purchaseDate
-        this.purchaseDateTZ = moment(purchaseDate).format(DateUtil.DEFAULT_FORMAT);
+        this.purchaseDateTZ = DateUtil.utsToDs(purchaseDate);
     }
 }
 

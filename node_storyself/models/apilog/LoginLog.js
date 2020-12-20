@@ -3,8 +3,6 @@ const Model = require('..')
 const ValidateUtil = require('../../util/ValidateUtil')
 const DateUtil = require('../../util/DateUtil');
 const ValidType = ValidateUtil.ValidType;
-const moment = require('moment')
-
 
 const Schema = {
     UID: { key: 'uid', required: false, type: ValidType.STRING },
@@ -42,7 +40,7 @@ class LoginLog extends Model {
 
         this.ip = ip;
         this.loginDate = loginDate;
-        this.loginDateTZ = moment(loginDate).format(DateUtil.DEFAULT_FORMAT);
+        this.loginDateTZ = DateUtil.utsToDs(loginDate);
     }
 }
 

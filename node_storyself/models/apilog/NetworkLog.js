@@ -21,8 +21,8 @@ class NetworkLog extends Model {
         this.res = ctx.body;
         this.status = ctx.status;
         this.ms = endDate - startDate;
-        this.endDate = moment(endDate).format(DateUtil.DEFAULT_FORMAT);
-        this.startDate = moment(startDate).format(DateUtil.DEFAULT_FORMAT);
+        this.endDate = DateUtil.utsToDs(endDate);
+        this.startDate = DateUtil.utsToDs(startDate);
     }
 }
 
