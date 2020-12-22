@@ -28,6 +28,10 @@ const ArrayUtil = require('@ss/util/ArrayUtil');
 module.exports = async (ctx, next) => {
     const loginDate = ctx.$date;
     const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
+    if(!reqAuthLogin.getProvider() || !reqAuthLogin.getProviderId()) {
+        ctx.$res.success({});
+        return;
+    }
     ReqAuthLogin.validModel(reqAuthLogin);
 
     const provider = reqAuthLogin.getProvider();
