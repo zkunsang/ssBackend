@@ -1,5 +1,6 @@
 const dbMongo = require('@ss/dbMongo');
-const dbRedis = require('@ss/dbRedisSS');
+const dbRedisSS = require('@ss/dbRedisSS');
+const dbRedisPB = require('@ss/dbRedisPB');
 
 const helper = require('@ss/helper');
 
@@ -28,13 +29,17 @@ const ArrayUtil = require('@ss/util/ArrayUtil');
 module.exports = async (ctx, next) => {
     const loginDate = ctx.$date;
     const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
+    if(!reqAuthLogin.getProvider() || !reqAuthLogin.getProviderId()) {
+        ctx.$res.success({});
+        return;
+    }
     ReqAuthLogin.validModel(reqAuthLogin);
 
     const provider = reqAuthLogin.getProvider();
     const providerId = reqAuthLogin.getProviderId();
     
     const userDao = new UserDao(dbMongo);
-    const sessionDao = new SessionDao(dbRedis);
+    const sessionDao = new SessionDao(dbRedisSS);
     const inventoryDao = new InventoryDao(dbMongo);
 
     const providerInfo = {}
@@ -46,7 +51,12 @@ module.exports = async (ctx, next) => {
     const sessionId = shortid.generate();
 
     let isNewUser = false;
-    let showEvent = true;
+    
+    let eventList = [];
+
+    if(dbRedisPB.betaEvent && dbRedisPB.betaEvent.status == 1) {
+        eventList.push({ evtCode: dbRedisPB.betaEvent.evtCode, message: dbRedisPB.betaEvent.message });
+    }
 
     if (userInfo) {
         const oldSessionId = userInfo.getSessionId();
@@ -61,12 +71,14 @@ module.exports = async (ctx, next) => {
         // TODO: 이벤트 데이터
         const storyTempEventDao = new StoryTempEventDao(dbMongo);
         const eventInfo = await storyTempEventDao.findOne({uid: userInfo.getUID()});
-        showEvent = eventInfo ? 1 : 0;
+
+        // 이벤트 달성 했을때 
+        eventList.push({ evtCode: 101, complete: eventInfo ? 1 : 0 });
     }
     else {
         isNewUser = true;
 
-        const userCountDao = new UserCountDao(dbRedis);
+        const userCountDao = new UserCountDao(dbRedisSS);
         const userCountInfo = await userCountDao.incr();
         
         reqAuthLogin.uid = userCountInfo.toString();
@@ -78,7 +90,8 @@ module.exports = async (ctx, next) => {
         userInfo.setProvider(provider, providerId);
 
         await userDao.insertOne(userInfo);
-        showEvent = 0;
+
+        eventList.push({ evtCode: 101, complete: 0 });
     }
     const invenLogDao = new InvenLogDao(dbMongo);
     const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate, invenLogDao);
@@ -100,7 +113,7 @@ module.exports = async (ctx, next) => {
         inventoryList: userInventoryList,
         policyVersion,
         fcmToken,
-        showEvent
+        eventList
     });
 
     const loginLog = new LoginLog(reqAuthLogin, { ip: ctx.$req.clientIp, loginDate });

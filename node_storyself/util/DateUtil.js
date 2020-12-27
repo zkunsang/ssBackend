@@ -27,7 +27,7 @@ class DateUtil {
     utsToDs(uts) {
         const length = uts.toString().length;
         if (length > 10)
-            uts = uts / 1000;
+            uts = parseInt(uts / 1000);
 
         return moment.unix(uts).format(defaultDateFormat);
     }

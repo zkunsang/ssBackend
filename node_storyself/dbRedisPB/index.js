@@ -1,7 +1,6 @@
 const ioredis = require('ioredis');
 const ss = require('../index.js');
 const dbCache = require('../dbCache');
-const ArrayUtil = require('../util/ArrayUtil');
 
 const Channels = {
     googleAuth: "googleAuth",
@@ -9,13 +8,15 @@ const Channels = {
     serverStatus: "serverStatus",
     ipList: "ipList",
     serverVariable: 'serverVariable',
-    coupon: 'coupon'
+    coupon: 'coupon',
+    betaEvent: "betaEvent"
 }
 
 class RedisPubSubHelper {
     constructor() {
         this.accessToken = null;
         this.serverStatus = null;
+        this.betaEvent = null;
         this.whiteListMap = {};
     }
 
@@ -28,6 +29,7 @@ class RedisPubSubHelper {
 
         this.accessToken = await this.redis.get(Channels.googleAuth);
         this.serverStatus = JSON.parse(await this.redis.get(Channels.serverStatus));
+        this.betaEvent = JSON.parse(await this.redis.get(Channels.betaEvent));
         
         this.redis.subscribe(Channels.googleAuth, async () => {
             console.log(`[${Channels.googleAuth}] - subscribe - Start`)
@@ -39,6 +41,10 @@ class RedisPubSubHelper {
 
         this.redis.subscribe(Channels.serverStatus, async() => {
             console.log(`[${Channels.serverStatus}] - subscribe - Start`)
+        });
+
+        this.redis.subscribe(Channels.betaEvent, async() => {
+            console.log(`[${Channels.betaEvent}] - subscribe - Start`)
         });
 
         this.redis.subscribe(Channels.ipList, async() => {
@@ -68,6 +74,9 @@ class RedisPubSubHelper {
             }
             else if(channel == Channels.serverStatus) {
                 this.serverStatus = JSON.parse(message);
+            }
+            else if(channel == Channels.betaEvent) {
+                this.betaEvent = JSON.parse(message);
             }
             else if(channel == Channels.coupon) {
                 await dbCache.reloadCoupon();

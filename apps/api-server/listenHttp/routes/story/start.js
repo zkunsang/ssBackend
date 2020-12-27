@@ -1,11 +1,35 @@
-const ss = require('@ss');
-const apiConfig = ss.configs.apiServer;
+const ReqStoryStart = require('@ss/models/controller/ReqStoryStart');
 
-const DataTableCache = require('@ss/dbCache/DataTableCache');
-const DataTable = require('@ss/models/mongo/DataTable');
+const StoryLogDao = require('@ss/daoMongo/StoryLogDao');
+
+const StoryLog = require('@ss/models/mongo/StoryLog');
+
+const StoryCache = require('@ss/dbCache/StoryCache');
+const SSError = require('@ss/error');
 
 module.exports = async (ctx, next) => {
-    // 데이터 버젼 테이블만 내려 받는 형식으로 변경
+    const updateDate = ctx.$date;
+    
+    const reqStoryStart = new ReqStoryStart(ctx.request.body);
+    ReqStoryStart.validModel(reqStoryStart);
+
+    const storyId = reqStoryStart.getStoryId();
+    const storyInfo = StoryCache.get(storyId);
+
+    if(!storyInfo) {
+        ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
+        return;
+    }
+
+    const userInfo = ctx.$userInfo;
+
+    const uid = userInfo.uid;
+    const type = StoryLog.StoryLogType.START;
+
+    const storyLogDao = new StoryLogDao(ctx.$dbMongo);
+    
+    await storyLogDao.insertOne(new StoryLog({ uid, storyId, updateDate, type }));
+
     ctx.$res.success({});
     await next();
 }

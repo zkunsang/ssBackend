@@ -50,6 +50,7 @@
     "apiLocal": "env NODE_ENV=apiLocal pm2 start apps/api-server/app.js",
     "apiks": "env NODE_ENV=apiKS pm2 start apps/api-server/app.js",
     "apiDev": "env NODE_ENV=apiDev pm2 start apps/api-server/app.js --name [Dev]api -i max ",
+    "apiDevTest": "env NODE_ENV=apiDev pm2 start apps/api-server/app.js",
     "apiLive": "env NODE_ENV=apiLive pm2 start apps/api-server/app.js -i max",
     "cmsLocal": "env NODE_ENV=cmsLocal pm2 start apps/cms-server/app.js",
     "cmsDev": "env NODE_ENV=cmsDev pm2 start apps/cms-server/app.js",
