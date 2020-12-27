@@ -54,13 +54,8 @@ module.exports = async (ctx, next) => {
     
     let eventList = [];
 
-    dbRedisPB.betaEvent = {
-        status: 1,
-        message: "~ test"
-    };
-
     if(dbRedisPB.betaEvent && dbRedisPB.betaEvent.status == 1) {
-        eventList.push({ status: 1, evtCode: 102, additionalMessage: dbRedisPB.betaEvent.message });
+        eventList.push({ evtCode: dbRedisPB.betaEvent.evtCode, message: dbRedisPB.betaEvent.message });
     }
 
     if (userInfo) {
@@ -78,7 +73,7 @@ module.exports = async (ctx, next) => {
         const eventInfo = await storyTempEventDao.findOne({uid: userInfo.getUID()});
 
         // 이벤트 달성 했을때 
-        eventList.push({ evtCode: 100, complete: eventInfo ? 1 : 0 });
+        eventList.push({ evtCode: 101, complete: eventInfo ? 1 : 0 });
     }
     else {
         isNewUser = true;
@@ -96,7 +91,7 @@ module.exports = async (ctx, next) => {
 
         await userDao.insertOne(userInfo);
 
-        eventList.push({ evtCode: 100, complete: 0 });
+        eventList.push({ evtCode: 101, complete: 0 });
     }
     const invenLogDao = new InvenLogDao(dbMongo);
     const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate, invenLogDao);
