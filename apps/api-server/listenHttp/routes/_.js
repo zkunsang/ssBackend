@@ -72,7 +72,7 @@ module.exports = async (ctx, next) => {
         }
     }
 
-    const networkLogDao = new NetworkLogDao(dbMongo);
+    const networkLogDao = new NetworkLogDao(dbMongo, ctx.$date);
     const networkLog = new NetworkLog(ctx, ctx.$date, moment().valueOf());
     helper.fluent.sendNetworkLog(networkLog);
     await networkLogDao.insertOne(networkLog);

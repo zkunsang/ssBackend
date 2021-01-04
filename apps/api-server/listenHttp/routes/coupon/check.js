@@ -95,7 +95,7 @@ module.exports = async (ctx, next) => {
     
     const inventoryDao = new InventoryDao(ctx.$dbMongo);
 
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 

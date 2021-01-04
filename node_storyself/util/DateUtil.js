@@ -2,6 +2,7 @@ const moment = require('moment');
 
 const _ = require('lodash');
 const defaultDateFormat = 'YYYY-MM-DD HH:mm:ss';
+const YYYYMMDD = 'YYYYMMDD';
 class DateUtil {
     constructor() { }
 
@@ -24,12 +25,16 @@ class DateUtil {
         return moment(ds, dateFormat).unix();
     }
 
-    utsToDs(uts) {
+    utsToDs(uts, dateFormat = defaultDateFormat) {
         const length = uts.toString().length;
         if (length > 10)
             uts = parseInt(uts / 1000);
 
-        return moment.unix(uts).format(defaultDateFormat);
+        return moment.unix(uts).format(dateFormat);
+    }
+
+    getStrFromuts(uts) {
+
     }
 
     isBetween(now, startDate, endDate) {
@@ -45,3 +50,4 @@ class DateUtil {
 
 module.exports = new DateUtil();
 module.exports.DEFAULT_FORMAT = defaultDateFormat;
+module.exports.YYYYMMDD = YYYYMMDD;

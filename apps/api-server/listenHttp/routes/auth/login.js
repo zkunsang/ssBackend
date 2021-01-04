@@ -93,7 +93,7 @@ module.exports = async (ctx, next) => {
 
         eventList.push({ evtCode: 101, complete: 0 });
     }
-    const invenLogDao = new InvenLogDao(dbMongo);
+    const invenLogDao = new InvenLogDao(dbMongo, loginDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate, invenLogDao);
 
     const userInventoryList = await inventoryService.getUserInventoryList();
@@ -119,7 +119,7 @@ module.exports = async (ctx, next) => {
     const loginLog = new LoginLog(reqAuthLogin, { ip: ctx.$req.clientIp, loginDate });
     helper.fluent.sendLog('login', loginLog);
 
-    const loginLogDao = new LoginLogDao(dbMongo);
+    const loginLogDao = new LoginLogDao(dbMongo, loginDate);
     await loginLogDao.insertOne(loginLog);
 
     await next();

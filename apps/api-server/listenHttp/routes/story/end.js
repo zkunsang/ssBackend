@@ -32,7 +32,7 @@ module.exports = async (ctx, next) => {
     const uid = userInfo.uid;
     const type = StoryLog.StoryLogType.END;
 
-    const storyLogDao = new StoryLogDao(ctx.$dbMongo);
+    const storyLogDao = new StoryLogDao(ctx.$dbMongo, updateDate);
     
     await storyLogDao.insertOne(new StoryLog({ uid, storyId, updateDate, type }));
 
@@ -46,7 +46,7 @@ module.exports = async (ctx, next) => {
 
         if(!eventInfo) {
             const inventoryDao = new InventoryDao(ctx.$dbMongo);
-            const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+            const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
             const result = await processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, invenLogDao);
             inventoryList = result.userInventoryList;
             eventRewardCode = result.eventRewardCode;

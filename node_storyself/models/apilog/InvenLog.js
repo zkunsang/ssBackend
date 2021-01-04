@@ -1,5 +1,5 @@
+const DateUtil = require('../../util/DateUtil');
 const Model = require('..');
-const moment = require('moment');
 
 const ValidateUtil = require('../../util/ValidateUtil')
 const ValidType = ValidateUtil.ValidType;
@@ -33,7 +33,7 @@ class InvenLog extends Model {
         this[Schema.EDIT_KEY.key] = editKey;
         this[Schema.ADMIN_ID.key] = adminId;
 
-        this.logDateTZ = moment.unix(logDate).format("YYYY-MM-DD HH:mm:ss");
+        this.logDateTZ = DateUtil.utsToDs(logDate);
     }
 }
 

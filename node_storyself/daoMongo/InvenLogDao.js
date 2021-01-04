@@ -1,11 +1,12 @@
-const InvenLog = require("../models/apilog/InvenLog");
+const DateUtil = require('../util/DateUtil');
+const InvenLog = require('../models/apilog/InvenLog');
 const Dao = require('./Dao');
 
 class InvenLogDao extends Dao {
-    constructor(connection) {
+    constructor(connection, date) {
         super();
         this.db = connection.storyConnect.db('log');
-        this.collection = this.db.collection('inven');
+        this.collection = this.db.collection(`inven_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
     static model = InvenLog;

@@ -10,7 +10,7 @@ module.exports = async (ctx, next) => {
     ReqIPCreate.validModel(reqIPCreate);
 
     const updateDate = ctx.$date;
-    const dateString = DateUtil.utsToDs(updateDate, 'updateDate')
+    const dateString = DateUtil.utsToDs(updateDate)
 
     const ip = reqIPCreate.getIP();
     const type = reqIPCreate.getType();

@@ -43,7 +43,7 @@ module.exports = async (ctx, next) => {
 
     const productRewardList = ProductRewardCache.get(productId);
     
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo, purchaseDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate, invenLogDao);
 
     const inventoryList = makeInventoryList(productRewardList);

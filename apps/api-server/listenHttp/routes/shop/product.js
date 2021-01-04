@@ -72,7 +72,7 @@ module.exports = async (ctx, next) => {
     
     const productRewardList = ProductRewardCache.get(productId);
     
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo, purchaseDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate, invenLogDao);
 
     const inventoryList = makeInventoryList(productRewardList);
@@ -85,7 +85,7 @@ module.exports = async (ctx, next) => {
     const productLog = createProductLog(userInfo, productInfo, purchaseDate);
     helper.fluent.sendProductLog();
 
-    const productLogDao = new ProductLogDao(ctx.$dbMongo);
+    const productLogDao = new ProductLogDao(ctx.$dbMongo, purchaseDate);
     await productLogDao.insertOne(productLog);
     
     const userInventoryList = await inventoryService.getUserInventoryList();

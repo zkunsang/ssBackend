@@ -1,11 +1,12 @@
+const DateUtil = require('@ss/util/DateUtil');
 const ProductLog = require("../models/apilog/ProductLog");
 const Dao = require('./Dao');
 
 class ProductLogDao extends Dao {
-    constructor(connection) {
+    constructor(connection, date) {
         super();
         this.db = connection.storyConnect.db('log');
-        this.collection = this.db.collection('product');
+        this.collection = this.db.collection(`product_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
     static model = ProductLog;

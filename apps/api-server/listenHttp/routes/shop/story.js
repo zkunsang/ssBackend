@@ -33,7 +33,7 @@ module.exports = async (ctx, next) => {
 
     itemService.applyCoupon(useInventoryList, reqShopStory.getCouponId());
 
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 

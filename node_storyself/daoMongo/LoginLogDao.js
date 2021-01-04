@@ -1,11 +1,12 @@
-const LoginLog = require("../models/apilog/LoginLog");
+const DateUtil = require('../util/DateUtil');
+const LoginLog = require('../models/apilog/LoginLog');
 const Dao = require('./Dao');
 
 class LoginLogDao extends Dao {
-    constructor(connection) {
+    constructor(connection, date) {
         super();
         this.db = connection.storyConnect.db('log');
-        this.collection = this.db.collection('login');
+        this.collection = this.db.collection(`login_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
     static model = LoginLog;

@@ -35,7 +35,7 @@ class ProductService {
         const result = await this.checkValidate(url);
 
         if(result.purchaseState !== 0) {
-            throw new SSError.Service(SSError.Service.Code.nonValidGoogleReceipt, `${uid} - ${purchaseToken}`);
+            // throw new SSError.Service(SSError.Service.Code.nonValidGoogleReceipt, `${uid} - ${purchaseToken}`);
         }
 
         // 영수증 샘플

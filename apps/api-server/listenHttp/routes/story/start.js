@@ -26,7 +26,7 @@ module.exports = async (ctx, next) => {
     const uid = userInfo.uid;
     const type = StoryLog.StoryLogType.START;
 
-    const storyLogDao = new StoryLogDao(ctx.$dbMongo);
+    const storyLogDao = new StoryLogDao(ctx.$dbMongo, updateDate);
     
     await storyLogDao.insertOne(new StoryLog({ uid, storyId, updateDate, type }));
 

@@ -24,7 +24,7 @@ module.exports = async (ctx, next) => {
     const { putInventoryList, useInventoryList } 
         = itemService.getExchangeInventoryInfo([itemInventory]);
 
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo);
+    const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 

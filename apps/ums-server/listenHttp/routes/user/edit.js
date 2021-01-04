@@ -48,7 +48,7 @@ module.exports = async (ctx, next) => {
 
     const userInfo = await userDao.findOne({uid});
 
-    const invenLogDao = new InvenLogDao(dbMongo);
+    const invenLogDao = new InvenLogDao(dbMongo, updateDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 

@@ -1,11 +1,12 @@
+const DateUtil = require("@ss/util/DateUtil");
 const NetworkLog = require("../models/apilog/NetworkLog");
 const Dao = require('./Dao');
 
 class NetworkLogDao extends Dao {
-    constructor(connection) {
+    constructor(connection, date) {
         super();
         this.db = connection.storyConnect.db('log');
-        this.collection = this.db.collection('network');
+        this.collection = this.db.collection(`network_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
     static model = NetworkLog;
