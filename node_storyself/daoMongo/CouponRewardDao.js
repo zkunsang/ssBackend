@@ -4,7 +4,7 @@ const Dao = require('./Dao');
 class CouponRewardDao extends Dao {
     constructor(connection) {
         super();
-        this.db = connection.storyConnect.db('cms');
+        this.db = connection.storyConnect.db('coupon');
         this.collection = this.db.collection('couponReward');
     }
 
