@@ -288,10 +288,12 @@ class InventoryService extends Service {
         }
 
         for (const deleteInven of deleteList) {
+            const itemId = deleteInven.getItemId();
+            const beforeInven = beforeInvenMap[itemId];;
             const changeMap = new InventoryChangeDelete(
                 adminInfo ?
-                    { deleteInven, action, adminInfo } :
-                    { deleteInven, action });
+                    { beforeInven, deleteInven, action, adminInfo } :
+                    { beforeInven, deleteInven, action });
             changeList.push(changeMap);
         }
 
@@ -503,7 +505,7 @@ class InventoryService extends Service {
                 break;
             }
             else {
-                userInventory.minusItem(userInventory);
+                userInventory.minusItem(useInventory);
                 useInventory.setItemQny(deleteCnt - invenItemQny);
                 deleteList.push(userInventory);
                 break;

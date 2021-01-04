@@ -6,20 +6,24 @@ const ValidateUtil = require('../../util/ValidateUtil');
 const ValidType = ValidateUtil.ValidType;
 
 const Schema = {
+    BEFORE_INVEN: { key: 'beforeInven', required: true, type: ValidType.OBJECT },
     DELETE_INVEN: { key: 'deleteInven', required: true, type: ValidType.OBJECT },
     ACTION: { key: 'action', required: true, type: ValidType.ARRAY },
     ADMIN_INFO: { key: 'adminInfo', required: false, type: ValidType.OBJECT }
 }
 
 class InventoryChangeDelete extends Model {
-    constructor({ deleteInven, action, adminInfo }) {
+    constructor({ beforeInven, deleteInven, action, adminInfo }) {
         super();
+        
+        this[Schema.BEFORE_INVEN.key] = beforeInven;
         this[Schema.DELETE_INVEN.key] = deleteInven;
         this[Schema.ACTION.key] = action;
         this[Schema.ADMIN_INFO.key] = adminInfo;
     }
 
     getInvenLog(uid, logDate) {
+        const beforeInven = this[Schema.BEFORE_INVEN.key];
         const deleteInven = this[Schema.DELETE_INVEN.key];
         const action = this[Schema.ACTION.key];
 
@@ -27,7 +31,7 @@ class InventoryChangeDelete extends Model {
 
         const itemData = ItemCache.get(itemId);
         const itemCategory = itemData.getItemCategory();
-        const beforeQny = deleteInven.getItemQny();
+        const beforeQny = beforeInven.getItemQny();
         const afterQny = 0;
         const diffQny = afterQny - beforeQny;
 
