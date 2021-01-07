@@ -83,7 +83,7 @@ module.exports = async (ctx, next) => {
     await receiptDao.insertOne(receipt);
 
     const productLog = createProductLog(userInfo, productInfo, purchaseDate);
-    helper.fluent.sendProductLog();
+    helper.fluent.sendProductLog(productLog);
 
     const productLogDao = new ProductLogDao(ctx.$dbMongo, purchaseDate);
     await productLogDao.insertOne(productLog);

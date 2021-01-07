@@ -1,4 +1,7 @@
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
+
 const Koa = require('koa');
 const koaBodyParser = require('koa-bodyparser');
 const serve = require('koa-static');
@@ -31,8 +34,16 @@ function initKoa() {
 
 module.exports = async () => {
     const koa = initKoa();
+
     http.createServer(koa.callback()).listen(ss.configs.apiServer.port, () => {
         console.info('Listen API Server OK => ' + 'http:' + ss.configs.apiServer.port);
+    });
+
+    https.createServer({
+        key: fs.readFileSync(ss.configs.apiServer.sslKey),
+        cert: fs.readFileSync(ss.configs.apiServer.sslCert)
+    }, koa.callback()).listen(ss.configs.apiServer.sslPort, function () {
+        console.info('Listen API Server OK => ' + 'https:' + ss.configs.apiServer.sslPort);
     });
 };
 
