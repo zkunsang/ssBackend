@@ -17,6 +17,7 @@ const Schema = {
 
     GOOGLE: { key: 'google', required: false, type: ValidType.STRING },
     APPLE: { key: 'apple', required: false, type: ValidType.STRING },
+    ETC: { key: 'etc', required: false, type: ValidType.STRING },
 }
 
 class User extends Model {
