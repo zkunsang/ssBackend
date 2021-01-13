@@ -4,6 +4,7 @@ const ProductCache = require('./ProductCache');
 const ProductGroupCache = require('./ProductGroupCache');
 const ProductRewardCache = require('./ProductRewardCache');
 const ResourceCache = require('@ss/dbCache/ResourceCache');
+const ResourceIosCache = require('@ss/dbCache/ResourceIosCache');
 const StoryCache = require('@ss/dbCache/StoryCache');
 const DataTableCache = require('@ss/dbCache/DataTableCache');
 const CouponCache = require('@ss/dbCache/CouponCache');
@@ -20,6 +21,7 @@ const Schema = {
     PRODUCT_GROUP_CACHE: 'productGroupCache',
     PRODUCT_REWARD_CACHE: 'productRewardCache',
     RESOURCE_CACHE: 'resourceCache',
+    RESOURCE_IOS_CACHE: 'resourceIosCache',
     STORY_CACHE: 'storyCache',
     DATA_TABLE_CACHE: 'dataTableCache',
     COUPON_CACHE: 'couponCache',
@@ -27,7 +29,6 @@ const Schema = {
 
     IP_CACHE: 'ipCache',
     SERVICE_VARIABLE: 'serviceVariable'
-    
 }
 
 class CacheManager {
@@ -39,6 +40,7 @@ class CacheManager {
         this.cache[Schema.PRODUCT_GROUP_CACHE] = ProductGroupCache;
         this.cache[Schema.PRODUCT_REWARD_CACHE] = ProductRewardCache;
         this.cache[Schema.RESOURCE_CACHE] = ResourceCache;
+        this.cache[Schema.RESOURCE_IOS_CACHE] = ResourceIosCache;
         this.cache[Schema.STORY_CACHE] = StoryCache;
         this.cache[Schema.COUPON_CACHE] = CouponCache;
         this.cache[Schema.COUPON_REWARD_CACHE] = CouponRewardCache;
@@ -57,6 +59,7 @@ class CacheManager {
         await this.cache[Schema.PRODUCT_GROUP_CACHE].ready();
         await this.cache[Schema.PRODUCT_REWARD_CACHE].ready();
         await this.cache[Schema.RESOURCE_CACHE].ready();
+        await this.cache[Schema.RESOURCE_IOS_CACHE].ready();
         await this.cache[Schema.STORY_CACHE].ready();
         await this.cache[Schema.COUPON_CACHE].ready();
         await this.cache[Schema.COUPON_REWARD_CACHE].ready();
@@ -85,6 +88,7 @@ class CacheManager {
         await this.cache[Schema.PRODUCT_GROUP_CACHE].loadData(dataTableCacheModel);
         await this.cache[Schema.PRODUCT_REWARD_CACHE].loadData(dataTableCacheModel);
         await this.cache[Schema.RESOURCE_CACHE].loadData(dataTableCacheModel);
+        await this.cache[Schema.RESOURCE_IOS_CACHE].loadData(dataTableCacheModel);
         await this.cache[Schema.STORY_CACHE].loadData(dataTableCacheModel);
     }
 

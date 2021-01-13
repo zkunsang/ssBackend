@@ -36,7 +36,8 @@ const Provider = {
 
 const Platform = {
     IOS: 'ios',
-    AOS: 'aos'
+    AOS: 'aos',
+    ETC: 'etc'
 }
 
 const AppStore = {
