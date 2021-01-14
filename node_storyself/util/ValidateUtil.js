@@ -44,6 +44,7 @@ const AppStore = {
     GOOGLE: 'google',
     ONESTORE: 'onestore',
     APPLE: 'apple',
+    ETC: 'etc',
 }
 
 const StoryStatus = {
