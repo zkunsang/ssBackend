@@ -6,6 +6,7 @@ const StoryLog = require('@ss/models/mongo/StoryLog');
 
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
+const shortid = require('shortid');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
@@ -29,8 +30,8 @@ module.exports = async (ctx, next) => {
     const storyLogDao = new StoryLogDao(ctx.$dbMongo, updateDate);
     
     await storyLogDao.insertOne(new StoryLog({ uid, storyId, updateDate, type }));
-
-    ctx.$res.success({});
+    const startKey = shortid.generate();
+    ctx.$res.success({ startKey });
     await next();
 }
 
