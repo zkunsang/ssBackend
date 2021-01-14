@@ -39,6 +39,9 @@ module.exports = async () => {
         console.info('Listen API Server OK => ' + 'http:' + ss.configs.apiServer.port);
     });
 
+    if(!ss.configs.apiServer.sslKey)
+        return;
+
     https.createServer({
         key: fs.readFileSync(ss.configs.apiServer.sslKey),
         cert: fs.readFileSync(ss.configs.apiServer.sslCert)
