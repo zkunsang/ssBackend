@@ -81,6 +81,11 @@ const IpManageType = {
     WHITE: 'white'
 }
 
+const QuestActionType = {
+    CLICK: 1,
+    DRAG_AND_DROP: 2
+}
+
 class ValidateUtil {
     constructor() {
         this.validFunc = {};
@@ -238,4 +243,5 @@ module.exports.AdminStatus = AdminStatus;
 module.exports.CommonBoolean = CommonBoolean;
 module.exports.PurchaseStatus = PurchaseStatus;
 module.exports.IpManageType = IpManageType;
+module.exports.QuestActionType = QuestActionType;
 

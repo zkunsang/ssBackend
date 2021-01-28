@@ -80,6 +80,14 @@ class Dao {
         await this.collection.deleteMany();
     }
 
+    transModelList(list) {
+        return list.map((data) => new this.constructor.model(data))
+    }
+
+    transModel(data) {
+        return new this.constructor.model(data);
+    }
+
     static checkValidObj(obj) {
         if (!(obj instanceof this.constructor.model)) {
             throw new SSError.Dao(SSError.Dao.Code.notAllowModel, `${obj.name} is not ${this.constructor.model.name}`)

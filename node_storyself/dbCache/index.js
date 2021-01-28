@@ -9,21 +9,31 @@ const StoryCache = require('@ss/dbCache/StoryCache');
 const DataTableCache = require('@ss/dbCache/DataTableCache');
 const CouponCache = require('@ss/dbCache/CouponCache');
 const CouponRewardCache = require('@ss/dbCache/CouponRewardCache');
+const QuestStoryCache = require('@ss/dbCache/QuestStoryCache');
+
 
 const IPCache = require('@ss/dbCache/IPCache');
 const ServiceVariableCache = require('@ss/dbCache/ServiceVariableCache');
 
+// 서버에서 사용하는 데이터만 캐쉬한다.
+// 리소스는 왜 캐쉬했지?
 
 const Schema = {
     ITEM_CACHE: 'itemCache',
     ITEM_MATERIAL_CACHE: 'itemMaterialCache',
+
     PRODUCT_CACHE: 'productCache',
     PRODUCT_GROUP_CACHE: 'productGroupCache',
     PRODUCT_REWARD_CACHE: 'productRewardCache',
+
     RESOURCE_CACHE: 'resourceCache',
     RESOURCE_IOS_CACHE: 'resourceIosCache',
+
+    QUEST_STORY_CACHE: 'questStoryCache',
+
     STORY_CACHE: 'storyCache',
     DATA_TABLE_CACHE: 'dataTableCache',
+
     COUPON_CACHE: 'couponCache',
     COUPON_REWARD_CACHE: 'couponRewardCache',
 
@@ -45,14 +55,15 @@ class CacheManager {
         this.cache[Schema.COUPON_CACHE] = CouponCache;
         this.cache[Schema.COUPON_REWARD_CACHE] = CouponRewardCache;
         this.cache[Schema.DATA_TABLE_CACHE] = DataTableCache;
+        this.cache[Schema.QUEST_STORY_CACHE] = QuestStoryCache;
         
-
         this.cache[Schema.IP_CACHE] = IPCache;
         this.cache[Schema.SERVICE_VARIABLE] = ServiceVariableCache;
     }
 
     async ready() {
         await this.cache[Schema.DATA_TABLE_CACHE].ready();
+
         await this.cache[Schema.ITEM_CACHE].ready();
         await this.cache[Schema.ITEM_MATERIAL_CACHE].ready();
         await this.cache[Schema.PRODUCT_CACHE].ready();
@@ -63,6 +74,7 @@ class CacheManager {
         await this.cache[Schema.STORY_CACHE].ready();
         await this.cache[Schema.COUPON_CACHE].ready();
         await this.cache[Schema.COUPON_REWARD_CACHE].ready();
+        await this.cache[Schema.QUEST_STORY_CACHE].ready();
 
         await this.cache[Schema.IP_CACHE].ready();
         await this.cache[Schema.SERVICE_VARIABLE].ready();
@@ -71,6 +83,7 @@ class CacheManager {
         await this.reloadIPCache();
         await this.reloadServiceVariable();
         await this.reloadCoupon();
+        await this.reloadQuestStory();
     }
 
     // pubsub으로 받음
@@ -103,6 +116,10 @@ class CacheManager {
     async reloadCoupon() {
         await this.cache[Schema.COUPON_CACHE].loadDataWithoutVersion();
         await this.cache[Schema.COUPON_REWARD_CACHE].loadDataWithoutVersion();
+    }
+
+    async reloadQuestStory() {
+        await this.cache[Schema.QUEST_STORY_CACHE].loadDataWithoutVersion();
     }
  
     async updateCache(tableName, version) {

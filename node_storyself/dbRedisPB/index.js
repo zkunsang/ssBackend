@@ -9,7 +9,8 @@ const Channels = {
     ipList: "ipList",
     serverVariable: 'serverVariable',
     coupon: 'coupon',
-    betaEvent: "betaEvent"
+    betaEvent: "betaEvent",
+    questStory: 'questStory'
 }
 
 class RedisPubSubHelper {
@@ -59,6 +60,10 @@ class RedisPubSubHelper {
             console.log(`[${Channels.coupon}] - subscribe - Start`)
         });
 
+        this.redis.subscribe(Channels.questStory, async() => {
+            console.log(`[${Channels.questStory}] - subscribe - Start`)
+        });
+
         this.redis.on("message", async (channel, message) => {
             if(channel == Channels.googleAuth) {
                 this.accessToken = message;
@@ -80,6 +85,9 @@ class RedisPubSubHelper {
             }
             else if(channel == Channels.coupon) {
                 await dbCache.reloadCoupon();
+            }
+            else if(channel == Channels.questStory) {
+                await dbCache.reloadQuestStory();
             }
         })
     }

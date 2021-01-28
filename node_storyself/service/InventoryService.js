@@ -24,6 +24,7 @@ const PUT_ACTION = {
         CASH: [1000, 1]
     },
     ADMIN: [1001, 1],
+    
     CHEAT: [1002, 1],
     EXCHANGE: {
         STORY: [1003, 1],
@@ -34,7 +35,8 @@ const PUT_ACTION = {
     COUPON: [1005, 1],
     EVENT: {
         BETA_EVENT: [1006, 1]
-    }
+    },
+    STORY_QUEST: [1007, 1],
 };
 
 const USE_ACTION = {
