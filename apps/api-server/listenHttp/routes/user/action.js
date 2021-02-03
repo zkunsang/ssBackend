@@ -15,7 +15,7 @@ const UserQuestStoryDao = require('@ss/daoMongo/UserQuestStoryDao');
 function createActionLog(uid, storyId, actionList, logDate) {
     const retActionList = [];
 
-    for(const action of actionList) {
+    for (const action of actionList) {
         retActionList.push(new ActionLog({ uid, storyId, ...action, logDate }));
     }
 
@@ -39,21 +39,19 @@ module.exports = async (ctx, next) => {
 
     const questSet = new Set();
 
-    const questMap = {};
     const userNewActionMap = {};
 
-
-    for(const action of actionList) {    
-        if(!userNewActionMap[action.actionId]) {
+    for (const action of actionList) {
+        if (!userNewActionMap[action.actionId]) {
             const _questList = QuestStoryCache.getQuestListByTargetId(storyId, action.actionId);
-            if(!_questList) 
+            if (!_questList)
                 continue;
 
             _questList.map((quest) => questSet.add(quest.questId));
 
             userNewActionMap[action.actionId] = 0;
         }
-        
+
         userNewActionMap[action.actionId] += 1;
     }
 
@@ -63,32 +61,33 @@ module.exports = async (ctx, next) => {
     const userQuestStoryDao = new UserQuestStoryDao(dbMongo);
     const userQuestStory = await userQuestStoryDao.findOne({ storyId, uid });
 
-    const userAccuiredQuest = userQuestStory ? userQuestStory.getQuestStory(): {};
-    const userStoryAction = userQuestStory ? userQuestStory.getStoryAction(): {};
+    const userAccuiredQuest = userQuestStory ? userQuestStory.getQuestStory() : {};
+    const userStoryAction = userQuestStory ? userQuestStory.getStoryAction() : {};
 
     const newClearQuest = [];
+    newClearQuest.push(1);
 
-    for(const questId of questList) {
+    for (const questId of questList) {
         // 유저가 이미 획득한 퀘스트면 패스
-        if(userAccuiredQuest[questId]) continue;
+        if (userAccuiredQuest[questId]) continue;
 
         const goalList = QuestStoryCache.getQuestGoalList(storyId, questId);
 
         let isClear = true;
-        
-        for(const goal of goalList) {
+
+        for (const goal of goalList) {
             // 전부다 했는지 확인
             // 유저가 골에 대한 액션 카운트를 가지고 있는지 확인
             let userCount = userStoryAction[goal.actionId] ? userStoryAction[goal.actionId] : 0;
 
             // 신규 추가된 액션에 대한 카운팅
-            if(userNewActionMap[goal.actionId]) {
+            if (userNewActionMap[goal.actionId]) {
                 userCount += userNewActionMap[goal.actionId];
             }
-            
-            if(goal.count > userCount) isClear = false;
 
-            if(userCount != 0)  {
+            if (goal.count > userCount) isClear = false;
+
+            if (userCount != 0) {
                 userStoryAction[goal.actionId] = userCount;
             }
         }
@@ -107,11 +106,11 @@ module.exports = async (ctx, next) => {
     const clearQuest = [];
     const putInvenRewardList = [];
 
-    for(const quest of newClearQuest) {
+    for (const quest of newClearQuest) {
         const rewardList = QuestStoryCache.getQuestRewardList(storyId, quest);
-        clearQuest.push({questId: quest, rewardList});
+        clearQuest.push({ questId: quest, rewardList });
 
-        ctx.$res.addData({clearQuest});
+        ctx.$res.addData({ clearQuest });
 
         putInvenRewardList.push(...rewardList);
     }
@@ -123,19 +122,23 @@ module.exports = async (ctx, next) => {
 
     const retObject = {};
 
-    if(putInvenRewardList.length > 0 ) {
+    const userInventoryList = await inventoryService.getUserInventoryList();
+    InventoryService.removeObjectIdList(userInventoryList);
+    ctx.$res.addData({ inventoryList: userInventoryList });
+
+    if (putInvenRewardList.length > 0) {
         await inventoryService.processPut(
-            InventoryService.PUT_ACTION.STORY_QUEST, 
+            InventoryService.PUT_ACTION.STORY_QUEST,
             InventoryService.makeInventoryList(putInvenRewardList));
 
         const userInventoryList = await inventoryService.getUserInventoryList();
         InventoryService.removeObjectIdList(userInventoryList);
-        ctx.$res.addData({inventoryList: userInventoryList});
+        ctx.$res.addData({ inventoryList: userInventoryList });
 
         retObject.inventoryList = userInventoryList;
     }
 
-    if(userQuestStory) {
+    if (userQuestStory) {
         const _id = userQuestStory._id;
         await userQuestStoryDao.updateOne({ _id }, updateObject);
     }
