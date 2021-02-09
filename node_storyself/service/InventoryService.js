@@ -46,7 +46,8 @@ const USE_ACTION = {
         STORY: [2003, 1],
         ACCESSORY: [2003, 2],
         SLOT: [2003, 3],
-    }
+    },
+    QUEST_DELETE: [2004, 1]
 };
 
 const Schema = {
@@ -446,7 +447,8 @@ class InventoryService extends Service {
     }
 
     static checkItemUseable(itemData, itemId, action) {
-        if (action[0] == USE_ACTION.ADMIN[0]) return;
+        if (action[0] == USE_ACTION.ADMIN[0] ||
+            action[0] == USE_ACTION.QUEST_DELETE[0] ) return;
 
         if (!itemData.getUseable()) {
             throw new SSError.Service(SSError.Service.Code.useItemNoUseableItem, `${itemId} - not useable`);

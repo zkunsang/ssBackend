@@ -23,6 +23,10 @@ class NetworkLog extends Model {
         this.ms = endDate - startDate;
         this.endDate = DateUtil.utsToDs(endDate);
         this.startDate = DateUtil.utsToDs(startDate);
+
+        if(ctx.$userInfo) {
+            this.uid = ctx.$userInfo.getUID();
+        }
     }
 }
 
