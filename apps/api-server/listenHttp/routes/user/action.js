@@ -125,16 +125,15 @@ module.exports = async (ctx, next) => {
     InventoryService.removeObjectIdList(userInventoryList);
     
     if (putInvenRewardList.length > 0) {
+        const rewardList = InventoryService.makeInventoryList(putInvenRewardList);
         await inventoryService.processPut(
             InventoryService.PUT_ACTION.STORY_QUEST,
-            InventoryService.makeInventoryList(putInvenRewardList));
+            rewardList);
 
         const userInventoryList = await inventoryService.getUserInventoryList();
         InventoryService.removeObjectIdList(userInventoryList);
         ctx.$res.addData({ inventoryList: userInventoryList });
-        
-        retObject.rewardList = putInvenRewardList;
-        retObject.inventoryList = userInventoryList;
+        ctx.$res.addData({ rewardList });
     }
 
     if (userQuestStory) {
