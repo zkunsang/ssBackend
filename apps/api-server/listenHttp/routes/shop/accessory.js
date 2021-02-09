@@ -6,6 +6,9 @@ const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
 const ItemService = require('@ss/service/ItemService');
 const InventoryService = require('@ss/service/InventoryService');
 
+const ItemCache = require('@ss/dbCache/ItemCache');
+const SSError = require('@ss/error');
+
 module.exports = async (ctx, next) => {
     const reqShopAccessory = new ReqShopAccessory(ctx.request.body);
     ReqShopAccessory.validModel(reqShopAccessory);
@@ -18,6 +21,14 @@ module.exports = async (ctx, next) => {
     
     const itemId = reqShopAccessory.getItemId();
     itemService.getItemList([itemId]);
+
+    const itemInfo = ItemCache.get(itemId);
+
+    // 구매 가능한 상태가 아니면 에러 
+    if(itemInfo.status !== 1) {
+        ctx.$res.badRequest(SSError.Service.Code.purchaseNotPossible);
+        return;
+    }
     
     const itemInventory = InventoryService.makeInventoryObject(itemId, 1);
 
@@ -36,6 +47,7 @@ module.exports = async (ctx, next) => {
 
     const userInventoryList = await inventoryService.getUserInventoryList();
     InventoryService.removeObjectIdList(userInventoryList);
+
 
     ctx.status = 200;
     ctx.body.data = { inventoryList: userInventoryList };

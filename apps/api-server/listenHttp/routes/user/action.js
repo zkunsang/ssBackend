@@ -65,8 +65,7 @@ module.exports = async (ctx, next) => {
     const userStoryAction = userQuestStory ? userQuestStory.getStoryAction() : {};
 
     const newClearQuest = [];
-    newClearQuest.push(1);
-
+    
     for (const questId of questList) {
         // 유저가 이미 획득한 퀘스트면 패스
         if (userAccuiredQuest[questId]) continue;
@@ -124,8 +123,7 @@ module.exports = async (ctx, next) => {
 
     const userInventoryList = await inventoryService.getUserInventoryList();
     InventoryService.removeObjectIdList(userInventoryList);
-    ctx.$res.addData({ inventoryList: userInventoryList });
-
+    
     if (putInvenRewardList.length > 0) {
         await inventoryService.processPut(
             InventoryService.PUT_ACTION.STORY_QUEST,
