@@ -132,7 +132,8 @@ module.exports = async (ctx, next) => {
         const userInventoryList = await inventoryService.getUserInventoryList();
         InventoryService.removeObjectIdList(userInventoryList);
         ctx.$res.addData({ inventoryList: userInventoryList });
-
+        
+        retObject.rewardList = putInvenRewardList;
         retObject.inventoryList = userInventoryList;
     }
 
