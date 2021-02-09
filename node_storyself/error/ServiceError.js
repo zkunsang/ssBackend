@@ -10,7 +10,8 @@ const code = {
     putItemOverMaxQny: { code: 31002, name: 'putItemOverMaxQny', message: 'over max qny' },
     useItemNotEnoughItem: { code: 31003, name: 'putItemNotEnughItem', message: 'not enough Item' },
     useItemNoUseableItem: { code: 31004, name: 'useItemNoUseableItem', message: 'no useable item' },
-
+    purchaseNotPossible: { code: 31005, name: 'purchaseNotPossible', message: 'purchase not possible' },
+    
     noExistItemList: { code: 32001, name: 'noExistItemList', message: 'found not exist item' },
     noExistStoryList: { code: 32002, name: 'noExistStoryList', message: 'found not exist story' },
 
