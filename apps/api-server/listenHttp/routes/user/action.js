@@ -119,11 +119,6 @@ module.exports = async (ctx, next) => {
 
     const inventoryService = new InventoryService(inventoryDao, userInfo, logDate, invenLogDao);
 
-    const retObject = {};
-
-    const userInventoryList = await inventoryService.getUserInventoryList();
-    InventoryService.removeObjectIdList(userInventoryList);
-    
     if (putInvenRewardList.length > 0) {
         const rewardList = InventoryService.makeInventoryList(putInvenRewardList);
         await inventoryService.processPut(
@@ -133,7 +128,6 @@ module.exports = async (ctx, next) => {
         const userInventoryList = await inventoryService.getUserInventoryList();
         InventoryService.removeObjectIdList(userInventoryList);
         ctx.$res.addData({ inventoryList: userInventoryList });
-        ctx.$res.addData({ rewardList });
     }
 
     if (userQuestStory) {
