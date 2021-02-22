@@ -72,7 +72,7 @@ class InventoryService extends Service {
         return await this.inventoryDao.findMany({ uid });
     }
 
-    async checkPutItem(action, putInventoryList, adminInfo) {
+    async checkPutItem(action, putInventoryList, addInfo) {
         Service.Validate.checkArrayObject(putInventoryList, Inventory);
         const sortedInventoryList = InventoryService.sortInventoryList(putInventoryList);
 
@@ -129,10 +129,10 @@ class InventoryService extends Service {
             updateList.push(userInventory);
         }
 
-        return new InventoryPutObject({ insertList, updateList, beforeInvenMap, action, adminInfo });
+        return new InventoryPutObject({ insertList, updateList, beforeInvenMap, action, addInfo });
     }
 
-    async checkUseItem(action, useInventoryList, adminInfo) {
+    async checkUseItem(action, useInventoryList, addInfo) {
         Service.Validate.checkArrayObject(useInventoryList, Inventory);
         const sortedInventoryList = InventoryService.sortInventoryList(useInventoryList);
 
@@ -164,7 +164,7 @@ class InventoryService extends Service {
             InventoryService.calculateUse(userInventoryList, useInventory, deleteList, updateList);
         }
 
-        return new InventoryUseObject({ deleteList, updateList, beforeInvenMap, action, adminInfo });
+        return new InventoryUseObject({ deleteList, updateList, beforeInvenMap, action, addInfo });
     }
 
     /**
@@ -217,8 +217,8 @@ class InventoryService extends Service {
         const updateList = putObject.getUpdateList();
         const insertList = putObject.getInsertList()
         const action = putObject.getAction();
-        const adminInfo = putObject.getAdminInfo();
-
+        const addInfo = putObject.getAddInfo();
+        
         // 신규 추가된 아이템
         const afterInvenMap = {};
 
@@ -241,12 +241,12 @@ class InventoryService extends Service {
                 continue;
             }
 
-            const changeMap = new InventoryChangeUpdate({ beforeInven, afterInven, action, adminInfo });
+            const changeMap = new InventoryChangeUpdate({ beforeInven, afterInven, action }, addInfo);
             changeList.push(changeMap);
         }
 
         for (const insertInven of insertList) {
-            const changeMap = new InventoryChangeInsert({ insertInven, action, adminInfo });
+            const changeMap = new InventoryChangeInsert({ insertInven, action }, addInfo);
             changeList.push(changeMap);
         }
 
@@ -262,7 +262,8 @@ class InventoryService extends Service {
         const updateList = useObject.getUpdateList();
         const deleteList = useObject.getDeleteList()
         const action = useObject.getAction();
-        const adminInfo = useObject.getAdminInfo();
+        const addInfo = useObject.getAddInfo();
+        
 
         // 신규 추가된 아이템
         const afterInvenMap = {};
@@ -283,20 +284,14 @@ class InventoryService extends Service {
                 continue;
             }
 
-            const changeMap = new InventoryChangeUpdate(
-                adminInfo ?
-                    { beforeInven, afterInven, action, adminInfo } :
-                    { beforeInven, afterInven, action });
+            const changeMap = new InventoryChangeUpdate({ beforeInven, afterInven, action }, addInfo);
             changeList.push(changeMap);
         }
 
         for (const deleteInven of deleteList) {
             const itemId = deleteInven.getItemId();
             const beforeInven = beforeInvenMap[itemId];;
-            const changeMap = new InventoryChangeDelete(
-                adminInfo ?
-                    { beforeInven, deleteInven, action, adminInfo } :
-                    { beforeInven, deleteInven, action });
+            const changeMap = new InventoryChangeDelete({ beforeInven, deleteInven, action }, addInfo);
             changeList.push(changeMap);
         }
 
@@ -366,21 +361,21 @@ class InventoryService extends Service {
         }
     }
 
-    async processExchange(useAction, useInventoryList, putAction, putInventoryList, adminInfo) {
-        const putObject = await this.checkPutItem(putAction, putInventoryList, adminInfo);
-        const useObject = await this.checkUseItem(useAction, useInventoryList, adminInfo);
+    async processExchange(useAction, useInventoryList, putAction, putInventoryList, addInfo) {
+        const putObject = await this.checkPutItem(putAction, putInventoryList, addInfo);
+        const useObject = await this.checkUseItem(useAction, useInventoryList, addInfo);
 
         await this.useItem(useObject);
         await this.putItem(putObject);
     }
 
-    async processPut(action, putInventoryList, adminInfo) {
-        const putObject = await this.checkPutItem(action, putInventoryList, adminInfo);
+    async processPut(action, putInventoryList, addInfo) {
+        const putObject = await this.checkPutItem(action, putInventoryList, addInfo);
         await this.putItem(putObject);
     }
 
-    async processUse(action, useInventoryList, adminInfo) {
-        const useObject = await this.checkUseItem(action, useInventoryList, adminInfo);
+    async processUse(action, useInventoryList, addInfo) {
+        const useObject = await this.checkUseItem(action, useInventoryList, addInfo);
         await this.useItem(useObject);
     }
 

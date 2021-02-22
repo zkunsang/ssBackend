@@ -8,17 +8,17 @@ const Schema = {
     UPDATE_LIST: { key: 'updateList', required: true, type: ValidType.ARRAY },
     BEFORE_INVEN_MAP: { key: 'beforeInvenMap', required: true, type: ValidType.OBJECT },
     ACTION: { key: 'action', required: true, type: ValidType.ARRAY },
-    ADMIN_INFO: { key: 'adminInfo', required: false, type: ValidType.OBJECT }
+    ADD_INFO: { key: 'addInfo', required: false, type: ValidType.OBJECT }
 }
 
 class InventoryUseObject extends Model {
-    constructor({ updateList, deleteList, beforeInvenMap, action, adminInfo }) {
+    constructor({ updateList, deleteList, beforeInvenMap, action, addInfo }) {
         super();
         this[Schema.UPDATE_LIST.key] = updateList;
         this[Schema.DELETE_LIST.key] = deleteList;
         this[Schema.BEFORE_INVEN_MAP.key] = beforeInvenMap;
         this[Schema.ACTION.key] = action;
-        this[Schema.ADMIN_INFO.key] = adminInfo;
+        this[Schema.ADD_INFO.key] = addInfo;
     }
 
     getUpdateList() {
@@ -37,8 +37,8 @@ class InventoryUseObject extends Model {
         return this[Schema.ACTION.key];
     }
 
-    getAdminInfo() {
-        return this[Schema.ADMIN_INFO.key];
+    getAddInfo() {
+        return this[Schema.ADD_INFO.key];
     }
 }
 

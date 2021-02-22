@@ -10,16 +10,16 @@ const Schema = {
     BEFORE_INVEN: { key: 'beforeInven', required: true, type: ValidType.OBJECT },
     AFTER_INVEN: { key: 'afterInven', required: true, type: ValidType.OBJECT },
     ACTION: { key: 'action', required: true, type: ValidType.ARRAY },
-    ADMIN_INFO: { key: 'adminInfo', required: false, type: ValidType.OBJECT }
+    ADD_INFO: { key: 'addInfo', required: false, type: ValidType.OBJECT }
 }
 
 class InventoryChangeUpdate extends Model {
-    constructor({ beforeInven, afterInven, action, adminInfo }) {
+    constructor({ beforeInven, afterInven, action }, addInfo) {
         super();
         this[Schema.BEFORE_INVEN.key] = beforeInven;
         this[Schema.AFTER_INVEN.key] = afterInven;
         this[Schema.ACTION.key] = action;
-        this[Schema.ADMIN_INFO.key] = adminInfo;
+        this[Schema.ADD_INFO.key] = addInfo;
     }
 
     getInvenLog(uid, logDate) {
@@ -28,7 +28,7 @@ class InventoryChangeUpdate extends Model {
         const action = this[Schema.ACTION.key];
 
         const itemId = beforeInven.getItemId();
-        
+
         if (itemId !== afterInven.getItemId()) {
             console.error('itemId wrong');
             return;
@@ -41,12 +41,9 @@ class InventoryChangeUpdate extends Model {
         const diffQny = afterQny - beforeQny;
 
         const invenLog = { uid, itemId, itemCategory, diffQny, beforeQny, afterQny, logDate, action };
-        if(this.adminInfo) {
-            const { adminId, editKey } = this.adminInfo;
-            invenLog.adminId = adminId;
-            invenLog.editKey = editKey;
-        }
-        
+
+        InvenLog.parseAddInfo(invenLog, this.addInfo);
+
         return new InvenLog(invenLog);
     }
 }

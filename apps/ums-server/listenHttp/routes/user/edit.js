@@ -55,6 +55,7 @@ module.exports = async (ctx, next) => {
     const adminId = ctx.$adminInfo.adminId;
     const editKey = shortid.generate();
     const adminInfo = { adminId, editKey };
+    const addInfo = { adminInfo };
 
     const userEdit = new UserEdit({ uid, adminId, editKey, reason, updateDate });
     
@@ -65,14 +66,14 @@ module.exports = async (ctx, next) => {
         await inventoryService.processPut(
             InventoryService.PUT_ACTION.ADMIN, 
             putInventoryList, 
-            adminInfo);
+            addInfo);
     }
         
     if(useInventoryList.length > 0) {
         await inventoryService.processUse(
             InventoryService.USE_ACTION.ADMIN, 
             useInventoryList,
-            adminInfo);
+            addInfo);
     }
     
     ctx.status = 200;

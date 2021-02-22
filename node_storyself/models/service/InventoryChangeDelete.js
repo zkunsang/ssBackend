@@ -9,17 +9,17 @@ const Schema = {
     BEFORE_INVEN: { key: 'beforeInven', required: true, type: ValidType.OBJECT },
     DELETE_INVEN: { key: 'deleteInven', required: true, type: ValidType.OBJECT },
     ACTION: { key: 'action', required: true, type: ValidType.ARRAY },
-    ADMIN_INFO: { key: 'adminInfo', required: false, type: ValidType.OBJECT }
+    ADD_INFO: { key: 'addInfo', required: false, type: ValidType.OBJECT }
 }
 
 class InventoryChangeDelete extends Model {
-    constructor({ beforeInven, deleteInven, action, adminInfo }) {
+    constructor({ beforeInven, deleteInven, action }, addInfo) {
         super();
         
         this[Schema.BEFORE_INVEN.key] = beforeInven;
         this[Schema.DELETE_INVEN.key] = deleteInven;
         this[Schema.ACTION.key] = action;
-        this[Schema.ADMIN_INFO.key] = adminInfo;
+        this[Schema.ADD_INFO.key] = addInfo;
     }
 
     getInvenLog(uid, logDate) {
@@ -37,11 +37,7 @@ class InventoryChangeDelete extends Model {
 
         const invenLog = { uid, itemId, itemCategory, diffQny, beforeQny, afterQny, logDate, action };
 
-        if(this.adminInfo) {
-            const { adminId, editKey } = this.adminInfo;
-            invenLog.adminInfo = adminId;
-            invenLog.editKey = editKey;
-        }
+        InvenLog.parseAddInfo(invenLog, this.addInfo); 
 
         return new InvenLog(invenLog);
     }

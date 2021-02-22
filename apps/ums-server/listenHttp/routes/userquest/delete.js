@@ -48,12 +48,13 @@ module.exports = async (ctx, next) => {
         const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao)
         const editKey = shortid.generate();
         const adminInfo = { adminId, editKey };
+        const addInfo = { adminInfo };
         const useInvenList = InventoryDao.mappingList(totalRewardList);
         
         await inventoryService.processUse(
             InventoryService.USE_ACTION.QUEST_DELETE,
             useInvenList,
-            adminInfo);    
+            addInfo);    
     }
 
     await userQuestStoryDao.deleteMany({uid});

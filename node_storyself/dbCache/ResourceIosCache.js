@@ -2,7 +2,7 @@ const dbMongo = require('../dbMongo');
 const ResourceIosDao = require('../daoMongo/ResourceIosDao');
 const Cache = require('./Cache');
 
-const tableId = 'resource';
+const tableId = 'resource_ios';
 
 class ResourceIosCacheModel {
     constructor() {

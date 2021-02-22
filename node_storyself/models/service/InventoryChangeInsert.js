@@ -9,15 +9,15 @@ const ValidType = ValidateUtil.ValidType;
 const Schema = {
     INSERT_INVEN: { key: 'insertInven', required: true, type: ValidType.OBJECT },
     ACTION: { key: 'action', required: true, type: ValidType.ARRAY },
-    ADMIN_INFO: { key: 'adminInfo', required: false, type: ValidType.OBJECT }
+    ADD_INFO: { key: 'addInfo', required: false, type: ValidType.OBJECT }
 }
 
 class InventoryChangeInsert extends Model {
-    constructor({ insertInven, action, adminInfo }) {
+    constructor({ insertInven, action}, addInfo) {
         super();
         this[Schema.INSERT_INVEN.key] = insertInven;
         this[Schema.ACTION.key] = action;
-        this[Schema.ADMIN_INFO.key] = adminInfo;
+        this[Schema.ADD_INFO.key] = addInfo;
     }
 
     getInvenLog(uid, logDate) {
@@ -33,12 +33,9 @@ class InventoryChangeInsert extends Model {
         const diffQny = afterQny - beforeQny;
 
         const invenLog = { uid, itemId, itemCategory, diffQny, beforeQny, afterQny, logDate, action };
-        if(this.adminInfo) {
-            const { adminId, editKey } = this.adminInfo;
-            invenLog.adminId = adminId;
-            invenLog.editKey = editKey;
-        }
 
+        InvenLog.parseAddInfo(invenLog, this.addInfo); 
+        
         return new InvenLog(invenLog);
     }
 }

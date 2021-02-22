@@ -105,9 +105,9 @@ module.exports = async (ctx, next) => {
     const clearQuest = [];
     const putInvenRewardList = [];
 
-    for (const quest of newClearQuest) {
-        const rewardList = QuestStoryCache.getQuestRewardList(storyId, quest);
-        clearQuest.push({ questId: quest, rewardList });
+    for (const questId of newClearQuest) {
+        const rewardList = QuestStoryCache.getQuestRewardList(storyId, questId);
+        clearQuest.push({ questId, rewardList });
 
         ctx.$res.addData({ clearQuest });
 
@@ -120,10 +120,12 @@ module.exports = async (ctx, next) => {
     const inventoryService = new InventoryService(inventoryDao, userInfo, logDate, invenLogDao);
 
     if (putInvenRewardList.length > 0) {
+        const questInfo = { questId: newClearQuest.join(","), questSId: storyId };
+        const addInfo = { questInfo };
         const rewardList = InventoryService.makeInventoryList(putInvenRewardList);
         await inventoryService.processPut(
             InventoryService.PUT_ACTION.STORY_QUEST,
-            rewardList);
+            rewardList, addInfo);
 
         const userInventoryList = await inventoryService.getUserInventoryList();
         InventoryService.removeObjectIdList(userInventoryList);
