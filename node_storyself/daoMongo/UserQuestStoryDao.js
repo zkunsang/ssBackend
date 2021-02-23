@@ -13,7 +13,7 @@ class UserQuestStoryDao extends Dao {
     static requireInsertFieldList() {
         return [
             UserQuestStory.Schema.UID.key,
-            UserQuestStory.Schema.STORY_ID.key,
+            UserQuestStory.Schema.STORY_ID.key
         ];
     }
 
@@ -27,8 +27,9 @@ class UserQuestStoryDao extends Dao {
 
     static allowSetFieldList() {
         return [
-            UserQuestStory.Schema.STORY_ACTION.key,
-            UserQuestStory.Schema.QUEST_STORY.key
+            UserQuestStory.Schema.QUEST_ACTION.key,
+            UserQuestStory.Schema.QUEST_CLEAR.key,
+            UserQuestStory.Schema.QUEST_ACCEPT.key,
         ]
     };
 

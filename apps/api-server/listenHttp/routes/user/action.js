@@ -4,6 +4,8 @@ const UserQuestStory = require('@ss/models/mongo/UserQuestStory');
 const ActionLogDao = require('@ss/daoMongo/ActionLogDao');
 const ActionLog = require('@ss/models/apilog/ActionLog');
 
+const QuestCompleteLogDao = require('@ss/daoMongo/QuestCompleteLogDao');
+
 const InventoryService = require('@ss/service/InventoryService');
 
 const QuestStoryCache = require('@ss/dbCache/QuestStoryCache');
@@ -34,7 +36,7 @@ module.exports = async (ctx, next) => {
     const actionList = reqUserAction.getActionList();
     const storyId = reqUserAction.getStoryId();
 
-    const actionLogDao = new ActionLogDao(dbMongo);
+    const actionLogDao = new ActionLogDao(dbMongo, logDate);
     await actionLogDao.insertMany(createActionLog(uid, storyId, actionList));
 
     const questSet = new Set();
@@ -61,15 +63,14 @@ module.exports = async (ctx, next) => {
     const userQuestStoryDao = new UserQuestStoryDao(dbMongo);
     const userQuestStory = await userQuestStoryDao.findOne({ storyId, uid });
 
-    const userAccuiredQuest = userQuestStory ? userQuestStory.getQuestStory() : {};
+    const userClearQuest = userQuestStory ? userQuestStory.getQuestClear() : {};
     const userStoryAction = userQuestStory ? userQuestStory.getStoryAction() : {};
+    const userQuestAccept = userQuestStory ? userQuestStory.getQuestAccept() : {};
 
     const newClearQuest = [];
+    const completeLogList = [];
     
     for (const questId of questList) {
-        // 유저가 이미 획득한 퀘스트면 패스
-        if (userAccuiredQuest[questId]) continue;
-
         const goalList = QuestStoryCache.getQuestGoalList(storyId, questId);
 
         let isClear = true;
@@ -79,7 +80,6 @@ module.exports = async (ctx, next) => {
             // 유저가 골에 대한 액션 카운트를 가지고 있는지 확인
             let userCount = userStoryAction[goal.actionId] ? userStoryAction[goal.actionId] : 0;
 
-            // 신규 추가된 액션에 대한 카운팅
             if (userNewActionMap[goal.actionId]) {
                 userCount += userNewActionMap[goal.actionId];
             }
@@ -91,14 +91,22 @@ module.exports = async (ctx, next) => {
             }
         }
 
+        // 유저가 이미 획득한 퀘스트면 패스
+        if (userClearQuest[questId]) continue;
+
         if (isClear) {
-            userAccuiredQuest[questId] = logDate;
+            userClearQuest[questId] = logDate;
+            const completeType = userQuestAccept[questId] ? 1 : 0; 
+            const acceptDate = userQuestAccept[questId] ? userQuestAccept[questId]: 0;
+            
+            completeLogList.push({uid, storyId, questId, completeType, acceptDate, logDate});
+            
             newClearQuest.push(questId);
         }
     }
 
     const updateObject = {
-        questStory: userAccuiredQuest,
+        questClear: userClearQuest,
         storyAction: userStoryAction
     }
 
@@ -140,8 +148,13 @@ module.exports = async (ctx, next) => {
         await userQuestStoryDao.insertOne(new UserQuestStory({ storyId, uid, ...updateObject }));
     }
 
-    ctx.status = 200;
-    ctx.$res.success();
+    if(completeLogList.length > 0) {
+        const questCompleteLogDao = new QuestCompleteLogDao(dbMongo, logDate)
+        await questCompleteLogDao.insertMany(
+            questCompleteLogDao.transModelList(completeLogList));
+    }
 
+    ctx.$res.success();
+    
     await next();
 };

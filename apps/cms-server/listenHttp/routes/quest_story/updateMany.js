@@ -12,25 +12,25 @@ module.exports = async (ctx, next) => {
 
     const storyId = reqStoryQuestUpdateMany.getStoryId();
 
-    let questStoryList = reqStoryQuestUpdateMany.getQuestStoryList();
-    let questStoryGoalList = reqStoryQuestUpdateMany.getQuestStoryGoalList();
-    let questStoryRewardList = reqStoryQuestUpdateMany.getQuestStoryRewardList();
+    let questIdList = reqStoryQuestUpdateMany.getQuestIdList();
+    let questGoalList = reqStoryQuestUpdateMany.getGoalList();
+    let questRewardList = reqStoryQuestUpdateMany.getRewardList();
 
     const questStoryDao = new QuestStoryDao(ctx.$dbMongo);
     const questStoryRewardDao = new QuestStoryRewardDao(ctx.$dbMongo);
     const questStoryGoalDao = new QuestStoryGoalDao(ctx.$dbMongo);
 
-    questStoryList = questStoryList.map((data) => { return { ...data, storyId } });
-    questStoryGoalList = questStoryGoalList.map((data) => { return { ...data, storyId } });
-    questStoryRewardList = questStoryRewardList.map((data) => { return { ...data, storyId } });
+    questIdList = questIdList.map((data) => { return { ...data, storyId } });
+    questGoalList = questGoalList.map((data) => { return { ...data, storyId } });
+    questRewardList = questRewardList.map((data) => { return { ...data, storyId } });
 
     await questStoryDao.deleteMany({ storyId });
     await questStoryRewardDao.deleteMany({ storyId });
     await questStoryGoalDao.deleteMany({ storyId });
 
-    await questStoryDao.insertMany(questStoryDao.transModelList(questStoryList));
-    await questStoryGoalDao.insertMany(questStoryGoalDao.transModelList(questStoryGoalList));
-    await questStoryRewardDao.insertMany(questStoryRewardDao.transModelList(questStoryRewardList));
+    await questStoryDao.insertMany(questStoryDao.transModelList(questIdList));
+    await questStoryGoalDao.insertMany(questStoryGoalDao.transModelList(questGoalList));
+    await questStoryRewardDao.insertMany(questStoryRewardDao.transModelList(questRewardList));
 
     ctx.status = 200;
     ctx.body.data = {};

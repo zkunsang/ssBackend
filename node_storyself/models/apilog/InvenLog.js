@@ -58,9 +58,9 @@ class InvenLog extends Model {
 
     static parseQuestInfo(invenLog, questInfo) {
         if (questInfo) {
-            const { storyId, questId } = questInfo;
+            const { questSId, questId } = questInfo;
             invenLog.questId = questId;
-            invenLog.questSId = storyId;
+            invenLog.questSId = questSId;
         }
     }
 }
