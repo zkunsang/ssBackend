@@ -54,6 +54,7 @@ module.exports = async (ctx, next) => {
 
     const adminId = ctx.$adminInfo.adminId;
     const editKey = shortid.generate();
+    
     const adminInfo = { adminId, editKey };
     const addInfo = { adminInfo };
 

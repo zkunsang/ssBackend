@@ -13,7 +13,7 @@ const QuestStoryCache = require('@ss/dbCache/QuestStoryCache');
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
     const reqUserQuestDelete = new ReqUserQuestDelete(ctx.request.body);
-    const adminId = ctx.$adminInfo;
+    const adminId = ctx.$adminInfo.adminId;
     ReqUserQuestDelete.validModel(reqUserQuestDelete);
 
     const uid = reqUserQuestDelete.getUID();
@@ -47,8 +47,10 @@ module.exports = async (ctx, next) => {
         const invenLogDao = new InvenLogDao(dbMongo, updateDate);
         const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao)
         const editKey = shortid.generate();
+
         const adminInfo = { adminId, editKey };
         const addInfo = { adminInfo };
+        
         const useInvenList = InventoryDao.mappingList(totalRewardList);
         
         await inventoryService.processUse(
