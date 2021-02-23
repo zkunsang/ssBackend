@@ -36,7 +36,7 @@ module.exports = async (ctx, next) => {
     const totalRewardList = [];
     for(const userQuest of userQuestList) {
         const storyId = userQuest.storyId;
-        const clearQuestList = Object.keys(userQuest.questStory);
+        const clearQuestList = Object.keys(userQuest.questClear);
         for(const clearQuest of clearQuestList) {
             const rewardList =  QuestStoryCache.getQuestRewardList(storyId, clearQuest);
             totalRewardList.push(...rewardList);
