@@ -1,4 +1,4 @@
-const ReqQuestCheck = require('@ss/models/controller/ReqQuestCheck');
+const ReqQuestAccept = require('@ss/models/controller/ReqQuestAccept');
 
 const UserQuestStoryDao = require('@ss/daoMongo/UserQuestStoryDao');
 const QuestAcceptLogDao = require('@ss/daoMongo/QuestAcceptLogDao');
@@ -11,8 +11,8 @@ const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
 
 module.exports = async (ctx, next) => {
-    const reqQuestCheck = new ReqQuestCheck(ctx.request.body);
-    ReqQuestCheck.validModel(reqQuestCheck);
+    const reqQuestCheck = new ReqQuestAccept(ctx.request.body);
+    ReqQuestAccept.validModel(reqQuestCheck);
     
     const logDate = ctx.$date;
     const userInfo = ctx.$userInfo;

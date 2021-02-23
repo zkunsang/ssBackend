@@ -8,7 +8,7 @@ const Schema = {
     QUEST_ID: { key: 'questId', required: true, type: ValidType.STRING },
 }
 
-class ReqQuestCheck extends Model {
+class ReqQuestAccept extends Model {
     constructor({ storyId, questId }) {
         super();
         this[Schema.STORY_ID.key] = storyId;
@@ -24,5 +24,5 @@ class ReqQuestCheck extends Model {
     }
 }
 
-module.exports = ReqQuestCheck;
+module.exports = ReqQuestAccept;
 module.exports.Schema = Schema;
