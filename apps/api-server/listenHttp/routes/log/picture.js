@@ -13,9 +13,10 @@ module.exports = async (ctx, next) => {
     const success = reqLogPicture.getSuccess();
     const debugLog = reqLogPicture.getDebugLog();
     const location = reqLogPicture.getLocation();
+    const errCode = reqLogPicture.getErrCode();
     
     const pictureLogDao = new PictureLogDao(ctx.$dbMongo, ctx.$date);
-    pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, logDate, location }));
+    pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location }));
     
     ctx.status = 200;
     ctx.body.data = {  };
