@@ -9,16 +9,18 @@ const Schema = {
     SUCCESS: { key: 'success', required: false, type: ValidType.NUMBER },
     LOCATION: { key: 'location', required: false, type: ValidType.NUMBER },
     DEBUG_LOG: { key: 'debugLog', required: false, type: ValidType.STRING },
+    ERR_CODE: { key: 'errCode', required: false, type: ValidType.STRING },
     LOG_DATE: { key: 'logDate', required: false, type: ValidType.UNIX_TIMESTAMP },
 }
 
 class PictureLog extends Model {
-    constructor({ uid, success, location, debugLog, logDate }) {
+    constructor({ uid, success, location, debugLog, logDate, errCode }) {
         super();
         this[Schema.UID.key] = uid;
         this[Schema.SUCCESS.key] = success;
         this[Schema.DEBUG_LOG.key] = debugLog;
         this[Schema.LOCATION.key] = location;
+        this[Schema.ERR_CODE.key] = errCode;
         this[Schema.LOG_DATE.key] = logDate;
         
         this.logDateTZ = DateUtil.utsToDs(logDate);
