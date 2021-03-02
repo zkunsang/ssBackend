@@ -84,7 +84,7 @@ module.exports = async (ctx, next) => {
         // 재접속이벤트 5001
         if( !userEventInfo ) {
             const createDate = userInfo.getCreateDate();   
-            if (DateUtil.dsToUts("2021-03-02 12:00:00") > createDate / 1000) {
+            if (DateUtil.dsToUts("2021-03-02 17:00:00") > createDate / 1000) {
                 itemList.push(InventoryService.makeInventoryObject('honey', 50))
                 await eventDao.insertOne(new Event({ uid, eventInfo: { '5001': loginDate } }));
             }
