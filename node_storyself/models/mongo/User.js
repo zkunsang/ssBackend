@@ -42,6 +42,10 @@ class User extends Model {
         return this[Schema.UID.key];
     }
 
+    getCreateDate() {
+        return this[Schema.CREATE_DATE.key];
+    }
+
     setSessionId(sessionId) {
         this[Schema.SESSION_ID.key] = sessionId;
     }

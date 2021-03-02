@@ -3,6 +3,7 @@ const dbRedisSS = require('@ss/dbRedisSS');
 const dbRedisPB = require('@ss/dbRedisPB');
 
 const helper = require('@ss/helper');
+const DateUtil = require('@ss/util/DateUtil');
 
 const LoginLogDao = require("@ss/daoMongo/LoginLogDao");
 const InvenLogDao = require("@ss/daoMongo/InvenLogDao");
@@ -12,11 +13,13 @@ const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
 const SessionDao = require('@ss/daoRedis/SessionDao');
 const UserCountDao = require('@ss/daoRedis/UserCountDao');
+const EventDao = require('@ss/daoMongo/EventDao');
 
 const InventoryService = require('@ss/service/InventoryService');
 
 const User = require('@ss/models/mongo/User');
 const Item = require('@ss/models/mongo/Item');
+const Event = require('@ss/models/mongo/Event');
 
 const UserStatus = require('@ss/util/ValidateUtil').UserStatus;
 const ReqAuthLogin = require('@ss/models/controller/ReqAuthLogin');
@@ -53,24 +56,39 @@ module.exports = async (ctx, next) => {
     let isNewUser = false;
     
     let eventList = [];
+    const itemList = [];
 
     if(dbRedisPB.betaEvent && dbRedisPB.betaEvent.status == 1) {
         eventList.push({ evtCode: dbRedisPB.betaEvent.evtCode, message: dbRedisPB.betaEvent.message });
     }
 
     if (userInfo) {
+        const uid = userInfo.getUID();
         const oldSessionId = userInfo.getSessionId();
         
         userInfo.setSessionId(sessionId);
         userInfo.setLastLoginDate(loginDate);
-        await userDao.updateOne({ uid: userInfo.getUID() }, { sessionId, lastLoginDate: loginDate });
+        await userDao.updateOne({ uid }, { sessionId, lastLoginDate: loginDate });
         await sessionDao.del(oldSessionId);
-
+        
         reqAuthLogin.uid = userInfo.getUID();
 
         // TODO: 이벤트 데이터
         const storyTempEventDao = new StoryTempEventDao(dbMongo);
-        const eventInfo = await storyTempEventDao.findOne({uid: userInfo.getUID()});
+        const eventInfo = await storyTempEventDao.findOne({ uid });
+
+        const eventDao = new EventDao(dbMongo);
+        const userEventInfo = await eventDao.findOne({ uid });
+
+        // 유저 정보가 없고
+        // 재접속이벤트 5001
+        if( !userEventInfo ) {
+            const createDate = userInfo.getCreateDate();   
+            if (DateUtil.dsToUts("2021-03-02 12:00:00") > createDate / 1000) {
+                itemList.push(InventoryService.makeInventoryObject('honey', 50))
+                await eventDao.insertOne(new Event({ uid, eventInfo: { '5001': loginDate } }));
+            }
+        }
 
         // 이벤트 달성 했을때 
         eventList.push({ evtCode: 101, complete: eventInfo ? 1 : 0 });
@@ -98,8 +116,8 @@ module.exports = async (ctx, next) => {
 
     const userInventoryList = await inventoryService.getUserInventoryList();
 
-    if(isNewUser) {
-        await processUserInitInventory(inventoryService, userInventoryList);
+    if(isNewUser || itemList.length > 0) {
+        await processUserInitInventory(inventoryService, userInventoryList, itemList);
     }
 
     const fcmToken = userInfo.fcmToken;
@@ -125,16 +143,15 @@ module.exports = async (ctx, next) => {
     await next();
 };
 
-async function processUserInitInventory(inventoryService, userInventoryList) {
+async function processUserInitInventory(inventoryService, userInventoryList, itemList) {
     // pictureSlot아이템이 존재 하지 않으면 제공
-    await processLoginPictureSlot(inventoryService, userInventoryList);
+    await processLoginPictureSlot(inventoryService, userInventoryList, itemList);
 }
 
-async function processLoginPictureSlot(inventoryService, userInventoryList) {
+async function processLoginPictureSlot(inventoryService, userInventoryList, itemList = []) {
     const invenMap = ArrayUtil.getMapArrayByKey(userInventoryList, Item.Schema.ITEM_ID.key);
     
     const pictureSlotList = invenMap['pictureSlot'];
-    const itemList = [];
     if(!pictureSlotList) { 
         const pictureSlot = InventoryService.makeInventoryObject('pictureSlot', 1);
         itemList.push(pictureSlot);
