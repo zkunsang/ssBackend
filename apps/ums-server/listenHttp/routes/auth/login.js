@@ -1,12 +1,13 @@
 const shortid = require('shortid');
 const dbMongo = require('@ss/dbMongo');
 const dbRedis = require('@ss/dbRedisSS');
+const SSError = require('@ss/error');
 const UmsSessionDao = require('@ss/daoRedis/UmsSessionDao');
 const UmsAdminDao = require('@ss/daoMongo/UmsAdminDao');
 const ReqAuthLogin = require('@ss/models/umsController/ReqAuthLogin');
 
 module.exports = async (ctx, next) => {
-    const cmsSessionDao = new UmsSessionDao(dbRedis);
+    const umsSessionDao = new UmsSessionDao(dbRedis);
     const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
     ReqAuthLogin.validModel(reqAuthLogin);
 
@@ -14,17 +15,14 @@ module.exports = async (ctx, next) => {
     const adminInfo = await umsAdminDao.findOne({ adminId: reqAuthLogin.getAdminId() });
 
     if (!adminInfo || adminInfo.password !== reqAuthLogin.getPassword()) {
-        ctx.status = 400;
-        ctx.body.data = { err_message: 'invalid user or not match password!' };
+        ctx.$res.badRequest(SSError.UmsService.Code.loginFailed)
         return await next();
     }
 
     const sessionId = shortid.generate();
-    cmsSessionDao.set(sessionId, adminInfo);
+    umsSessionDao.set(sessionId, adminInfo);
 
-    ctx.status = 200;
-    ctx.body.data = { sessionId, adminId: adminInfo.getAdminId() };
-
+    ctx.$res.success({ sessionId, adminId: adminInfo.getAdminId() });
 
     await next();
 };
