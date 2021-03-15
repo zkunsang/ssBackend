@@ -64,8 +64,22 @@ class ResContext {
     }
 
     success(data) {
-        if(data)
+        if(data) {
             this.ctx.body.data = {...this.ctx.body.data, ...data};
+        }   
+    }
+
+    setResultCode(resultCode) {
+        this.ctx.body.resultCode = resultCode;
+    }
+
+    setCookie(name, value, options) {
+        console.log(name, value, options);
+        this.ctx.cookies.set(name, value, options)
+    }
+
+    setSessionCookie(value) {
+        this.setCookie('sessionId', value, { maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: true, path:"/login"});
     }
 }
 

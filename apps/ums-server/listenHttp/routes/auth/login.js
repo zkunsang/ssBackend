@@ -22,7 +22,11 @@ module.exports = async (ctx, next) => {
     const sessionId = shortid.generate();
     umsSessionDao.set(sessionId, adminInfo);
 
-    ctx.$res.success({ sessionId, adminId: adminInfo.getAdminId() });
+    ctx.$res.setSessionCookie(sessionId);
+    ctx.$res.setResultCode(0);
+    ctx.$res.success({ 
+        sessionId, 
+        adminId: adminInfo.getAdminId() });
 
     await next();
 };

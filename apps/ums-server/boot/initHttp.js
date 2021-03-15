@@ -11,7 +11,11 @@ module.exports = async () => {
     let path = __dirname + '/../listenHttp';
 
     const router = new KoaRouter();
-    router.use(Cors());
+
+    router.use(Cors({
+        origin: 'http://localhost:3000',
+        credentials: true,
+      }));
     router.use(koaBodyParser());
 
     router.mapping(path + '/routes');

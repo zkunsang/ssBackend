@@ -11,6 +11,7 @@ module.exports = async (ctx, next) => {
     
     await umsSessionDao.del(sessionId);
     
+    ctx.$res.setResultCode(0);
     ctx.$res.success({});
     return await next();
 };

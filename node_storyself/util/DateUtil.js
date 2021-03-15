@@ -3,6 +3,7 @@ const moment = require('moment');
 const _ = require('lodash');
 const defaultDateFormat = 'YYYY-MM-DD HH:mm:ss';
 const YYYYMMDD = 'YYYYMMDD';
+
 class DateUtil {
     constructor() { }
 
