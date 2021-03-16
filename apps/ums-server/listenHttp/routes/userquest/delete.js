@@ -2,7 +2,7 @@ const shortid = require("shortid");
 const dbMongo = require('@ss/dbMongo');
 
 const UserDao = require('@ss/daoMongo/UserDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const UserQuestStoryDao = require('@ss/daoMongo/UserQuestStoryDao');
 const InventoryService = require('@ss/service/InventoryService');
@@ -14,12 +14,12 @@ module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
     const reqUserQuestDelete = new ReqUserQuestDelete(ctx.request.body);
     const adminId = ctx.$adminInfo.adminId;
+
     ReqUserQuestDelete.validModel(reqUserQuestDelete);
 
     const uid = reqUserQuestDelete.getUID();
     
     const userDao = new UserDao(dbMongo);
-    const inventoryDao = new InventoryDao(dbMongo);
 
     const userInfo = await userDao.findOne({uid});
     const userQuestStoryDao = new UserQuestStoryDao(dbMongo);
@@ -44,8 +44,8 @@ module.exports = async (ctx, next) => {
     }
 
     if(totalRewardList.length > 0) {
-        const invenLogDao = new InvenLogDao(dbMongo, updateDate);
-        const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao)
+        const inventoryLogDao = new InventoryLogDao(dbMongo, updateDate);
+        const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao)
         const editKey = shortid.generate();
 
         const adminInfo = { adminId, editKey };
@@ -53,7 +53,7 @@ module.exports = async (ctx, next) => {
         
         const useInvenList = InventoryDao.mappingList(totalRewardList);
         
-        await inventoryService.processUse(
+        inventoryService.processUse(
             InventoryService.USE_ACTION.QUEST_DELETE,
             useInvenList,
             addInfo);    

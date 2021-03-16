@@ -1,25 +1,19 @@
 const dbMongo = require('@ss/dbMongo');
 const dbRedisSS = require('@ss/dbRedisSS');
-const dbRedisPB = require('@ss/dbRedisPB');
 
 const helper = require('@ss/helper');
-const DateUtil = require('@ss/util/DateUtil');
 
 const LoginLogDao = require("@ss/daoMongo/LoginLogDao");
-const InvenLogDao = require("@ss/daoMongo/InvenLogDao");
+const InventoryLogDao = require("@ss/daoMongo/InventoryLogDao");
 
 const UserDao = require('@ss/daoMongo/UserDao');
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
-const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
 const SessionDao = require('@ss/daoRedis/SessionDao');
 const UserCountDao = require('@ss/daoRedis/UserCountDao');
-const EventDao = require('@ss/daoMongo/EventDao');
 
 const InventoryService = require('@ss/service/InventoryService');
 
 const User = require('@ss/models/mongo/User');
 const Item = require('@ss/models/mongo/Item');
-const Event = require('@ss/models/mongo/Event');
 
 const UserStatus = require('@ss/util/ValidateUtil').UserStatus;
 const ReqAuthLogin = require('@ss/models/controller/ReqAuthLogin');
@@ -43,7 +37,6 @@ module.exports = async (ctx, next) => {
     
     const userDao = new UserDao(dbMongo);
     const sessionDao = new SessionDao(dbRedisSS);
-    const inventoryDao = new InventoryDao(dbMongo);
 
     const providerInfo = {}
     providerInfo[provider] = providerId;
@@ -58,10 +51,6 @@ module.exports = async (ctx, next) => {
     let eventList = [];
     const itemList = [];
 
-    if(dbRedisPB.betaEvent && dbRedisPB.betaEvent.status == 1) {
-        eventList.push({ evtCode: dbRedisPB.betaEvent.evtCode, message: dbRedisPB.betaEvent.message });
-    }
-
     if (userInfo) {
         const uid = userInfo.getUID();
         const oldSessionId = userInfo.getSessionId();
@@ -72,26 +61,6 @@ module.exports = async (ctx, next) => {
         await sessionDao.del(oldSessionId);
         
         reqAuthLogin.uid = userInfo.getUID();
-
-        // TODO: 이벤트 데이터
-        const storyTempEventDao = new StoryTempEventDao(dbMongo);
-        const eventInfo = await storyTempEventDao.findOne({ uid });
-
-        const eventDao = new EventDao(dbMongo);
-        const userEventInfo = await eventDao.findOne({ uid });
-
-        // 유저 정보가 없고
-        // 재접속이벤트 5001
-        if( !userEventInfo ) {
-            const createDate = userInfo.getCreateDate();   
-            if (DateUtil.dsToUts("2021-03-13 17:00:00") > createDate / 1000) {
-                itemList.push(InventoryService.makeInventoryObject('honey', 50))
-                await eventDao.insertOne(new Event({ uid, eventInfo: { '5001': loginDate } }));
-            }
-        }
-
-        // 이벤트 달성 했을때 
-        eventList.push({ evtCode: 101, complete: eventInfo ? 1 : 0 });
     }
     else {
         isNewUser = true;
@@ -111,24 +80,26 @@ module.exports = async (ctx, next) => {
 
         eventList.push({ evtCode: 101, complete: 0 });
     }
-    const invenLogDao = new InvenLogDao(dbMongo, loginDate);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate, invenLogDao);
 
-    const userInventoryList = await inventoryService.getUserInventoryList();
+    // const inventoryLogDao = new InventoryLogDao(dbMongo, loginDate);
+    // const inventoryService = new InventoryService(userInfo, loginDate, inventoryLogDao);
+
+    // TODO: getUserInventoryList삭제
+    // const userInventoryList = userInfo.userInventory || [];
+
+    const { inventory } = userInfo;
 
     if(isNewUser || itemList.length > 0) {
-        await processUserInitInventory(inventoryService, userInventoryList, itemList);
+        // await processUserInitInventory(inventoryService, userInventoryList, itemList);
     }
 
     const fcmToken = userInfo.fcmToken;
 
     sessionDao.set(sessionId, userInfo);
     
-    InventoryService.removeObjectIdList(userInventoryList);
-
     ctx.$res.success({ 
         sessionId,
-        inventoryList: userInventoryList,
+        inventory,
         policyVersion,
         fcmToken,
         eventList
@@ -143,12 +114,14 @@ module.exports = async (ctx, next) => {
     await next();
 };
 
-async function processUserInitInventory(inventoryService, userInventoryList, itemList) {
-    // pictureSlot아이템이 존재 하지 않으면 제공
-    await processLoginPictureSlot(inventoryService, userInventoryList, itemList);
-}
+/**
+ * 
+ * @param {InventoryService} inventoryService 
+ * @param {*} userInventoryList 
+ * @param {*} itemList 
+ */
+async function processUserInitInventory(inventoryService, userInventoryList, itemList = []) {
 
-async function processLoginPictureSlot(inventoryService, userInventoryList, itemList = []) {
     const invenMap = ArrayUtil.getMapArrayByKey(userInventoryList, Item.Schema.ITEM_ID.key);
     
     const pictureSlotList = invenMap['pictureSlot'];
@@ -181,6 +154,7 @@ async function processLoginPictureSlot(inventoryService, userInventoryList, item
         userInventoryList.push(item);
     }
 }
+
 /**
  * @swagger
  * resourcePath: /auth

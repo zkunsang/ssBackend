@@ -20,50 +20,55 @@ const Schema = {
     QUEST_SID: { key: 'questSId', required: false, type: ValidType.STRING }, // 스토리 아이디
 }
 
-class InvenLog extends Model {
-    constructor({ uid, itemId, itemCategory, diffQny, beforeQny, afterQny, action, logDate, adminId, editKey, questId, questSId }) {
+class InventoryLog extends Model {
+    constructor({ uid, itemId, itemCategory, diffQny, beforeQny, afterQny, logDate, action, addInfo }) {
         super();
         this[Schema.UID.key] = uid;
+
         this[Schema.ITEM_ID.key] = itemId;
         this[Schema.ITEM_CATEGORY.key] = itemCategory;
+
         this[Schema.DIFF_QNY.key] = diffQny;
         this[Schema.BEFORE_QNY.key] = beforeQny;
         this[Schema.AFTER_QNY.key] = afterQny;
-        this[Schema.ACTION.key] = action[0];
-        this[Schema.SUB_ACTION.key] = action[1];
+        
         this[Schema.LOG_DATE.key] = logDate;
-        this[Schema.EDIT_KEY.key] = editKey;
-        this[Schema.ADMIN_ID.key] = adminId;
-        this[Schema.QUEST_ID.key] = questId;
-        this[Schema.QUEST_SID.key] = questSId;
-
+        
         this.logDateTZ = DateUtil.utsToDs(logDate);
+
+        this.parseAddInfo(addInfo);
+        this.parseAction(action);
     }
 
-    static parseAddInfo(invenLog, addInfo) {
+    parseAction(action) {
+        this[Schema.ACTION.key] = action[0];
+        this[Schema.SUB_ACTION.key] = action[1];
+    }
+
+    parseAddInfo(addInfo) {
         if(!addInfo) return;
         const { adminInfo, questInfo } = addInfo;
 
-        this.parseAdminInfo(invenLog, adminInfo);
-        this.parseQuestInfo(invenLog, questInfo);
+        this.parseAdminInfo(adminInfo);
+        this.parseQuestInfo(questInfo);
     }
 
-    static parseAdminInfo(invenLog, adminInfo) {
+    parseAdminInfo(adminInfo) {
         if (adminInfo) {
             const { adminId, editKey } = adminInfo;
-            invenLog.adminId = adminId;
-            invenLog.editKey = editKey;
+            this[Schema.ADMIN_ID.key] = adminId;
+            this[Schema.EDIT_KEY.key] = editKey;
         }
     }
 
-    static parseQuestInfo(invenLog, questInfo) {
+    parseQuestInfo(questInfo) {
         if (questInfo) {
             const { questSId, questId } = questInfo;
-            invenLog.questId = questId;
-            invenLog.questSId = questSId;
+            this[Schema.QUEST_ID.key] = questId;
+            this[Schema.QUEST_SID.key] = questSId;
         }
     }
 }
 
-module.exports = InvenLog;
+module.exports = InventoryLog;
 module.exports.Schema = Schema;

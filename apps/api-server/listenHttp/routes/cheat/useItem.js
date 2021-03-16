@@ -1,27 +1,36 @@
 const ReqCheatUseItem = require('@ss/models/controller/ReqCheatUseItem');
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 
 const InventoryService = require('@ss/service/InventoryService');
+const UserService = require('@ss/service/UserService');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
+    const userDao = ctx.$userDao;
     
     const reqCheatUseItem = new ReqCheatUseItem(ctx.request.body);
     ReqCheatUseItem.validModel(reqCheatUseItem);
     
-    const inventoryDao = new InventoryDao(ctx.$dbMongo);
+    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
+    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
 
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
     InventoryService.validModel(inventoryService);
 
-    await inventoryService.processUse(InventoryService.USE_ACTION.CHEAT, reqCheatUseItem.getInventoryList());
+    inventoryService.useItem(
+        InventoryService.USE_ACTION.CHEAT, 
+        { cheat: 'cheat' },
+        reqCheatUseItem.getInventoryList());
 
-    ctx.status = 200;
-    ctx.body.data = {};
+    const inventory = await inventoryService.finalize();
 
+    const userService = new UserService(userInfo, userDao);
+    userService.setInventory(inventory);
+
+    await userService.finalize();
+
+    ctx.$res.success({ inventory });
+    
     await next();
 }
 

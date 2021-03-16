@@ -1,0 +1,31 @@
+const DateUtil = require('../util/DateUtil');
+const InventoryLog = require('../models/apilog/InventoryLog');
+const Dao = require('./Dao');
+
+class InventoryLogDao extends Dao {
+    constructor(connection, date) {
+        super();
+        this.db = connection.storyConnect.db('log');
+        this.collection = this.db.collection(`inven_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
+    }
+
+    static model = InventoryLog;
+
+    static requireInsertFieldList() {
+        return [];
+    }
+
+    static allowWhereFieldList() {
+        return [];
+    }
+
+    static allowSetFieldList() {
+        return []
+    };
+
+    static notAllowSetFieldList() {
+        return []
+    };
+}
+
+module.exports = InventoryLogDao;

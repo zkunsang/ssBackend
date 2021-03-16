@@ -1,9 +1,8 @@
 const ReqShopProduct = require('@ss/models/controller/ReqShopProduct');
 
 const ProductLogDao = require('@ss/daoMongo/ProductLogDao');
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const ReceiptDao = require('@ss/daoMongo/ReceiptDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 
 const ProductService = require('@ss/service/ProductService');
 
@@ -67,13 +66,11 @@ module.exports = async (ctx, next) => {
         ctx.$res.badRequest(SSError.Service.Code.shopNoExistProduct);
         return;
     }
-
-    const inventoryDao = new InventoryDao(ctx.$dbMongo);
     
     const productRewardList = ProductRewardCache.get(productId);
     
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo, purchaseDate);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate, invenLogDao);
+    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, purchaseDate);
+    const inventoryService = new InventoryService(userInfo, purchaseDate, inventoryLogDao);
 
     const inventoryList = makeInventoryList(productRewardList);
     await inventoryService.processPut(
@@ -89,7 +86,6 @@ module.exports = async (ctx, next) => {
     await productLogDao.insertOne(productLog);
     
     const userInventoryList = await inventoryService.getUserInventoryList();
-    InventoryService.removeObjectIdList(userInventoryList);
     
     ctx.$res.success({ 
         inventoryList: userInventoryList,

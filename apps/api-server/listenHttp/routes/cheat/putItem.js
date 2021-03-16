@@ -1,31 +1,35 @@
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
+
 const ReqCheatPutItem = require('@ss/models/controller/ReqCheatPutItem');
 
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
-
 const InventoryService = require('@ss/service/InventoryService');
-
-
+const UserService = require('@ss/service/UserService');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
-    
+    const userDao = ctx.$userDao;
+
     const reqCheatPutItem = new ReqCheatPutItem(ctx.request.body);
     ReqCheatPutItem.validModel(reqCheatPutItem);
-    
-    const inventoryDao = new InventoryDao(ctx.$dbMongo);
 
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
+    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
+    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
+
     InventoryService.validModel(inventoryService);
 
-    await inventoryService.processPut(
+    inventoryService.putItem(
         InventoryService.PUT_ACTION.CHEAT,
+        { cheat: 'cheat' },
         reqCheatPutItem.getInventoryList());
-    
-    ctx.status = 200;
-    ctx.body.data = {};
+
+    const inventory = await inventoryService.finalize();
+
+    const userService = new UserService(userInfo, userDao);
+    userService.setInventory(inventory);
+    await userService.finalize();
+
+    ctx.$res.success({ inventory });
 
     await next();
 }
@@ -70,7 +74,7 @@ module.exports = async (ctx, next) => {
  *         description: 세션 아이디
  *       putList:
  *         type: array
- *         items: 
+ *         items:
  *           type: inventory
  *         required: true
  *         description: 아이템 리스트

@@ -1,7 +1,6 @@
 const ReqShopStory = require('@ss/models/controller/ReqShopStory');
 
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 
 const ItemService = require('@ss/service/ItemService');
 const StoryService = require('@ss/service/StoryService');
@@ -18,8 +17,6 @@ module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
 
-    const inventoryDao = new InventoryDao(ctx.$dbMongo);
-    
     const itemService = new ItemService();
     const storyService = new StoryService()
     
@@ -33,18 +30,18 @@ module.exports = async (ctx, next) => {
 
     itemService.applyCoupon(useInventoryList, reqShopStory.getCouponId());
 
-    const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
+    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
+    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
     InventoryService.validModel(inventoryService);
 
-    await inventoryService.processExchange(
+    inventoryService.processExchange(
         InventoryService.USE_ACTION.EXCHANGE.STORY,
         useInventoryList, 
         InventoryService.PUT_ACTION.EXCHANGE.STORY,
         putInventoryList);
 
     const userInventoryList = await inventoryService.getUserInventoryList();
-    InventoryService.removeObjectIdList(userInventoryList);
+    
     ctx.status = 200;
     ctx.body.data = { inventoryList: userInventoryList };
 

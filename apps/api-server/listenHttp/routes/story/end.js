@@ -1,8 +1,7 @@
 const ReqStoryEnd = require('@ss/models/controller/ReqStoryEnd');
 
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 const StoryLogDao = require('@ss/daoMongo/StoryLogDao');
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
 
 const StoryLog = require('@ss/models/mongo/StoryLog');
@@ -45,9 +44,9 @@ module.exports = async (ctx, next) => {
         const eventInfo = await storyTempEventDao.findOne({ uid, storyId });
 
         if(!eventInfo) {
-            const inventoryDao = new InventoryDao(ctx.$dbMongo);
-            const invenLogDao = new InvenLogDao(ctx.$dbMongo, updateDate);
-            const result = await processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, invenLogDao);
+            const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
+
+            const result = await processBetaEvent(storyTempEventDao, userInfo, storyId, updateDate, inventoryLogDao);
             inventoryList = result.userInventoryList;
             eventRewardCode = result.eventRewardCode;
         }
@@ -57,11 +56,11 @@ module.exports = async (ctx, next) => {
     await next();
 }
 
-async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, invenLogDao) {
+async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, inventoryLogDao) {
     const eventRewardCode = 100;
     
     const uid = userInfo.uid;
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
+    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
 
     const itemList = [];
 
@@ -73,8 +72,7 @@ async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, story
         itemList);
 
     const userInventoryList = await inventoryService.getUserInventoryList();
-    InventoryService.removeObjectIdList(userInventoryList);
-
+    
     await storyTempEventDao.insertOne(new StoryTempEvent({ uid, storyId, updateDate }));
 
     return { userInventoryList, eventRewardCode };

@@ -10,8 +10,7 @@ const InventoryService = require('@ss/service/InventoryService');
 
 const QuestStoryCache = require('@ss/dbCache/QuestStoryCache');
 
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 const UserQuestStoryDao = require('@ss/daoMongo/UserQuestStoryDao');
 
 function createActionLog(uid, storyId, actionList, logDate) {
@@ -122,10 +121,9 @@ module.exports = async (ctx, next) => {
         putInvenRewardList.push(...rewardList);
     }
 
-    const invenLogDao = new InvenLogDao(dbMongo, logDate);
-    const inventoryDao = new InventoryDao(dbMongo);
+    const inventoryLogDao = new InventoryLogDao(dbMongo, logDate);
 
-    const inventoryService = new InventoryService(inventoryDao, userInfo, logDate, invenLogDao);
+    const inventoryService = new InventoryService(userInfo, logDate, inventoryLogDao);
 
     if (putInvenRewardList.length > 0) {
         const questInfo = { questId: newClearQuest.join(","), questSId: storyId };
@@ -136,7 +134,7 @@ module.exports = async (ctx, next) => {
             rewardList, addInfo);
 
         const userInventoryList = await inventoryService.getUserInventoryList();
-        InventoryService.removeObjectIdList(userInventoryList);
+        
         ctx.$res.addData({ inventoryList: userInventoryList });
     }
 

@@ -5,8 +5,7 @@ const UserEdit = require('@ss/models/mongo/UserEdit');
 const UmsUserEditDao = require('@ss/daoMongo/UmsUserEditDao');
 
 const UserDao = require('@ss/daoMongo/UserDao');
-const InvenLogDao = require('@ss/daoMongo/InvenLogDao');
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
+const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
 const InventoryService = require('@ss/service/InventoryService');
 
 const ReqUserEdit = require('@ss/models/umsController/ReqUserEdit');
@@ -44,12 +43,11 @@ module.exports = async (ctx, next) => {
     const useInventoryList = InventoryService.makeInventoryList(useList);
 
     const userDao = new UserDao(dbMongo);
-    const inventoryDao = new InventoryDao(dbMongo);
 
     const userInfo = await userDao.findOne({uid});
 
-    const invenLogDao = new InvenLogDao(dbMongo, updateDate);
-    const inventoryService = new InventoryService(inventoryDao, userInfo, updateDate, invenLogDao);
+    const inventoryLogDao = new InventoryLogDao(dbMongo, updateDate);
+    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
     InventoryService.validModel(inventoryService);
 
     const adminId = ctx.$adminInfo.adminId;
@@ -61,17 +59,17 @@ module.exports = async (ctx, next) => {
     const userEdit = new UserEdit({ uid, adminId, editKey, reason, updateDate });
     
     const umsUserEditDao = new UmsUserEditDao(dbMongo);
-    const result = await umsUserEditDao.insertOne(userEdit);
+    const result = umsUserEditDao.insertOne(userEdit);
 
     if(putInventoryList.length > 0) {
-        await inventoryService.processPut(
+        inventoryService.processPut(
             InventoryService.PUT_ACTION.ADMIN, 
             putInventoryList, 
             addInfo);
     }
         
     if(useInventoryList.length > 0) {
-        await inventoryService.processUse(
+        inventoryService.processUse(
             InventoryService.USE_ACTION.ADMIN, 
             useInventoryList,
             addInfo);

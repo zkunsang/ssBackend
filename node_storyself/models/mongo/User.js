@@ -18,10 +18,12 @@ const Schema = {
     GOOGLE: { key: 'google', required: false, type: ValidType.STRING },
     APPLE: { key: 'apple', required: false, type: ValidType.STRING },
     ETC: { key: 'etc', required: false, type: ValidType.STRING },
+
+    INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY }
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory }) {
         super();
         
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -32,6 +34,7 @@ class User extends Model {
         this[Schema.POLICY_VERSION.key] = ValidateUtil.setNullUndefined(policyVersion);
         this[Schema.SESSION_ID.key] = ValidateUtil.setNullUndefined(sessionId);
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
+        this[Schema.INVENTORY.key] = inventory || [];
     }
 
     getSessionId() {
