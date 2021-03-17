@@ -86,6 +86,20 @@ const QuestActionType = {
     DRAG_AND_DROP: 2
 }
 
+const MailSender = {
+    ADMIN: 1,
+    PRODUCT: 2,
+    QUEST_REWARD: 3,
+    EVENT: 4
+}
+
+const MailStatus = {
+    SEND: 1, 
+    READ: 2,
+    DELETE: 3,
+    ADMIN_DELETE: 4
+}
+
 class ValidateUtil {
     constructor() {
         this.validFunc = {};
@@ -244,4 +258,7 @@ module.exports.CommonBoolean = CommonBoolean;
 module.exports.PurchaseStatus = PurchaseStatus;
 module.exports.IpManageType = IpManageType;
 module.exports.QuestActionType = QuestActionType;
+module.exports.MailSender = MailSender;
+module.exports.MailStatus = MailStatus;
+
 

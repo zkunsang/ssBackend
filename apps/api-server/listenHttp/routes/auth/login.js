@@ -4,7 +4,6 @@ const dbRedisSS = require('@ss/dbRedisSS');
 const helper = require('@ss/helper');
 
 const LoginLogDao = require("@ss/daoMongo/LoginLogDao");
-const InventoryLogDao = require("@ss/daoMongo/InventoryLogDao");
 
 const UserDao = require('@ss/daoMongo/UserDao');
 const SessionDao = require('@ss/daoRedis/SessionDao');

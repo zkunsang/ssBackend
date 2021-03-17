@@ -10,7 +10,8 @@ const Schema = {
     USER_DAO: { key: 'userDao', required: true, type: ValidType.OBJECT },
 
     UPDATE_DATE: { key: 'updateDate', required: false, type: ValidType.UNIX_TIMESTAMP },
-    INVENTORY: { key: 'inventory', required: false, type: ValidType.OBJECT },
+    INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
+    MAIL: { key: 'mail', required: false, type: ValidType.ARRAY },
 }
 
 
@@ -36,6 +37,12 @@ class UserService extends Service {
         this[Schema.USER_INFO.key][Schema.INVENTORY.key] = inventory;
     }
 
+    setMail(mail) {
+        this.isChange = true;
+        this[Schema.USER_INFO.key][Schema.MAIL.key] = mail;
+
+    }
+
     async finalize() {
         if(!this.isChange) return false;
         
@@ -49,6 +56,8 @@ class UserService extends Service {
 
         await this[Schema.USER_DAO.key].updateOne({ uid }, copyUserInfo); 
     }
+
+    
 }
 
 module.exports = UserService;

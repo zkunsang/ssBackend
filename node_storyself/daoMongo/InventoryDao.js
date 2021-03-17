@@ -12,11 +12,8 @@ class InvetoryDao extends Dao {
 
     static requireInsertFieldList() {
         return [
-            Invetory.Schema.UID.key,
             Invetory.Schema.ITEM_ID.key,
             Invetory.Schema.ITEM_QNY.key,
-            Invetory.Schema.UPDATE_DATE.key,
-            Invetory.Schema.CREATE_DATE.key,
         ];
     }
 

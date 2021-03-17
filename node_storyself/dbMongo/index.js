@@ -9,12 +9,14 @@ class Mongo {
         console.log('mongo constructor');
         this.userConnect = null;
         this.storyConnect = null;
+        this.logConnect = null;
     }
 
     async ready() {
         try {
             this.userConnect = await this.setConnect(ss.configs.dbMongoUser);
             this.storyConnect = await this.setConnect(ss.configs.dbMongoData);
+            this.logConnect = await this.setConnect(ss.configs.dbMongoLog);
         }
         catch (err) {
             console.log(err);

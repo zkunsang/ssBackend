@@ -34,6 +34,7 @@ const code = {
 
     storyNoExist: { code: 37001, name: 'storyNoExist', message: 'storyNoExist' },
     
+    noExistMail: {code: 38001, name: 'noExistMail', message: 'noExistMail'}
 }
 
 class ServiceError extends RuntimeError {

@@ -1,5 +1,3 @@
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-
 const ReqCheatPutItem = require('@ss/models/controller/ReqCheatPutItem');
 
 const InventoryService = require('@ss/service/InventoryService');
@@ -12,9 +10,8 @@ module.exports = async (ctx, next) => {
 
     const reqCheatPutItem = new ReqCheatPutItem(ctx.request.body);
     ReqCheatPutItem.validModel(reqCheatPutItem);
-
-    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
+    
+    const inventoryService = new InventoryService(userInfo, updateDate);
 
     InventoryService.validModel(inventoryService);
 
@@ -23,10 +20,11 @@ module.exports = async (ctx, next) => {
         { cheat: 'cheat' },
         reqCheatPutItem.getInventoryList());
 
-    const inventory = await inventoryService.finalize();
+    const inventory = inventoryService.finalize();
 
     const userService = new UserService(userInfo, userDao);
     userService.setInventory(inventory);
+
     await userService.finalize();
 
     ctx.$res.success({ inventory });

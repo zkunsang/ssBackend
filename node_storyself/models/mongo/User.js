@@ -19,11 +19,12 @@ const Schema = {
     APPLE: { key: 'apple', required: false, type: ValidType.STRING },
     ETC: { key: 'etc', required: false, type: ValidType.STRING },
 
-    INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY }
+    INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
+    MAIL: { key: 'mail', required: false, type: ValidType.OBJECT }
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail }) {
         super();
         
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -35,6 +36,7 @@ class User extends Model {
         this[Schema.SESSION_ID.key] = ValidateUtil.setNullUndefined(sessionId);
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
         this[Schema.INVENTORY.key] = inventory || [];
+        this[Schema.MAIL.key] = mail || {};
     }
 
     getSessionId() {

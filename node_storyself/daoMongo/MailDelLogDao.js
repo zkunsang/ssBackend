@@ -1,15 +1,15 @@
 const DateUtil = require('../util/DateUtil');
-const InventoryLog = require('../models/apilog/InventoryLog');
+const MailDelLog = require("../models/apilog/MailDelLog");
 const Dao = require('./Dao');
 
-class InventoryLogDao extends Dao {
+class MailDelLogDao extends Dao {
     constructor(connection, date) {
         super();
         this.db = connection.logConnect.db('log');
-        this.collection = this.db.collection(`inven_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
+        this.collection = this.db.collection(`mail_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
-    static model = InventoryLog;
+    static model = MailDelLog;
 
     static requireInsertFieldList() {
         return [];
@@ -28,4 +28,4 @@ class InventoryLogDao extends Dao {
     };
 }
 
-module.exports = InventoryLogDao;
+module.exports = MailDelLogDao;
