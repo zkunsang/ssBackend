@@ -20,13 +20,15 @@ const Schema = {
     ETC: { key: 'etc', required: false, type: ValidType.STRING },
 
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
-    MAIL: { key: 'mail', required: false, type: ValidType.OBJECT }
+    MAIL: { key: 'mail', required: false, type: ValidType.OBJECT },
+
 }
 
 class User extends Model {
     constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail }) {
         super();
         
+
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
         this[Schema.EMAIL.key] = ValidateUtil.setNullUndefined(email);
         this[Schema.STATUS.key] = ValidateUtil.setNullUndefined(status);

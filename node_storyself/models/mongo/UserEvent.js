@@ -8,7 +8,7 @@ const Schema = {
     EVENT_INFO: { key: 'eventInfo', required: true, type: ValidType.OBJECT },
 }
 
-class Event extends Model {
+class UserEvent extends Model {
     constructor({ uid, eventInfo }) {
         super();
 
@@ -17,5 +17,5 @@ class Event extends Model {
     }
 }
 
-module.exports = Event;
+module.exports = UserEvent;
 module.exports.Schema = Schema;

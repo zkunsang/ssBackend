@@ -24,7 +24,7 @@ module.exports = async (ctx, next) => {
 
     const inventory = await inventoryService.finalize();
 
-    const userService = new UserService(userInfo, userDao);
+    const userService = new UserService(userInfo, userDao, updateDate);
     userService.setInventory(inventory);
 
     await userService.finalize();

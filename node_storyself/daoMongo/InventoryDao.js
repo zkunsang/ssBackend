@@ -1,4 +1,4 @@
-const Invetory = require('../models/mongo/Inventory');
+const PrevInventory = require('../models/mongo/PrevInventory');
 const Dao = require('./Dao');
 
 class InvetoryDao extends Dao {
@@ -8,35 +8,31 @@ class InvetoryDao extends Dao {
         this.collection = this.db.collection('inventory');
     }
 
-    static model = Invetory;
+    static model = PrevInventory;
 
     static requireInsertFieldList() {
         return [
-            Invetory.Schema.ITEM_ID.key,
-            Invetory.Schema.ITEM_QNY.key,
+            PrevInventory.Schema.ITEM_ID.key,
+            PrevInventory.Schema.ITEM_QNY.key,
         ];
     }
 
     static allowWhereFieldList() {
         return [
-            Invetory.Schema.OBJECT_ID.key,
-            Invetory.Schema.UID.key,
-            Invetory.Schema.ITEM_ID.key,
+            PrevInventory.Schema.ITEM_ID.key,
+            PrevInventory.Schema.UID.key,
         ];
     }
 
     static allowSetFieldList() {
         return [
-            Invetory.Schema.ITEM_QNY.key,
-            Invetory.Schema.UPDATE_DATE.key,
-            Invetory.Schema.CREATE_DATE.key,
+            PrevInventory.Schema.ITEM_QNY.key,
         ]
     };
 
     static notAllowSetFieldList() {
         return [
-            Invetory.Schema.UID.key,
-            Invetory.Schema.ITEM_ID.key,
+            PrevInventory.Schema.ITEM_ID.key,
         ]
     };
 }

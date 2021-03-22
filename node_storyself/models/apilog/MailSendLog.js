@@ -21,7 +21,7 @@ const Schema = {
 }
 
 class MailSendLog extends Model {
-    constructor({ uid, mailId, title, message, sender, status, senderId, date, itemList, itemInfo }) {
+    constructor({ uid, mailId, title, message, sender, senderId, status, date, itemList, itemInfo }) {
         super();
         this[Schema.UID.key] = uid;
 

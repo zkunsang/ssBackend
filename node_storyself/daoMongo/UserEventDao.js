@@ -1,19 +1,19 @@
-const Event = require('../models/mongo/Event');
+const UserEvent = require('../models/mongo/UserEvent');
 const Dao = require('./Dao');
 
-class EventDao extends Dao {
+class UserEventDao extends Dao {
     constructor(connection) {
         super();
         this.db = connection.storyConnect.db('user');
         this.collection = this.db.collection('event');
     }
     
-    static model = Event;
+    static model = UserEvent;
 
     static requireInsertFieldList() {
         return [
-            Event.Schema.UID.key,
-            Event.Schema.EVENT_INFO.key,
+            UserEvent.Schema.UID.key,
+            UserEvent.Schema.EVENT_INFO.key,
         ];
     }
 
@@ -30,4 +30,4 @@ class EventDao extends Dao {
     };
 }
 
-module.exports = EventDao;
+module.exports = UserEventDao;

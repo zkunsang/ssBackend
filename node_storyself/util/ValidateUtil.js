@@ -18,6 +18,7 @@ const ValidType = {
     EMAIL: 'email',
     ARRAY: 'Array',
     OBJECT: 'Object',
+    BOOLEAN: 'boolean',
 }
 
 const UserStatus = {

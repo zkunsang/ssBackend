@@ -15,12 +15,10 @@ const SSError = require('@ss/error');
 const DateUtil = require('@ss/util/DateUtil');
 const CouponUse = require('@ss/models/mongo/CouponUse');
 
-
-
 module.exports = async (ctx, next) => {
     const reqCouponCheck = new ReqCouponCheck(ctx.request.body);
     ReqCouponCheck.validModel(reqCouponCheck);
-    
+
     // 시도 횟수 체크
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
@@ -28,25 +26,25 @@ module.exports = async (ctx, next) => {
     const couponTryDao = new CouponTryDao(ctx.$dbRedis);
     const couponTryInfo = await couponTryDao.get(userInfo.uid, DateUtil.getHours());
 
-    if(parseInt(couponTryInfo) >= 5) {
+    if (parseInt(couponTryInfo) >= 5) {
         ctx.$res.badRequest(SSError.Service.Code.couponManyTry);
         await next();
-        return;        
+        return;
     }
 
     await couponTryDao.set(userInfo.uid, DateUtil.getHours());
-    
+
     const couponCode = reqCouponCheck.getCouponCode();
 
     const couponCodeDao = new CouponCodeDao(ctx.$dbMongo);
-    const couponCodeInfo = await couponCodeDao.findOne({couponCode});
+    const couponCodeInfo = await couponCodeDao.findOne({ couponCode });
 
     let couponInfo = null;
-    if(!couponCodeInfo) {
+    if (!couponCodeInfo) {
         couponInfo = CouponCache.get(couponCode);
 
         // 쿠폰 정보가 없으면
-        if(!couponInfo) {
+        if (!couponInfo) {
             ctx.$res.badRequest(SSError.Service.Code.couponNoExist);
             await next();
             return;
@@ -54,7 +52,7 @@ module.exports = async (ctx, next) => {
     }
     else {
         couponInfo = CouponCache.get(couponCodeInfo.couponId);
-        if(!couponInfo) {
+        if (!couponInfo) {
             ctx.$res.badRequest(SSError.Service.Code.couponNoExist);
             await next();
             return;
@@ -62,7 +60,7 @@ module.exports = async (ctx, next) => {
     }
 
     // 사용 기한 체크
-    if(!DateUtil.isBetween(updateDate, couponInfo.startDate, couponInfo.endDate)) {
+    if (!DateUtil.isBetween(updateDate, couponInfo.startDate, couponInfo.endDate)) {
         ctx.$res.badRequest(SSError.Service.Code.couponUnavailable);
         await next();
         return;
@@ -74,14 +72,14 @@ module.exports = async (ctx, next) => {
     const uid = userInfo.uid;
 
     const couponUse = await couponUseDao.findOne({ uid, couponId })
-    if(couponUse) {
+    if (couponUse) {
         ctx.$res.badRequest(SSError.Service.Code.couponAlreadyUsed);
         await next();
         return;
     }
 
-    if(couponInfo.userLimit) {
-        if(couponCodeInfo.uid) {
+    if (couponInfo.userLimit) {
+        if (couponCodeInfo.uid) {
             ctx.$res.badRequest(SSError.Service.Code.couponAlreadyOccupied);
             await next();
             return;
@@ -90,8 +88,8 @@ module.exports = async (ctx, next) => {
         await couponCodeDao.updateOne({ couponId, couponCode }, { uid, updateDate });
     }
 
-    await couponUseDao.insertOne(new CouponUse({uid, couponCode, couponId, updateDate}));
-    
+    await couponUseDao.insertOne(new CouponUse({ uid, couponCode, couponId, updateDate }));
+
     const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
     const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
     InventoryService.validModel(inventoryService);
@@ -103,12 +101,12 @@ module.exports = async (ctx, next) => {
     await inventoryService.processPut(
         InventoryService.PUT_ACTION.COUPON,
         putInventoryList);
-    
+
     const userInventoryList = await inventoryService.getUserInventoryList();
 
-    ctx.$res.success({ 
+    ctx.$res.success({
         inventoryList: userInventoryList
     });
-    
+
     await next();
 }

@@ -21,12 +21,13 @@ module.exports = async (ctx, next) => {
         addInfo: { cheat: 'cheat' },    
     };
 
-    const newMail = mailService.sendMail({ ...reqCheatSendMail, itemInfo });
+    
+    mailService.sendMail({ ...reqCheatSendMail, itemInfo });
+    const newMail = mailService.finalize();
 
-    const userService = new UserService(userInfo, userDao);
+    const userService = new UserService(userInfo, userDao, updateDate);
     userService.setMail(newMail);
-
-    mailService.finalize();
+    
     await userService.finalize();
 
     const { mail, inventory } = userInfo;

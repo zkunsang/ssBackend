@@ -17,7 +17,7 @@ module.exports = async (ctx, next) => {
 
     const delMail = mailService.delMail(mailId, delId);
 
-    const userService = new UserService(userInfo, userDao);
+    const userService = new UserService(userInfo, userDao, updateDate);
     userService.setMail(delMail);
 
     mailService.finalize();

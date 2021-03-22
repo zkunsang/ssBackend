@@ -91,20 +91,29 @@ class MailService extends Service {
         this[Schema.DEL_LOG.key].push(delLog);
     }
 
-    sendMail({ title, message, sender, itemList, itemInfo }) {
+    sendMail({ title, message, sender, senderId, itemList, itemInfo }) {
         const uid = this.getUID();
         const mailId = shortid.generate();
         const date = this.getUpdateDate();
         const status = MailStatus.SEND;
 
         const newMail = new Mail({ mailId, title, message, sender, status, itemList, itemInfo });
-        const mailSendLog = new MailSendLog({ uid, date, ...newMail });
+        const mailSendLog = new MailSendLog({ uid, date, ...newMail, senderId });
+
         this.pushSendLog(mailSendLog);
 
         const userMail = this.getMail();
         userMail[mailId] = newMail;
-        
+
         return userMail;
+    }
+
+    putEventMailList(eventMailList) {
+        for(const eventMail of eventMailList) {
+            this.sendMail(eventMail);
+        }
+
+        return this[Schema.MAIL.key];
     }
 
     readMail(mailId) {
@@ -149,6 +158,8 @@ class MailService extends Service {
         this.logRead();
         this.logSend();
         this.logDel();
+
+        return this[Schema.MAIL.key];
     }
 
     logRead() {

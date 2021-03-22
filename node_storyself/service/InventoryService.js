@@ -11,6 +11,9 @@ const InventoryUse = require('../models/service/InventoryUse');
 
 const InventoryLog = require('../models/apilog/InventoryLog');
 const InventoryLogDao = require('../daoMongo/InventoryLogDao');
+
+const InventoryDao = require('../daoMongo/InventoryDao');
+
 const dbMongo = require('../dbMongo');
 
 const SSError = require('../error');
@@ -32,9 +35,11 @@ const PUT_ACTION = {
     USER_INIT: [1004, 1],
     COUPON: [1005, 1],
     EVENT: {
-        BETA_EVENT: [1006, 1]
+        BETA_EVENT: [1006, 1],
+        EVENT: [1006, 2]
     },
     STORY_QUEST: [1007, 1],
+    WRONG_INVENTORY: [9000, 1],
 };
 
 const USE_ACTION = {
@@ -107,6 +112,10 @@ class InventoryService extends Service {
         return this[Schema.UPDATE_DATE.key];
     }
 
+    getUserInfo() {
+        return this[Schema.USER_INFO.key];
+    }
+
     /**
      * 
      * @param {*} action 
@@ -114,6 +123,7 @@ class InventoryService extends Service {
      * @param {Array.<Inventory>} putInvenList 
      */
     putItem(action, addInfo, putInvenList) {
+        if(putInvenList.length === 0) return;
         
         const putMap = {};
 
@@ -131,6 +141,7 @@ class InventoryService extends Service {
     }
 
     useItem(action, addInfo, useInvenList) {
+        if(useInvenList.length === 0) return;
         const useMap = {};
 
         for(const useInven of useInvenList) {
@@ -145,6 +156,15 @@ class InventoryService extends Service {
 
         this.isChange = true;
         this.useListPush(Object.values(useMap));
+    }
+
+    putEventItemList(eventItemList) {
+        if (eventItemList.length === 0) return;
+
+        for (const eventReward of eventItemList) {
+            const { eventId, itemList } = eventReward;
+            this.putItem(PUT_ACTION.EVENT.EVENT, {eventId}, itemList)
+        }
     }
 
     finalize() {
@@ -176,7 +196,7 @@ class InventoryService extends Service {
                 userInvenMap[itemId] = new Inventory({ itemId, itemQny: 0 });
             }
 
-            const log = this.createInvenLog(userInvenMap[itemId], putInven);
+            const log = this.createInvenLog(userInvenMap[itemId], putInven, LOG_TYPE.PUT);
             
             logList.push(log);
         }
@@ -196,6 +216,7 @@ class InventoryService extends Service {
             if(!userInvenMap[itemId]) {
                 this.throwNotEnoughItem(itemId, 0, itemQny);
             }
+
             const userItemQny = userInvenMap[itemId].getItemQny();
             if (userItemQny < itemQny) {
                 this.throwNotEnoughItem(itemId, userItemQny, itemQny);
@@ -209,34 +230,25 @@ class InventoryService extends Service {
         return logList;
     }
 
+    // 처음 인벤토리 구조를 rdb구조로 잘못 구성
+    // rdb구조의 inventory -> mongodb구조의 inventory로 처리해주는 로직
+    async checkWrongInventory() {
+        const uid = this.getUID();
+        const userInventory = this.getUserInventory();
+        if(userInventory.length !== 0) return null;
+
+        const inventoryDao = new     InventoryDao(dbMongo);
+        const inventoryList = await inventoryDao.findMany({ uid });
+
+        this.putItem(
+            PUT_ACTION.WRONG_INVENTORY, {},
+            inventoryList.map(item => new Inventory(item)));
+    }
+
     throwNotEnoughItem(itemId, userQny, useQny) {
         throw new SSError.Service(
             SSError.Service.Code.useItemNotEnoughItem,
             `${itemId} - ${userQny} < ${useQny}`);
-    }
-
-    /**
-     * 
-     * @param {Inventory} origin 
-     * @param {InventoryPut} update 
-     */
-    putInventory(origin, update) {
-        const uid = this.getUID();
-        const logDate = this.getUpdateDate();
-        const itemId = origin.getItemId();
-        const itemData = ItemCache.get(itemId);
-        const itemCategory = itemData.itemCategory;
-
-        const beforeQny = origin.getItemQny();
-        const diffQny = update.getItemQny();
-        const afterQny = beforeQny + diffQny;
-
-        const action = update.getAction();
-        const addInfo = update.getAddInfo();
-
-        origin.addItem(update);
-        
-        return new InventoryLog({ uid, itemId, itemCategory, beforeQny, diffQny, afterQny, logDate, action, addInfo });
     }
 
     createInvenLog(origin, update, logType) {
