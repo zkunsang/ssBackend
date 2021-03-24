@@ -1,9 +1,8 @@
 const ReqShopAccessory = require('@ss/models/controller/ReqShopAccessory');
 
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-
 const ItemService = require('@ss/service/ItemService');
 const InventoryService = require('@ss/service/InventoryService');
+const UserService = require('@ss/service/UserService');
 
 const ItemCache = require('@ss/dbCache/ItemCache');
 const SSError = require('@ss/error');
@@ -11,42 +10,35 @@ const SSError = require('@ss/error');
 module.exports = async (ctx, next) => {
     const reqShopAccessory = new ReqShopAccessory(ctx.request.body);
     ReqShopAccessory.validModel(reqShopAccessory);
-    
+
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
+    const userDao = ctx.$userDao;
 
     const itemService = new ItemService();
-    
+
     const itemId = reqShopAccessory.getItemId();
     itemService.getItemList([itemId]);
+    itemService.checkPurchaseItem(itemId);
 
-    const itemInfo = ItemCache.get(itemId);
+    const inventoryService = new InventoryService(userInfo, updateDate);
 
-    // 구매 가능한 상태가 아니면 에러 
-    if(itemInfo.status !== 1) {
-        ctx.$res.badRequest(SSError.Service.Code.purchaseNotPossible);
-        return;
-    }
-    
-    const itemInventory = InventoryService.makeInventoryObject(itemId, 1);
+    const itemInventory = inventoryService.makeInventoryObject(itemId, 1);
 
-    const { putInventoryList, useInventoryList } 
+    const { putInventoryList, useInventoryList }
         = itemService.getExchangeInventoryInfo([itemInventory]);
 
-    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
-    InventoryService.validModel(inventoryService);
+    inventoryService.checkAlready(putInventoryList);
+    inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.ACCESSORY, {}, useInventoryList);
+    inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.ACCESSORY, {}, putInventoryList);
 
-    inventoryService.processExchange(
-        InventoryService.USE_ACTION.EXCHANGE.ACCESSORY, 
-        useInventoryList, 
-        InventoryService.PUT_ACTION.EXCHANGE.ACCESSORY, 
-        putInventoryList);
+    const inventory = inventoryService.finalize();
 
-    const userInventoryList = await inventoryService.getUserInventoryList();
+    const userService = new UserService(userInfo, userDao, updateDate);
+    userService.setInventory(inventory);
+    userService.finalize();
 
-    ctx.status = 200;
-    ctx.body.data = { inventoryList: userInventoryList };
+    ctx.$res.success({ inventory });
 
     await next();
 }

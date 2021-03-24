@@ -35,8 +35,10 @@ const PUT_ACTION = {
     USER_INIT: [1004, 1],
     COUPON: [1005, 1],
     EVENT: {
+        TEMP_EVENT: [1006, 0],
         BETA_EVENT: [1006, 1],
-        EVENT: [1006, 2]
+        EVENT: [1006, 2],
+        STORY_EVENT: [1006, 3]
     },
     STORY_QUEST: [1007, 1],
     WRONG_INVENTORY: [9000, 1],
@@ -61,9 +63,10 @@ const LOG_TYPE = {
 const Schema = {
     USER_INFO: { key: 'userInfo', required: true, type: ValidType.OBJECT, validObject: User },
     UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
-    
+
     UID: { key: 'uid', required: false, type: ValidType.STRING },
     INVENTORY: { key: 'inventory', required: false, type: ValidType.OBJECT },
+    INVENTORY_MAP: { key: 'inventoryMap', required: false, type: ValidType.OBJECT },
 
     USE_LIST: { key: 'useList', required: false, type: ValidType.ARRAY },
     PUT_LIST: { key: 'putList', required: false, type: ValidType.ARRAY },
@@ -75,10 +78,11 @@ class InventoryService extends Service {
 
         this[Schema.USER_INFO.key] = userInfo;
         this[Schema.UPDATE_DATE.key] = updateDate;
-        
+
         const { inventory, uid } = userInfo;
-        
-        this[Schema.INVENTORY.key] = inventory ? inventory.map(item => new Inventory(item)) : [];
+
+        this[Schema.INVENTORY.key] = inventory ? ArrayUtil.map(inventory, (item) => new Inventory(item)) : [];
+        this[Schema.INVENTORY_MAP.key] = ArrayUtil.keyBy(inventory, "itemId");
         this[Schema.UID.key] = uid;
 
         this[Schema.PUT_LIST.key] = [];
@@ -92,8 +96,7 @@ class InventoryService extends Service {
     }
 
     getUserInventoryMap() {
-        const inventory = this.getUserInventory();
-        return ArrayUtil.keyBy(inventory, 'itemId');
+        return this[Schema.INVENTORY_MAP.key];
     }
 
     getUID() {
@@ -107,7 +110,7 @@ class InventoryService extends Service {
     getPutList() {
         return this[Schema.PUT_LIST.key];
     }
-    
+
     getUpdateDate() {
         return this[Schema.UPDATE_DATE.key];
     }
@@ -123,14 +126,14 @@ class InventoryService extends Service {
      * @param {Array.<Inventory>} putInvenList 
      */
     putItem(action, addInfo, putInvenList) {
-        if(putInvenList.length === 0) return;
-        
+        if (putInvenList.length === 0) return;
+
         const putMap = {};
 
-        for(const putInven of putInvenList) {
+        for (const putInven of putInvenList) {
             const { itemId, itemQny } = putInven;
 
-            if(putMap[itemId]) {
+            if (putMap[itemId]) {
                 putMap[itemId].addQny(itemQny);
             } else {
                 putMap[itemId] = new InventoryPut({ ...putInven, action, addInfo })
@@ -141,13 +144,13 @@ class InventoryService extends Service {
     }
 
     useItem(action, addInfo, useInvenList) {
-        if(useInvenList.length === 0) return;
+        if (useInvenList.length === 0) return;
         const useMap = {};
 
-        for(const useInven of useInvenList) {
+        for (const useInven of useInvenList) {
             const { itemId, itemQny } = useInven;
 
-            if(useMap[itemId]) {
+            if (useMap[itemId]) {
                 useMap[itemId].addQny(itemQny);
             } else {
                 useMap[itemId] = new InventoryUse({ ...useInven, action, addInfo });
@@ -158,12 +161,24 @@ class InventoryService extends Service {
         this.useListPush(Object.values(useMap));
     }
 
-    putEventItemList(eventItemList) {
-        if (eventItemList.length === 0) return;
+    checkAlready(putInvenList) {
+        const uid = this.getUID();
+        const inventory = this.getUserInventoryMap();
+        for (const putItem of putInvenList) {
+            const { itemId } = putItem;
+            if (inventory[itemId]) {
+                this.throwAlreadyHasItem(uid, itemId);
+            }
+        }
+    }
 
-        for (const eventReward of eventItemList) {
-            const { eventId, itemList } = eventReward;
-            this.putItem(PUT_ACTION.EVENT.EVENT, {eventId}, itemList)
+    putEventItemList(eventRewardList) {
+        if (!eventRewardList) return;
+        for (const eventReward of eventRewardList) {
+            const rewardInfo = eventReward.getRewardInfo();
+
+            const { action, addInfo, itemList } = rewardInfo;
+            this.putItem(action, addInfo, itemList);
         }
     }
 
@@ -171,10 +186,10 @@ class InventoryService extends Service {
         const updateDate = this.getUpdateDate();
         const userInventoryMap = this.getUserInventoryMap(updateDate);
 
-        if(!this.isChange) {
+        if (!this.isChange) {
             return Object.values(userInventoryMap);
         }
-        
+
         const putLogList = this.processPut(userInventoryMap);
         const useLogList = this.processUse(userInventoryMap);
 
@@ -191,17 +206,15 @@ class InventoryService extends Service {
         // 액션에 상관없이 하나로 뭉침
         for (const putInven of putList) {
             const itemId = putInven.getItemId();
-            
+
             if (!userInvenMap[itemId]) {
                 userInvenMap[itemId] = new Inventory({ itemId, itemQny: 0 });
             }
 
             const log = this.createInvenLog(userInvenMap[itemId], putInven, LOG_TYPE.PUT);
-            
             logList.push(log);
         }
 
-        
         return logList;
     }
 
@@ -209,11 +222,11 @@ class InventoryService extends Service {
         const useList = this.getUseList();
         const logList = [];
 
-        for(const useInven of useList) {
+        for (const useInven of useList) {
             const itemId = useInven.getItemId();
             const itemQny = useInven.getItemQny();
 
-            if(!userInvenMap[itemId]) {
+            if (!userInvenMap[itemId]) {
                 this.throwNotEnoughItem(itemId, 0, itemQny);
             }
 
@@ -223,7 +236,7 @@ class InventoryService extends Service {
             }
 
             const log = this.createInvenLog(userInvenMap[itemId], useInven, LOG_TYPE.USE);
-            
+
             logList.push(log);
         }
 
@@ -235,9 +248,9 @@ class InventoryService extends Service {
     async checkWrongInventory() {
         const uid = this.getUID();
         const userInventory = this.getUserInventory();
-        if(userInventory.length !== 0) return null;
+        if (userInventory.length !== 0) return null;
 
-        const inventoryDao = new     InventoryDao(dbMongo);
+        const inventoryDao = new InventoryDao(dbMongo);
         const inventoryList = await inventoryDao.findMany({ uid });
 
         this.putItem(
@@ -245,11 +258,6 @@ class InventoryService extends Service {
             inventoryList.map(item => new Inventory(item)));
     }
 
-    throwNotEnoughItem(itemId, userQny, useQny) {
-        throw new SSError.Service(
-            SSError.Service.Code.useItemNotEnoughItem,
-            `${itemId} - ${userQny} < ${useQny}`);
-    }
 
     createInvenLog(origin, update, logType) {
         const isUse = logType === LOG_TYPE.USE;
@@ -269,7 +277,7 @@ class InventoryService extends Service {
         const action = update.getAction();
         const addInfo = update.getAddInfo();
 
-        if(isUse) {
+        if (isUse) {
             origin.minusItem(update);
         } else {
             origin.addItem(update);
@@ -283,7 +291,7 @@ class InventoryService extends Service {
      * @param {InventoryUse} useItem 
      */
     useListPush(useItem) {
-        if(Array.isArray(useItem)) {
+        if (Array.isArray(useItem)) {
             this[Schema.USE_LIST.key].push(...useItem);
             return;
         }
@@ -295,10 +303,10 @@ class InventoryService extends Service {
      * @param {InventoryPut} putItem 
      */
     putListPush(putItem) {
-        if(Array.isArray(putItem)) {
+        if (Array.isArray(putItem)) {
             this[Schema.PUT_LIST.key].push(...putItem);
             return;
-        } 
+        }
         this[Schema.PUT_LIST.key].push(putItem);
     }
 
@@ -306,12 +314,30 @@ class InventoryService extends Service {
         this[Schema.CHANGE_LIST.key].push(change);
     }
 
-    static makeInventoryObject(itemId, itemQny) {
+    makeInventoryObject(itemId, itemQny) {
         return new Inventory({ itemId, itemQny });
     }
 
-    static makeInventoryList(itemList) {
-        return itemList.map((item) => new Inventory({ itemId: item.itemId, itemQny: item.itemQny }))
+    makeInventoryList(itemList) {
+        return ArrayUtil.map(itemList, (item) => new Inventory(item));
+    }
+
+    makeInventoryStoryList(storyIdList) {
+        return ArrayUtil.map(storyIdList, (storyId) => new Inventory({ itemId: storyId, itemQny: 1 }));
+    }
+
+    throwNotEnoughItem(itemId, userQny, useQny) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.useItemNotEnoughItem,
+            `[${uid}]: ${itemId} - ${userQny} < ${useQny}`);
+    }
+
+    throwAlreadyHasItem(itemId) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.alreadyHaveItem, `[${uid}]: itemId(${itemId})`
+        )
     }
 }
 

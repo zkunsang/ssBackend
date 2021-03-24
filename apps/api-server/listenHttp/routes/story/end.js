@@ -1,15 +1,13 @@
 const ReqStoryEnd = require('@ss/models/controller/ReqStoryEnd');
 
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-const StoryLogDao = require('@ss/daoMongo/StoryLogDao');
-const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
-
-const StoryLog = require('@ss/models/mongo/StoryLog');
-const StoryTempEvent = require('@ss/models/mongo/StoryTempEvent');
+const StoryService = require('@ss/service/StoryService');
+const UserService = require('@ss/service/UserService');
+const StoryEventService = require('@ss/service/StoryEventService');
 
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
 const InventoryService = require('@ss/service/InventoryService');
+const ItemService = require('@ss/service/ItemService');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
@@ -20,63 +18,41 @@ module.exports = async (ctx, next) => {
     const storyId = reqStoryEnd.getStoryId();
     const storyInfo = StoryCache.get(storyId);
 
-    if(!storyInfo) {
+    if (!storyInfo) {
         ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
         return;
     }
 
     // 해당 스토리를 다 읽은 로그 저장
     const userInfo = ctx.$userInfo;
+    const userDao = ctx.$userDao;
 
-    const uid = userInfo.uid;
-    const type = StoryLog.StoryLogType.END;
+    const userService = new UserService(userInfo, userDao, updateDate);
+    const storyService = new StoryService(userInfo, updateDate);
 
-    const storyLogDao = new StoryLogDao(ctx.$dbMongo, updateDate);
-    
-    await storyLogDao.insertOne(new StoryLog({ uid, storyId, updateDate, type }));
+    storyService.startLog(storyId);
+    await storyService.finalize();
 
-    // TODO: 임시 이벤트
-    let eventRewardCode = 0;
-    let inventoryList = null;
-    if("PussInBoots" == storyId) {
-        const storyTempEventDao = new StoryTempEventDao(ctx.$dbMongo);
+    const storyEventService = new StoryEventService(userInfo, updateDate);
+    const eventRewardList = await storyEventService.storyEvent(storyId);
 
-        const eventInfo = await storyTempEventDao.findOne({ uid, storyId });
+    if (eventRewardList.length > 0) {
+        const inventoryService = new InventoryService(userInfo, updateDate);
+        inventoryService.putEventRewardList(eventRewardList);
 
-        if(!eventInfo) {
-            const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
+        const inventory = inventoryService.finalize();
+        userService.setInventory(inventory);
 
-            const result = await processBetaEvent(storyTempEventDao, userInfo, storyId, updateDate, inventoryLogDao);
-            inventoryList = result.userInventoryList;
-            eventRewardCode = result.eventRewardCode;
-        }
+        ctx.$res.addData({ inventory });
     }
-    
-    ctx.$res.success({ eventRewardCode, inventoryList });
+
+    await userService.finalize();
+
+    ctx.$res.success();
+
     await next();
 }
 
-async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, storyId, updateDate, inventoryLogDao) {
-    const eventRewardCode = 100;
-    
-    const uid = userInfo.uid;
-    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
-
-    const itemList = [];
-
-    const honey = InventoryService.makeInventoryObject('honey', 50);
-    itemList.push(honey);
-
-    await inventoryService.processPut(
-        InventoryService.PUT_ACTION.EVENT.BETA_EVENT, 
-        itemList);
-
-    const userInventoryList = await inventoryService.getUserInventoryList();
-    
-    await storyTempEventDao.insertOne(new StoryTempEvent({ uid, storyId, updateDate }));
-
-    return { userInventoryList, eventRewardCode };
-}
 
 
 /**
@@ -130,7 +106,7 @@ async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, story
  *     properties:
  *       itemList:
  *         type: array
- *         items: 
+ *         items:
  *           type: item
  *       itemMaterialList:
  *         type: array
@@ -185,7 +161,7 @@ async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, story
  *     properties:
  *       productId:
  *         type: String
- *       productType: 
+ *       productType:
  *         type: String
  *       cost:
  *         type: number
@@ -200,9 +176,9 @@ async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, story
  *   productGroup:
  *     id: productGroup
  *     properties:
- *       groupId: 
+ *       groupId:
  *         type: String
- *       startDate: 
+ *       startDate:
  *         type: number
  *       endDate:
  *         type: number
@@ -245,5 +221,5 @@ async function processBetaEvent(inventoryDao, storyTempEventDao, userInfo, story
  *         type: String
  *       thumbnailVersion:
  *         type: number
- * 
+ *
  * */

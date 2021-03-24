@@ -22,13 +22,13 @@ class FluentHelper {
     }
 
     sendLog(category, log) {
-        if(!this.fluentConfig.useFluent) {
+        if (!this.fluentConfig.useFluent) {
             console.log(`${category} - ${JSON.stringify(log)}`);
             return;
         }
 
         if (Array.isArray(log)) {
-            for(const l of log) {
+            for (const l of log) {
                 this.logger.emit(category, l);
             }
         }

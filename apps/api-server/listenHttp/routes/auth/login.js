@@ -14,12 +14,13 @@ const ReqAuthLogin = require('@ss/models/controller/ReqAuthLogin');
 const Inventory = require('@ss/models/mongo/Inventory');
 
 const shortid = require('shortid');
+const ArrayUtil = require('@ss/util/ArrayUtil');
 
 module.exports = async (ctx, next) => {
     const loginDate = ctx.$date;
     const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
     const ip = ctx.$req.clientIp;
-    
+
     ReqAuthLogin.validModel(reqAuthLogin);
 
     const userDao = new UserDao(dbMongo);
@@ -36,51 +37,52 @@ module.exports = async (ctx, next) => {
         await sessionDao.del(oldSessionId);
     }
     else {
-        userInfo = authService.signIn();
+        userInfo = await authService.signIn(sessionId);
         userService.setUserInfo(userInfo);
     }
-    
+
     const eventService = new EventService(userInfo, loginDate);
     const inventoryService = new InventoryService(userInfo, loginDate);
     const mailService = new MailService(userInfo, loginDate);
 
-    if(userService.isNewUser()) {
+    if (userService.isNewUser()) {
         const itemList = eventService.newUserEvent();
         inventoryService.putItem(
             InventoryService.PUT_ACTION.USER_INIT, {},
-            itemList.map(item => new Inventory(item)));
+            ArrayUtil.map(itemList, item => new Inventory(item)));
     } else {
         await inventoryService.checkWrongInventory();
     }
 
-    const { eventItemList, eventMailList } = eventService.checkEvent();
-    
-    inventoryService.putEventItemList(eventItemList);
+    const eventResult = await eventService.checkEvent();
+
+    const { eventItemList, eventMailList } = eventResult || {};
+
+    inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
     const mail = mailService.putEventMailList(eventMailList);
-    
+
+    if (mail) userService.setMail(mail);
+
     const userInventory = inventoryService.finalize();
     userService.setInventory(userInventory);
-    userService.setMail(mail);
-    authService.finalize();
 
     await eventService.finalize();
     await userService.finalize();
+    authService.finalize();
 
     const { fcmToken } = userInfo;
     const eventList = [];
 
     sessionDao.set(sessionId, userInfo);
-    
-    ctx.$res.success({ 
+    ctx.$userInfo = userInfo;
+    ctx.$res.success({
         sessionId,
-        inventory: userInventory,
         policyVersion: 1,
         fcmToken,
-        mail,
-        eventList
+        eventList,
+        mail: userService.getMail(),
+        inventory: userService.getInventory(),
     });
-
-    
 
     await next();
 };
@@ -105,7 +107,7 @@ module.exports = async (ctx, next) => {
  *        <br>platform (String): 플랫폼(ios|aos) aos - android os,
  *        <br>appStore (String): 스토어(google|onestore|appstore),
  *        <br>clientVersion (String): 클라이언트 앱 버젼입니다.
- * 
+ *
  *      responseClass: resAuthLogin
  *      nickname: config
  *      consumes:
@@ -154,7 +156,7 @@ module.exports = async (ctx, next) => {
  *     id: resAuthLogin
  *     properties:
  *       common:
- *         type: common 
+ *         type: common
  *       error:
  *         type: error
  *       data:
@@ -162,7 +164,7 @@ module.exports = async (ctx, next) => {
  *   common:
  *     id: common
  *     properties:
- *       serverTime: 
+ *       serverTime:
  *         type: number
  *   error:
  *     id: error
@@ -176,6 +178,6 @@ module.exports = async (ctx, next) => {
  *     properties:
  *       sessionId:
  *         type: String
- *     
+ *
  *
  * */

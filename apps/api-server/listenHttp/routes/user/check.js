@@ -1,7 +1,6 @@
 
 module.exports = async (ctx, next) => {
-    ctx.status = 200;
-    ctx.body.data = {};
+    ctx.$res.success({});
     await next();
 };
 
@@ -19,7 +18,7 @@ module.exports = async (ctx, next) => {
  *      summary: 유저 인포
  *      notes: |
  *        <br><b>requestParam</b>
- *        <br>sessionId: 세션 아이디 
+ *        <br>sessionId: 세션 아이디
  *      responseClass: resUserInfo
  *      nickname: config
  *      consumes:
@@ -47,12 +46,12 @@ module.exports = async (ctx, next) => {
  *     properties:
  *       inventoryList:
  *         type: array
- *         items: 
+ *         items:
  *           type: inventory
  *   inventory:
  *     id: inventory
  *     properties:
- *       itemId: 
+ *       itemId:
  *         type: String
  *       itemQny:
  *         type: number
@@ -62,5 +61,5 @@ module.exports = async (ctx, next) => {
  *         type: number
  *       endDate:
  *         type: number
- * 
+ *
  * */

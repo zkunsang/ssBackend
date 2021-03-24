@@ -1,25 +1,18 @@
 const ReqLogVoice = require('@ss/models/controller/ReqLogVoice');
 
-const VoiceLogDao = require('@ss/daoMongo/VoiceLogDao');
-const VoiceLog = require('@ss/models/apilog/VoiceLog');
+const LogService = require('@ss/service/LogService');
 
 module.exports = async (ctx, next) => {
     const reqLogVoice = new ReqLogVoice(ctx.request.body);
     ReqLogVoice.validModel(reqLogVoice);
+
     const userInfo = ctx.$userInfo;
-    
-    const uid = userInfo.uid;
     const logDate = ctx.$date;
 
-    const storyId = reqLogVoice.getStoryId();
-    const soundIndex = reqLogVoice.getSoundIndex();
-    const sceneIndex = reqLogVoice.getSceneIndex();
-    const length = reqLogVoice.getLength();
+    const logService = new LogService(userInfo, logDate);
+    logService.sendVoiceLog(reqLogVoice);
 
-    const voiceLogDao = new VoiceLogDao(ctx.$dbMongo, ctx.$date);
-    voiceLogDao.insertOne(new VoiceLog({ uid, logDate, storyId, soundIndex, sceneIndex, length }));
-    
-    ctx.$res.success();
+    ctx.$res.success({});
     await next();
 }
 

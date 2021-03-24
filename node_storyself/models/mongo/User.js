@@ -27,7 +27,6 @@ const Schema = {
 class User extends Model {
     constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail }) {
         super();
-        
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
         this[Schema.EMAIL.key] = ValidateUtil.setNullUndefined(email);
@@ -47,6 +46,10 @@ class User extends Model {
 
     getUID() {
         return this[Schema.UID.key];
+    }
+
+    getInventory() {
+        return this[Schema.INVENTORY.key];
     }
 
     getCreateDate() {
@@ -76,6 +79,11 @@ class User extends Model {
     setProvider(provider, providerId) {
         this[provider] = providerId;
     }
+
+    setUID(uid) {
+        this[Schema.UID.key] = uid;
+    }
+
 };
 
 module.exports = User;

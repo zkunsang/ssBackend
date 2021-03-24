@@ -1,49 +1,44 @@
 const ReqShopStory = require('@ss/models/controller/ReqShopStory');
 
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-
 const ItemService = require('@ss/service/ItemService');
 const StoryService = require('@ss/service/StoryService');
+const UserService = require('@ss/service/UserService');
 const InventoryService = require('@ss/service/InventoryService');
-
-function makeStoryInventoryList(storyList) {
-    return storyList.map((item) => InventoryService.makeInventoryObject(item, 1));
-}
 
 module.exports = async (ctx, next) => {
     const reqShopStory = new ReqShopStory(ctx.request.body);
     ReqShopStory.validModel(reqShopStory);
-    
+
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
+    const userDao = ctx.$userDao;
 
     const itemService = new ItemService();
     const storyService = new StoryService()
-    
-    const needStoryList = reqShopStory.getStoryList();
-    storyService.getStoryList(needStoryList);
-    
-    const storyInvenList = makeStoryInventoryList(needStoryList);
 
-    const { putInventoryList, useInventoryList } 
+    const needStoryList = reqShopStory.getStoryList();
+    storyService.checkStoryList(needStoryList);
+    itemService.checkPurchaseItemList(needStoryList);
+
+    const inventoryService = new InventoryService(userInfo, updateDate);
+
+    const storyInvenList = inventoryService.makeInventoryStoryList(needStoryList);
+
+    const { putInventoryList, useInventoryList }
         = itemService.getExchangeInventoryInfo(storyInvenList);
 
     itemService.applyCoupon(useInventoryList, reqShopStory.getCouponId());
 
-    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
-    InventoryService.validModel(inventoryService);
+    inventoryService.checkAlready(putInventoryList);
+    inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.STORY, {}, useInventoryList);
+    inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.STORY, {}, putInventoryList);
 
-    inventoryService.processExchange(
-        InventoryService.USE_ACTION.EXCHANGE.STORY,
-        useInventoryList, 
-        InventoryService.PUT_ACTION.EXCHANGE.STORY,
-        putInventoryList);
+    const inventory = inventoryService.finalize();
 
-    const userInventoryList = await inventoryService.getUserInventoryList();
-    
-    ctx.status = 200;
-    ctx.body.data = { inventoryList: userInventoryList };
+    const userService = new UserService(userInfo, userDao, updateDate);
+    userService.setInventory(inventory);
+
+    ctx.$res.success({ inventory });
 
     await next();
 }
@@ -88,7 +83,7 @@ module.exports = async (ctx, next) => {
  *         description: 세션 아이디
  *       storyList:
  *         type: array
- *         items: 
+ *         items:
  *           type: string
  *         required: true
  *         description: 동화 아이디

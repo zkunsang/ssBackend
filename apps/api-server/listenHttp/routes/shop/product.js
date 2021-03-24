@@ -1,96 +1,59 @@
 const ReqShopProduct = require('@ss/models/controller/ReqShopProduct');
 
-const ProductLogDao = require('@ss/daoMongo/ProductLogDao');
-const ReceiptDao = require('@ss/daoMongo/ReceiptDao');
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-
-const ProductService = require('@ss/service/ProductService');
-
-const ProductCache = require('@ss/dbCache/ProductCache');
-const ProductRewardCache = require('@ss/dbCache/ProductRewardCache');
-
-const ProductLog = require('@ss/models/apilog/ProductLog');
-
+const SSError = require('@ss/error');
 const ValidateUtil = require('@ss/util/ValidateUtil')
 const PurchaseStatus = ValidateUtil.PurchaseStatus;
 
+const UserService = require('@ss/service/UserService');
+const ProductService = require('@ss/service/ProductService');
 const InventoryService = require('@ss/service/InventoryService');
-const helper = require('@ss/helper');
-const SSError = require('@ss/error');
-const dbMongo = require('@ss/dbMongo');
-
-function makeInventoryList(productRewardList) {
-    return productRewardList.map((item) => item.makeInventoryObject());
-}
-
-function createProductLog(userInfo, productInfo, purchaseDate) {
-    const uid = userInfo.uid;
-    const productId = productInfo.productId;
-    const cost = productInfo.costKr;
-
-    return new ProductLog({ uid, productId, cost, purchaseDate });
-}
 
 module.exports = async (ctx, next) => {
     const purchaseDate = ctx.$date;
     const userInfo = ctx.$userInfo
+    const userDao = ctx.$userDao;
+
     const reqShopProduct = new ReqShopProduct(ctx.request.body);
     ReqShopProduct.validModel(reqShopProduct);
 
-    const uid = userInfo.getUID();
-    const receipt = await ProductService.validateReceipt(uid, reqShopProduct, purchaseDate);
+    const productService = new ProductService(userInfo, purchaseDate);
+
+    const receipt = await productService.validateReceipt(reqShopProduct);
 
     if (receipt.purchaseState === PurchaseStatus.FAIL) {
         ctx.$res.badRequest(SSError.Service.Code.shopReceiptFail);
         return;
     }
 
-    const transactionId = receipt.getTransactionId();
-
-    const receiptDao = new ReceiptDao(ctx.$dbMongo);
-
-    const receiptHistory = await receiptDao.findOne({ transactionId });
+    const receiptHistory = await productService.checkReceipt();
 
     // 이미 처리된 내역이 있으면 
-    if(receiptHistory) {
-        ctx.$res.set({purchaseState: 0});
+    // TODO: error code and data
+    if (receiptHistory) {
+        ctx.$res.set({ purchaseState: 0 });
         ctx.$res.badRequest(SSError.Service.Code.shopAlreadyPurchased);
         return;
     }
 
-    const productId = ProductService.getProductId(receipt.productId);
-    
-    const productInfo = ProductCache.get(productId);
+    const inventoryService = new InventoryService(userInfo, purchaseDate);
+    const userService = new UserService(userInfo, userDao, purchaseDate);
 
-    if (!productInfo) {
-        ctx.$res.badRequest(SSError.Service.Code.shopNoExistProduct);
-        return;
-    }
-    
-    const productRewardList = ProductRewardCache.get(productId);
-    
-    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, purchaseDate);
-    const inventoryService = new InventoryService(userInfo, purchaseDate, inventoryLogDao);
+    const productRewardList = productService.getProductRewardList();
 
-    const inventoryList = makeInventoryList(productRewardList);
-    await inventoryService.processPut(
-        InventoryService.PUT_ACTION.PURCHASE.CASH,
-        inventoryList);
+    const inventoryList = inventoryService.makeInventoryList(productRewardList);
 
-    await receiptDao.insertOne(receipt);
+    inventoryService.putItem(InventoryService.PUT_ACTION.PURCHASE.CASH, {}, inventoryList);
 
-    const productLog = createProductLog(userInfo, productInfo, purchaseDate);
-    helper.fluent.sendProductLog(productLog);
+    const inventory = inventoryService.finalize();
+    userService.setInventory(inventory);
 
-    const productLogDao = new ProductLogDao(ctx.$dbMongo, purchaseDate);
-    await productLogDao.insertOne(productLog);
-    
-    const userInventoryList = await inventoryService.getUserInventoryList();
-    
-    ctx.$res.success({ 
-        inventoryList: userInventoryList,
+    userService.finalize();
+    productService.finalize();
+
+    ctx.$res.success({
+        inventory,
         purchaseState: 0
-     });
+    });
 
     await next();
 }

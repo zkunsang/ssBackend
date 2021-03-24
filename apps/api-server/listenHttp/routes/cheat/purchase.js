@@ -24,33 +24,32 @@ function createProductLog(userInfo, productInfo, purchaseDate) {
 module.exports = async (ctx, next) => {
     const purchaseDate = ctx.$date;
     const userInfo = ctx.$userInfo;
-    
+
     const reqCheatPurchase = new ReqCheatPurchase(ctx.request.body);
     ReqCheatPurchase.validModel(reqCheatPurchase);
-    
+
     const productId = reqCheatPurchase.getProductId();
     const productInfo = ProductCache.get(productId);
 
     if (!productInfo) {
-        ctx.status = 400;
-        ctx.body.data = { message: 'no exist product info' };
+        ctx.$res.badRequest({ message: 'no exist product info' });
         return;
     }
 
     const productRewardList = ProductRewardCache.get(productId);
-    
+
     const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, purchaseDate);
     const inventoryService = new InventoryService(userInfo, purchaseDate, inventoryLogDao);
 
     const inventoryList = makeInventoryList(productRewardList);
     await inventoryService.processPut(
-        InventoryService.PUT_ACTION.CHEAT, 
+        InventoryService.PUT_ACTION.CHEAT,
         inventoryList);
-    
+
     helper.fluent.sendProductLog(createProductLog(userInfo, productInfo, purchaseDate));
-    
+
     const userInventoryList = await inventoryService.getUserInventoryList();
-    
+
     ctx.status = 200;
     ctx.body.data = { inventoryList: userInventoryList };
 
@@ -108,7 +107,7 @@ module.exports = async (ctx, next) => {
  *   common:
  *     id: common
  *     properties:
- *       serverTime: 
+ *       serverTime:
  *         type: number
  *   error:
  *     id: error

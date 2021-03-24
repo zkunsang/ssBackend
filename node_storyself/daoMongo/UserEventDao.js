@@ -4,10 +4,10 @@ const Dao = require('./Dao');
 class UserEventDao extends Dao {
     constructor(connection) {
         super();
-        this.db = connection.storyConnect.db('user');
+        this.db = connection.userConnect.db('user');
         this.collection = this.db.collection('event');
     }
-    
+
     static model = UserEvent;
 
     static requireInsertFieldList() {

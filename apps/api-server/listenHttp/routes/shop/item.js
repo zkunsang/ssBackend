@@ -1,41 +1,43 @@
 const ReqShopItem = require('@ss/models/controller/ReqShopItem');
 
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-
+const UserService = require('@ss/service/UserService');
 const ItemService = require('@ss/service/ItemService');
 const InventoryService = require('@ss/service/InventoryService');
+
+const ItemCache = require('@ss/dbCache/ItemCache');
+const SSError = require('@ss/error');
 
 module.exports = async (ctx, next) => {
     const reqShopItem = new ReqShopItem(ctx.request.body);
     ReqShopItem.validModel(reqShopItem);
-    
+
     const updateDate = ctx.$date;
     const userInfo = ctx.$userInfo;
+    const userDao = ctx.$userDao;
 
     const itemService = new ItemService();
-    
+
     const itemId = reqShopItem.getItemId();
     itemService.getItemList([itemId]);
-    
-    const itemInventory = InventoryService.makeInventoryObject(itemId, 1);
+    itemService.checkPurchaseItem(itemId);
 
-    const { putInventoryList, useInventoryList } 
+    const inventoryService = new InventoryService(userInfo, updateDate);
+
+    const itemInventory = inventoryService.makeInventoryObject(itemId, 1);
+
+    const { putInventoryList, useInventoryList }
         = itemService.getExchangeInventoryInfo([itemInventory]);
 
-    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
-    const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
-    InventoryService.validModel(inventoryService);
+    // inventoryService.checkAlready(putInventoryList);
+    inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.SLOT, {}, useInventoryList);
+    inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.SLOT, {}, putInventoryList);
 
-    inventoryService.processExchange(
-        InventoryService.USE_ACTION.EXCHANGE.SLOT,
-        useInventoryList, 
-        InventoryService.PUT_ACTION.EXCHANGE.SLOT,
-        putInventoryList);
+    const inventory = inventoryService.finalize();
 
-    const userInventoryList = await inventoryService.getUserInventoryList();
+    const userService = new UserService(userInfo, userDao, updateDate);
+    userService.setInventory(inventory);
 
-    ctx.status = 200;
-    ctx.body.data = { inventoryList: userInventoryList };
+    ctx.$res.success({ inventory });
 
     await next();
 }

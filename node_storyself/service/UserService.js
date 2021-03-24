@@ -32,24 +32,41 @@ class UserService extends Service {
 
         // userDao는 context의 첫부분에서 항상 만든다.
         // 그래서 인자로 userDao를 넣는다
-        if(!userDao) {
+        if (!userDao) {
             userDao = new UserDao(dbMongo);
         }
 
         this[Schema.USER_INFO.key] = userInfo;
         this[Schema.USER_DAO.key] = userDao;
         this[Schema.UPDATE_DATE.key] = updateDate;
+
         this[Schema.NEW_USER.key] = false;
         this[Schema.CHANGE.key] = false;
     }
 
-    
+
     async findUser(provider, providerId) {
         const providerInfo = {}
         providerInfo[provider] = providerId;
 
         const userInfo = this[Schema.USER_DAO.key].findOne(providerInfo);
         return userInfo;
+    }
+
+    getInventory() {
+        return this[Schema.USER_INFO.key][Schema.INVENTORY.key];
+    }
+
+    getMail() {
+        return this[Schema.USER_INFO.key][Schema.MAIL.key];
+    }
+
+    getUserDao() {
+        return this[Schema.USER_DAO.key];
+    }
+
+    getUserInfo() {
+        return this[Schema.USER_INFO.key];
     }
 
     setInventory(inventory) {
@@ -86,9 +103,9 @@ class UserService extends Service {
     }
 
     async finalize() {
-        if(!this.isChange()) return false;
+        if (!this.isChange()) return false;
 
-        if(!this.isNewUser()) {
+        if (!this.isNewUser()) {
             const copyUserInfo = Object.assign({ ...this[Schema.USER_INFO.key] });
             const { uid } = copyUserInfo;
 
@@ -96,14 +113,13 @@ class UserService extends Service {
             delete copyUserInfo.email;
             delete copyUserInfo.createDate;
 
-            await this[Schema.USER_DAO.key].updateOne({ uid }, copyUserInfo); 
+
+            await this.getUserDao().updateOne({ uid }, copyUserInfo);
         } else {
-
+            const userInfo = this.getUserInfo();
+            await this.getUserDao().insertOne(userInfo);
         }
-        
     }
-
-    
 }
 
 module.exports = UserService;

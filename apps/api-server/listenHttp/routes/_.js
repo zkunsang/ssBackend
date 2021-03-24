@@ -80,6 +80,7 @@ module.exports = async (ctx, next) => {
 
 function uncaughtError(ctx, err) {
     ctx.body.error = {
+        code: err.code,
         message: err.message,
         additional: err.additionalMessage
     };
@@ -87,6 +88,7 @@ function uncaughtError(ctx, err) {
 
 function processDaoError(ctx, err) {
     ctx.body.error = {
+        code: err.code,
         message: err.message,
         additional: err.additionalMessage
     };
@@ -94,6 +96,7 @@ function processDaoError(ctx, err) {
 
 function processModelError(ctx, err) {
     ctx.body.error = {
+        code: err.code,
         message: err.message,
         additional: err.additionalMessage
     };
@@ -109,6 +112,7 @@ function processServiceError(ctx, err) {
 
 function processControllerError(ctx, err) {
     ctx.body.error = {
+        code: err.code,
         message: err.message,
         additional: err.additionalMessage
     };

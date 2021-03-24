@@ -55,6 +55,14 @@ class ArrayUtil {
     keyBy(array, key) {
         return _.keyBy(array, key);
     }
+
+    map(array, fn) {
+        const _array = [];
+        for (const item of array) {
+            _array.push(fn(item))
+        }
+        return _array;
+    }
 }
 
 module.exports = new ArrayUtil();

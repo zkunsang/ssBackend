@@ -5,13 +5,14 @@ const code = {
     notArray: { code: 30002, name: 'notArray', message: 'it should be array' },
     emptyArray: { code: 30003, name: 'emptyArray', message: 'not allow empty array' },
     wrongArrayObject: { code: 30004, name: 'wrongArrayObject', message: 'array includes wrong object' },
-    
+
     putItemNoExistItem: { code: 31001, name: 'putItemNoExistItem', message: 'put item no exist item' },
     putItemOverMaxQny: { code: 31002, name: 'putItemOverMaxQny', message: 'over max qny' },
     useItemNotEnoughItem: { code: 31003, name: 'putItemNotEnughItem', message: 'not enough Item' },
     useItemNoUseableItem: { code: 31004, name: 'useItemNoUseableItem', message: 'no useable item' },
     purchaseNotPossible: { code: 31005, name: 'purchaseNotPossible', message: 'purchase not possible' },
-    
+    alreadyHaveItem: { code: 31006, name: 'alreadyHaveItem', message: 'alreadyHaveItem' },
+
     noExistItemList: { code: 32001, name: 'noExistItemList', message: 'found not exist item' },
     noExistStoryList: { code: 32002, name: 'noExistStoryList', message: 'found not exist story' },
 
@@ -20,7 +21,7 @@ const code = {
 
     noExistSession: { code: 34001, name: 'noExistSession', message: 'noExistSession' },
     serviceUnavailable: { code: 34002, name: 'serviceUnavailable', message: 'serviceUnavailable' },
-    prepareService: { code: 34003, name: 'prepareService', message: 'prepareService' },    
+    prepareService: { code: 34003, name: 'prepareService', message: 'prepareService' },
 
     couponNoExist: { code: 35001, name: 'couponNoExist', message: 'couponNoExist' },
     couponAlreadyUsed: { code: 35002, name: 'couponAlreadyUsed', message: 'couponAlreadyUsed' },
@@ -31,25 +32,31 @@ const code = {
     shopReceiptFail: { code: 36001, name: 'shopReceiptFail', message: 'shopReceiptFail' },
     shopAlreadyPurchased: { code: 36002, name: 'shopAlreadyPurchased', message: 'shopAlreadyPurchased' },
     shopNoExistProduct: { code: 36003, name: 'shopNoExistProduct', message: 'shopNoExistProduct' },
+    shopNoExistProductReward: { code: 36004, name: 'shopNoExistProductReward', message: 'shopNoExistProductReward' },
 
     storyNoExist: { code: 37001, name: 'storyNoExist', message: 'storyNoExist' },
-    
-    noExistMail: {code: 38001, name: 'noExistMail', message: 'noExistMail'}
+
+    noExistMail: { code: 38001, name: 'noExistMail', message: 'noExistMail' },
+    alreadyReadMail: { code: 38002, name: 'alreadyReadMail', message: 'alreadyReadMail' },
+    throwAlreadNotReadMail: { code: 38003, name: 'throwAlreadNotReadMail', message: 'throwAlreadNotReadMail' },
+
+    noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' }
+
 }
 
 class ServiceError extends RuntimeError {
     constructor(errObj, additionalMessage) {
         super('ServiceError', errObj);
         this.additionalMessage = additionalMessage;
-        
+
     }
 }
 
 function createErrorCodeMap() {
-    const codeKeyList = Object.keys(code); 
+    const codeKeyList = Object.keys(code);
     codeMap = {};
 
-    for(const codeKey of codeKeyList) {
+    for (const codeKey of codeKeyList) {
         this.codeMap[code[codeKey].code] = code[codeKey];
     }
 

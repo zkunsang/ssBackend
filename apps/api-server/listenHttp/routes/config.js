@@ -2,13 +2,10 @@ const ss = require('@ss');
 const apiConfig = ss.configs.apiServer;
 
 module.exports = async (ctx, next) => {
-    ctx.status = 200;
-    ctx.body.data = {
-        url: apiConfig.cdnUrl,
-        version: apiConfig.appVersion,
-        policyVersion: apiConfig.policyVersion
-    };
-
+    const url = apiConfig.cdnUrl;
+    const version = apiConfig.appVersion;
+    const policyVersion = apiConfig.policyVersion;
+    ctx.$res.success({ url, version, policyVersion });
     await next();
 }
 

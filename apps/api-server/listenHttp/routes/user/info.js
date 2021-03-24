@@ -1,22 +1,13 @@
-
 const ReqUserInfo = require('@ss/models/controller/ReqUserInfo');
-const InventoryDao = require('@ss/daoMongo/InventoryDao');
-
 
 module.exports = async (ctx, next) => {
     const reqUserInfo = new ReqUserInfo(ctx.request.body);
     ReqUserInfo.validModel(reqUserInfo);
 
-    const dbMongo = ctx.$dbMongo;
     const userInfo = ctx.$userInfo;
+    const inventory = userInfo.getInventory();
 
-    const uid = userInfo.getUID();
-
-    const inventoryDao = new InventoryDao(dbMongo);
-    const inventoryList = await inventoryDao.findMany({uid});
-
-    ctx.status = 200;
-    ctx.body.data = { inventoryList };
+    ctx.$res.success({ inventory });
 
     await next();
 };
@@ -35,7 +26,7 @@ module.exports = async (ctx, next) => {
  *      summary: 유저 인포
  *      notes: |
  *        <br><b>requestParam</b>
- *        <br>sessionId: 세션 아이디 
+ *        <br>sessionId: 세션 아이디
  *      responseClass: resUserInfo
  *      nickname: config
  *      consumes:
@@ -63,12 +54,12 @@ module.exports = async (ctx, next) => {
  *     properties:
  *       inventoryList:
  *         type: array
- *         items: 
+ *         items:
  *           type: inventory
  *   inventory:
  *     id: inventory
  *     properties:
- *       itemId: 
+ *       itemId:
  *         type: String
  *       itemQny:
  *         type: number
@@ -78,5 +69,5 @@ module.exports = async (ctx, next) => {
  *         type: number
  *       endDate:
  *         type: number
- * 
+ *
  * */

@@ -9,7 +9,7 @@ const Schema = {
     UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
 }
 
-class StoryTempEvent extends Model {
+class StoryEvent extends Model {
     constructor({ uid, storyId, updateDate }) {
         super();
 
@@ -19,5 +19,5 @@ class StoryTempEvent extends Model {
     }
 }
 
-module.exports = StoryTempEvent;
+module.exports = StoryEvent;
 module.exports.Schema = Schema;

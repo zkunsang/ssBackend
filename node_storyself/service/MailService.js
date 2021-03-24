@@ -109,7 +109,9 @@ class MailService extends Service {
     }
 
     putEventMailList(eventMailList) {
-        for(const eventMail of eventMailList) {
+        if (!eventMailList) return;
+
+        for (const eventMail of eventMailList) {
             this.sendMail(eventMail);
         }
 
@@ -121,8 +123,12 @@ class MailService extends Service {
         const uid = this.getUID();
         const date = this.getUpdateDate();
 
-        if(!userMail[mailId]) {
+        if (!userMail[mailId]) {
             this.throwNoExitMail(uid, mailId);
+        }
+
+        if (userMail[mailId].status === MailStatus.READ) {
+            this.throwAlreadReadMail(uid, mailId);
         }
 
         // 아이템 처리
@@ -132,7 +138,7 @@ class MailService extends Service {
         userMail[mailId].status = MailStatus.READ;
         const mailReadLog = new MailReadLog({ uid, date, mailId });
         this.pushReadLog(mailReadLog);
-        
+
         return { userMail, itemList, itemInfo };
     }
 
@@ -141,13 +147,17 @@ class MailService extends Service {
         const uid = this.getUID();
         const date = this.getUpdateDate();
 
-        if(!userMail[mailId]) {
+        if (!userMail[mailId]) {
             this.throwNoExitMail(uid, mailId);
         }
-        
+
+        if (!userMail[mailId].status === MailStatus.SEND) {
+            this.throwAlreadNotReadMail(uid, mailId);
+        }
+
         userMail[mailId].status = MailStatus.DELETE;
 
-        const mailDelLog = new MailDelLog({uid, date, delId, status: MailStatus.DELETE, mailId })
+        const mailDelLog = new MailDelLog({ uid, date, delId, status: MailStatus.DELETE, mailId })
         this.pushDelLog(mailDelLog);
 
         delete userMail[mailId];
@@ -164,16 +174,16 @@ class MailService extends Service {
 
     logRead() {
         const readLog = this.getReadLog();
-        if(readLog.length <= 0) return;
+        if (readLog.length <= 0) return;
 
-        
+
         const mailReadLogDao = new MailReadLogDao(dbMongo, this.getUpdateDate());
         mailReadLogDao.insertMany(readLog);
     }
 
     logSend() {
         const sendLog = this.getSendLog();
-        if(sendLog.length <= 0) return;
+        if (sendLog.length <= 0) return;
 
         const mailSendLogDao = new MailSendLogDao(dbMongo, this.getUpdateDate());
         mailSendLogDao.insertMany(sendLog);
@@ -181,7 +191,7 @@ class MailService extends Service {
 
     logDel() {
         const delLog = this.getDelLog();
-        if(delLog.length <= 0) return;
+        if (delLog.length <= 0) return;
 
         const mailDelLogDao = new MailDelLogDao(dbMongo, this.getUpdateDate());
         mailDelLogDao.insertMany(delLog);
@@ -192,7 +202,19 @@ class MailService extends Service {
             SSError.Service.Code.noExistMail,
             `${uid} - ${mailId}`);
     }
-    
+
+    throwAlreadReadMail(uid, mailId) {
+        throw new SSError.Service(
+            SSError.Service.Code.alreadyReadMail,
+            `${uid} - ${mailId}`);
+    }
+
+    throwAlreadNotReadMail(uid, mailId) {
+        throw new SSError.Service(
+            SSError.Service.Code.alreadyReadMail,
+            `${uid} - ${mailId}`);
+    }
+
 }
 module.exports = MailService;
 module.exports.Schema = Schema;

@@ -5,7 +5,7 @@ const Dao = require('./Dao');
 class VoiceLogDao extends Dao {
     constructor(connection, date) {
         super();
-        this.db = connection.storyConnect.db('log');
+        this.db = connection.userConnect.db('log');
         this.collection = this.db.collection(`voice_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 

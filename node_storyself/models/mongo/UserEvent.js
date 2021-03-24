@@ -15,6 +15,14 @@ class UserEvent extends Model {
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
         this[Schema.EVENT_INFO.key] = ValidateUtil.setNullUndefined(eventInfo);
     }
+
+    setEventInfo(eventId, updateDate) {
+        this[Schema.EVENT_INFO.key][eventId] = updateDate;
+    }
+
+    hasEventInfo(eventId) {
+        return this[Schema.EVENT_INFO.key][eventId];
+    }
 }
 
 module.exports = UserEvent;

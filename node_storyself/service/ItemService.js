@@ -5,10 +5,27 @@ const ItemCache = require('../dbCache/ItemCache');
 const ItemMaterialCache = require('../dbCache/ItemMaterialCache');
 
 const SSError = require('../error');
+const ValidateUtil = require('../util/ValidateUtil');
+const ValidType = ValidateUtil.ValidType;
+
+const User = require('../models/mongo/User');
+
+const Schema = {
+    USER_INFO: { key: 'userInfo', required: true, type: ValidType.OBJECT, validObject: User },
+    UID: { key: 'uid', required: false, type: ValidType.STRING },
+}
 
 class ItemService extends Service {
-    constructor() {
+    constructor(userInfo) {
         super();
+
+        const { uid } = userInfo;
+        this[Schema.USER_INFO.key] = userInfo;
+        this[Schema.UID.key] = uid;
+    }
+
+    getUID() {
+        return this[Schema.UID.key];
     }
 
     getItemList(itemList) {
@@ -17,19 +34,19 @@ class ItemService extends Service {
     }
 
     filterItemList(itemList) {
-        const notExistItem = [];
+        const noExistItem = [];
         const existItem = [];
 
         for (const itemId of itemList) {
             const itemData = ItemCache.get(itemId);
             if (!itemData) {
-                notExistItem.push(itemId);
+                noExistItem.push(itemId);
             }
             existItem.push(itemData);
         }
 
-        if (notExistItem.length > 0) {
-            throw new SSError.Service(SSError.Service.Code.noExistItemList, `[${notExistItem.join(',')}] not exist item`)
+        if (noExistItem.length > 0) {
+            throw new SSError.Service(SSError.Service.Code.noExistItemList, `[${noExistItem.join(',')}] not exist item`)
         }
 
         return existItem;
@@ -56,18 +73,52 @@ class ItemService extends Service {
 
         return { useInventoryList, putInventoryList }
     }
-    
+
     applyCoupon(useInventoryList, couponId) {
-        for(const inventory of useInventoryList) {
+        for (const inventory of useInventoryList) {
             this.applyCouponInventory(inventory, couponId);
         }
     }
 
     applyCouponInventory(inventory, couponId) {
         // TODO: 할인 쿠폰
-        if(couponId === "defaultSale") {
+        if (couponId === "defaultSale") {
             inventory.setItemQny(parseInt(inventory.getItemQny() * 0.9));
         }
+    }
+
+    checkPurchaseItem(itemId) {
+        const itemInfo = ItemCache.get(itemId);
+
+        if (!itemInfo) {
+            this.throwNoExistItem(itemId);
+            return;
+        }
+
+        // 구매 가능한 상태가 아니면 에러 
+        if (itemInfo.status !== 1) {
+            this.throwNoPurchaseImpossible(itemId);
+            return;
+        }
+    }
+
+    chekcPurchaseItemList(itemList) {
+        itemList.map((item) => this.checkPurchaseItem(item));
+    }
+
+
+    throwNoExistItem(itemId) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.noExistItemList,
+            `[${uid}]: itemId(${itemId})`);
+    }
+
+    throwNoPossiblePurchase(itemId) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.purchaseNotPossible,
+            `[${uid}]: itemId(${itemId})`);
     }
 }
 

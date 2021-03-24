@@ -1,25 +1,18 @@
 const ReqLogPicture = require('@ss/models/controller/ReqLogPicture');
 
-const PictureLogDao = require('@ss/daoMongo/PictureLogDao');
-const PictureLog = require('@ss/models/apilog/PictureLog');
+
 
 module.exports = async (ctx, next) => {
     const reqLogPicture = new ReqLogPicture(ctx.request.body);
     ReqLogPicture.validModel(reqLogPicture);
+
     const userInfo = ctx.$userInfo;
-    
-    const uid = userInfo.uid;
     const logDate = ctx.$date;
-    const success = reqLogPicture.getSuccess();
-    const debugLog = reqLogPicture.getDebugLog();
-    const location = reqLogPicture.getLocation();
-    const errCode = reqLogPicture.getErrCode();
-    
-    const pictureLogDao = new PictureLogDao(ctx.$dbMongo, ctx.$date);
-    pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location }));
-    
-    ctx.status = 200;
-    ctx.body.data = {  };
+
+    const logService = new LogService(userInfo, logDate);
+    logService.sendPictureLog(reqLogPicture);
+
+    ctx.$res.success({});
 
     await next();
 }

@@ -20,7 +20,7 @@ class QuestStoryCacheModel {
         this.questStoryMap = null;
     }
 
-    async loadData({questStoryDao, questStoryGoalDao, questStoryRewardDao}) {
+    async loadData({ questStoryDao, questStoryGoalDao, questStoryRewardDao }) {
         this.questStoryList = await questStoryDao.findAll();
         this.questStoryGoalList = await questStoryGoalDao.findAll();
         this.questStoryRewardList = await questStoryRewardDao.findAll();
@@ -31,7 +31,7 @@ class QuestStoryCacheModel {
 
         const storyList = Array.from(new Set(this.questStoryList.map((item) => item.storyId)));
 
-        for(const storyId of storyList) {
+        for (const storyId of storyList) {
             const questStoryList = this.questStoryMap[storyId];
             const questStoryGoalList = this.questStoryGoalMap[storyId];
             const questStoryRewardList = this.questStoryRewardMap[storyId];
@@ -53,22 +53,26 @@ class QuestStoryCacheModel {
         return this.questStoryMap[storyId];
     }
 
+    getQuestInfo(storyId, questId) {
+        return this.questStoryMap[storyId].questMap[questId];
+    }
+
     getQuestListByTargetId(storyId, actionId) {
-        if(!this.questStoryMap[storyId]) 
+        if (!this.questStoryMap[storyId])
             return null;
 
         return this.questStoryMap[storyId].questTargetMap[actionId];
     }
 
     getQuestRewardList(storyId, questId) {
-        if(!this.questStoryMap[storyId]) 
+        if (!this.questStoryMap[storyId])
             return null;
 
         return this.questStoryMap[storyId].questRewardMap[questId];
     }
 
     getQuestGoalList(storyId, questId) {
-        if(!this.questStoryMap[storyId]) 
+        if (!this.questStoryMap[storyId])
             return null;
 
         return this.questStoryMap[storyId].questGoalMap[questId];
@@ -76,18 +80,18 @@ class QuestStoryCacheModel {
 }
 
 class QuestStoryCache extends Cache {
-    constructor() {    
+    constructor() {
         super();
         this.cacheModel = QuestStoryCacheModel;
         this.tableId = tableId;
-    }   
-    
+    }
+
     async ready() {
         const questStoryDao = new QuestStoryDao(dbMongo);
         const questStoryGoalDao = new QuestStoryGoalDao(dbMongo);
         const questStoryRewardDao = new QuestStoryRewardDao(dbMongo);
-        
-        this.dao = {questStoryDao, questStoryGoalDao, questStoryRewardDao};
+
+        this.dao = { questStoryDao, questStoryGoalDao, questStoryRewardDao };
     }
 
     getQuestListByStoryId(storyId) {
@@ -104,6 +108,10 @@ class QuestStoryCache extends Cache {
 
     getQuestGoalList(storyId, questId) {
         return this.currentCacheModel.getQuestGoalList(storyId, questId);
+    }
+
+    getQuestInfo(storyId, questId) {
+        return this.currentCacheModel.getQuestInfo(storyId, questId);
     }
 }
 

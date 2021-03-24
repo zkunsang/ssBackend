@@ -1,36 +1,35 @@
 const ReqStoryStart = require('@ss/models/controller/ReqStoryStart');
 
-const StoryLogDao = require('@ss/daoMongo/StoryLogDao');
-
-const StoryLog = require('@ss/models/mongo/StoryLog');
+const StoryService = require('@ss/service/StoryService');
 
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
-const shortid = require('shortid');
+const ArrayUtil = require('@ss/util/ArrayUtil');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;
-    
+
     const reqStoryStart = new ReqStoryStart(ctx.request.body);
     ReqStoryStart.validModel(reqStoryStart);
 
     const storyId = reqStoryStart.getStoryId();
     const storyInfo = StoryCache.get(storyId);
 
-    if(!storyInfo) {
+    if (!storyInfo) {
         ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
         return;
     }
 
     const userInfo = ctx.$userInfo;
 
-    const uid = userInfo.uid;
-    const type = StoryLog.StoryLogType.START;
+    const storyService = new StoryService(userInfo, updateDate);
 
-    const storyLogDao = new StoryLogDao(ctx.$dbMongo, updateDate);
-    
-    await storyLogDao.insertOne(new StoryLog({ uid, storyId, updateDate, type }));
-    const startKey = shortid.generate();
+    storyService.checkHasStory(storyId);
+    storyService.startLog(storyId);
+    const startKey = storyService.generateStartKey();
+
+    await storyService.finalize();
+
     ctx.$res.success({ startKey });
     await next();
 }
@@ -86,7 +85,7 @@ module.exports = async (ctx, next) => {
  *     properties:
  *       itemList:
  *         type: array
- *         items: 
+ *         items:
  *           type: item
  *       itemMaterialList:
  *         type: array
@@ -141,7 +140,7 @@ module.exports = async (ctx, next) => {
  *     properties:
  *       productId:
  *         type: String
- *       productType: 
+ *       productType:
  *         type: String
  *       cost:
  *         type: number
@@ -156,9 +155,9 @@ module.exports = async (ctx, next) => {
  *   productGroup:
  *     id: productGroup
  *     properties:
- *       groupId: 
+ *       groupId:
  *         type: String
- *       startDate: 
+ *       startDate:
  *         type: number
  *       endDate:
  *         type: number
@@ -201,5 +200,5 @@ module.exports = async (ctx, next) => {
  *         type: String
  *       thumbnailVersion:
  *         type: number
- * 
+ *
  * */

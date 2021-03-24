@@ -1,16 +1,20 @@
 const ValidateUtil = require('../util/ValidateUtil');
 const ValidType = ValidateUtil.ValidType;
-const Provider =ValidateUtil.Provider;
-const Platform =ValidateUtil.Platform;
-const AppStore =ValidateUtil.AppStore;
+const Provider = ValidateUtil.Provider;
+const Platform = ValidateUtil.Platform;
+const AppStore = ValidateUtil.AppStore;
 const UserStatus = ValidateUtil.UserStatus;
 
 const Service = require('../service/Service');
 const User = require('../models/mongo/User');
-const dbMongo = require('../dbMongo');
 
+const dbMongo = require('../dbMongo');
+const dbRedisSS = require('../dbRedisSS');
+
+const UserCountDao = require('../daoRedis/UserCountDao');
 const LoginLogDao = require('../daoMongo/LoginLogDao');
 const LoginLog = require('../models/apilog/LoginLog');
+
 
 const Schema = {
     REQ_AUTH_LOGIN: { key: 'reqAuthLogin', required: true, type: ValidType.OBJECT },
@@ -26,7 +30,7 @@ const Schema = {
     GAME_LANGUAGE: { key: 'gameLanguage', required: true, type: ValidType.STRING },
     OS_VERSION: { key: 'osVersion', required: true, type: ValidType.STRING },
     FCM_TOKEN: { key: 'fcmToken', required: false, type: ValidType.STRING },
-    
+
     LOGIN_DATE: { key: 'loginDate', required: true, type: ValidType.UNIX_TIMESTAMP },
     IP: { key: "ip", required: true, type: ValidType.STRING }
 }
@@ -49,7 +53,7 @@ class AuthService extends Service {
             gameLanguage,
             osVersion,
             fcmToken } = reqAuthLogin;
-        
+
         this[Schema.EMAIL.key] = email;
         this[Schema.PROVIDER.key] = provider;
         this[Schema.PROVIDER_ID.key] = providerId;
@@ -69,7 +73,7 @@ class AuthService extends Service {
         const loginDate = this.getLoginDate();
         const reqAuthLogin = this.getReqAuthLogin();
         const ip = this.getIP();
-        
+
         const loginLog = new LoginLog(reqAuthLogin, { ip, loginDate });
         // helper.fluent.sendLog('login', loginLog);
 
@@ -115,15 +119,24 @@ class AuthService extends Service {
      */
     login(userInfo, sessionId) {
         const oldSessionId = userInfo.getSessionId();
-        
+        const loginDate = this.getLoginDate();
+
         userInfo.setSessionId(sessionId);
-        userInfo.setLastLoginDate(this.getLoginDate());
+        userInfo.setLastLoginDate(loginDate);
 
         return oldSessionId;
     }
 
-    signIn(uid) {
+    async signIn(sessionId) {
         const userInfo = new User(this.getReqAuthLogin());
+
+        const userCountDao = new UserCountDao(dbRedisSS);
+        const userCountInfo = await userCountDao.incr();
+
+        const uid = userCountInfo.toString();
+        const loginDate = this.getLoginDate();
+        const provider = this.getProvider();
+        const providerId = this.getProviderId();
 
         userInfo.setUID(uid);
         userInfo.setStatus(UserStatus.NONE);

@@ -1,64 +1,30 @@
 const ReqQuestAccept = require('@ss/models/controller/ReqQuestAccept');
 
-const UserQuestStoryDao = require('@ss/daoMongo/UserQuestStoryDao');
-const QuestAcceptLogDao = require('@ss/daoMongo/QuestAcceptLogDao');
-const QuestAcceptLog = require('@ss/models/apilog/QuestAcceptLog');
-
-const UserQuestStory = require('@ss/models/mongo/UserQuestStory');
-const dbMongo = require('@ss/dbMongo');
-
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
+
+const QuestService = require('@ss/service/QuestService');
 
 module.exports = async (ctx, next) => {
     const reqQuestCheck = new ReqQuestAccept(ctx.request.body);
     ReqQuestAccept.validModel(reqQuestCheck);
-    
+
     const logDate = ctx.$date;
     const userInfo = ctx.$userInfo;
 
-    const uid = userInfo.uid;
     const storyId = reqQuestCheck.getStoryId();
     const questId = reqQuestCheck.getQuestId();
 
     const storyData = StoryCache.get(storyId);
 
-    if(!storyData) {
+    if (!storyData) {
         ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
         return;
     }
 
-    // 퀘스트 수락 로그
-    const userQuestStoryDao = new UserQuestStoryDao(ctx.$dbMongo);
-    const userQuestStory = await userQuestStoryDao.findOne({ storyId, uid });
-
-    let questAccepted = false;
-    if(userQuestStory == null) {
-        questAccepted = true;
-        const questAccept = {};
-        questAccept[questId] = logDate;
-        await userQuestStoryDao.insertOne(new UserQuestStory({ storyId, uid, questAccept }));
-    }
-    else {
-        let userQuestAccept = userQuestStory.getQuestAccept();
-    
-        if(userQuestAccept == null || userQuestAccept[questId] == null) {
-            questAccepted = true;
-            userQuestAccept = userQuestAccept || {};
-            userQuestAccept[questId] = logDate;
-            const updateObject = {
-                questAccept: userQuestAccept
-            }
-            
-            const _id = userQuestStory.getObjectId();
-            await userQuestStoryDao.updateOne({ _id }, {...updateObject});
-        }
-    }
-    
-    if(questAccepted) {
-        const questAcceptLogDao = new QuestAcceptLogDao(dbMongo, logDate);
-        await questAcceptLogDao.insertOne(new QuestAcceptLog({uid, storyId, questId, logDate}));
-    }
+    const questService = new QuestService(userInfo, logDate);
+    await questService.acceptQuest(storyId, questId);
+    await questService.finalize();
 
     ctx.$res.success({})
 

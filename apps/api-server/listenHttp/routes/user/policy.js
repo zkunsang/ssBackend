@@ -1,5 +1,5 @@
 const ss = require('@ss');
-const UserDao =  require('@ss/daoMongo/UserDao');
+const UserDao = require('@ss/daoMongo/UserDao');
 const DataTableCache = require('@ss/dbCache/DataTableCache');
 const ReqUserPolicy = require('@ss/models/controller/ReqUserPolicy');
 
@@ -19,8 +19,7 @@ module.exports = async (ctx, next) => {
     const userDao = new UserDao(ctx.$dbMongo);
     await userDao.updateOne({ uid: userInfo.getUID() }, { policyVersion: policyVersion.version });
 
-    ctx.status = 200;
-    ctx.body.data = {};
+    ctx.res.success({});
 
     await next();
 };
