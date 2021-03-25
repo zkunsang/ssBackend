@@ -44,6 +44,13 @@ const reqAuthLogin = {
 };
 
 describe('storyData', function () {
+    const UserTestUtil = require('../util/UserTestUtil');
+    let userTestUtil = null;
+    before(async () => {
+        userTestUtil = new UserTestUtil();
+        userTestUtil.findAndDeleteUser(provider, providerId);
+    })
+
     describe('auth fail', () => {
         it('sessionId', async () => {
             const params = {};

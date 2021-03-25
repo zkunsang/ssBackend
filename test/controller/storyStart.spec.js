@@ -45,6 +45,13 @@ const reqAuthLogin = {
 };
 
 describe('storyStart', function () {
+    const UserTestUtil = require('../util/UserTestUtil');
+    let userTestUtil = null;
+    before(async () => {
+        userTestUtil = new UserTestUtil();
+        userTestUtil.findAndDeleteUser(provider, providerId);
+    })
+
     describe('auth fail', () => {
         it('sessionId', async () => {
             const params = {};
@@ -97,7 +104,7 @@ describe('storyStart', function () {
 
             const result = await testRequest(urlStoryStart, params);
             const { error } = result.body;
-            assert.equal(error.code, ServiceError.Code.needPurcahse.code);
+            assert.equal(error.code, ServiceError.Code.needPurchase.code);
         });
 
         it('success', async () => {

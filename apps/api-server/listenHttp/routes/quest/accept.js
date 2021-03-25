@@ -4,6 +4,7 @@ const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
 
 const QuestService = require('@ss/service/QuestService');
+const StoryService = require('@ss/service/StoryService');
 
 module.exports = async (ctx, next) => {
     const reqQuestCheck = new ReqQuestAccept(ctx.request.body);
@@ -22,7 +23,11 @@ module.exports = async (ctx, next) => {
         return;
     }
 
+    const storyService = new StoryService(userInfo, logDate);
+    storyService.checkHasStory(storyId);
+
     const questService = new QuestService(userInfo, logDate);
+
     await questService.acceptQuest(storyId, questId);
     await questService.finalize();
 

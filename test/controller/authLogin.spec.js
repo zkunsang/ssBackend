@@ -29,6 +29,13 @@ async function testRequest(params) {
 }
 
 describe('AuthLogin', function () {
+    const UserTestUtil = require('../util/UserTestUtil');
+    let userTestUtil = null;
+    before(async () => {
+        userTestUtil = new UserTestUtil();
+        userTestUtil.findAndDeleteUser(provider, providerId);
+    })
+
     describe('fail - required field', () => {
         describe('required field', () => {
             it('email', async () => {

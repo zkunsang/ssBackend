@@ -21,6 +21,7 @@ after(() => {
 
 const urlQuestAccept = '/quest/accept';
 const urlAuthLogin = '/auth/login';
+const urlShopStory = '/shop/story';
 
 async function testRequest(url, params) {
     return await request.post(url)
@@ -45,6 +46,13 @@ const reqAuthLogin = {
 };
 
 describe('userCheck', function () {
+    const UserTestUtil = require('../util/UserTestUtil');
+    let userTestUtil = null;
+    before(async () => {
+        userTestUtil = new UserTestUtil();
+        userTestUtil.findAndDeleteUser(provider, providerId);
+    })
+
     describe('auth fail', () => {
         it('sessionId', async () => {
             const params = {};
@@ -67,7 +75,10 @@ describe('userCheck', function () {
 
     describe('auth success', () => {
         let sessionId = null;
+
         before(async () => {
+
+
             const result = await testRequest(urlAuthLogin, reqAuthLogin);
             const { data } = result.body;
             sessionId = data.sessionId;
@@ -114,7 +125,7 @@ describe('userCheck', function () {
             assert.equal(error.code, ServiceError.Code.noExistStoryQuest.code);
         });
 
-        it('noExistStoryQuest', async () => {
+        it('success', async () => {
             const storyId = 'PussInBoots';
             const questId = '1'
             const params = { sessionId, storyId, questId };
@@ -123,6 +134,36 @@ describe('userCheck', function () {
             const { error } = result.body;
             assert.equal(error, undefined);
         });
+
+        it('needPurchase', async () => {
+            const storyId = 'nutcracker';
+            const questId = '1'
+            const params = { sessionId, storyId, questId };
+
+            const result = await testRequest(urlQuestAccept, params);
+            const { error } = result.body;
+            assert.equal(error.code, ServiceError.Code.needPurchase.code);
+        });
+
+        describe('purchase', async () => {
+            before(async () => {
+                const storyList = ['nutcracker'];
+                const params = { sessionId, storyList };
+                const result = await testRequest(urlShopStory, params);
+                const { data } = result.body;
+                const { inventory } = data;
+            })
+
+            it('noExistStoryQuest', async () => {
+                const storyId = 'nutcracker';
+                const questId = '1'
+                const params = { sessionId, storyId, questId };
+
+                const result = await testRequest(urlQuestAccept, params);
+                const { error } = result.body;
+                assert.equal(error.code, ServiceError.Code.noExistStoryQuest.code);
+            })
+        })
     });
 })
 

@@ -314,7 +314,7 @@ class QuestService extends Service {
     throwNoExistQuest(uid, storyId, questId) {
         throw new SSError.Service(
             SSError.Service.Code.noExistStoryQuest,
-            `${uid} - ${storyId}, ${questId}`);
+            `[${uid}] ${storyId}, ${questId}`);
     }
 }
 

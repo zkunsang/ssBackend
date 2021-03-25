@@ -144,7 +144,7 @@ class StoryService extends Service {
     throwNoPossessionItem(storyId) {
         const uid = this.getUID();
         throw new SSError.Service(
-            SSError.Service.Code.needPurcahse,
+            SSError.Service.Code.needPurchase,
             `[${uid}]: [${storyId}] need purchase`)
     }
 }
