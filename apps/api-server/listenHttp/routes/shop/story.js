@@ -37,6 +37,7 @@ module.exports = async (ctx, next) => {
 
     const userService = new UserService(userInfo, userDao, updateDate);
     userService.setInventory(inventory);
+    userService.finalize();
 
     ctx.$res.success({ inventory });
 

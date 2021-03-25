@@ -46,7 +46,7 @@ class ItemService extends Service {
         }
 
         if (noExistItem.length > 0) {
-            throw new SSError.Service(SSError.Service.Code.noExistItemList, `[${noExistItem.join(',')}] not exist item`)
+            this.throwNoExistItemList(noExistItem);
         }
 
         return existItem;
@@ -102,7 +102,7 @@ class ItemService extends Service {
         }
     }
 
-    chekcPurchaseItemList(itemList) {
+    checkPurchaseItemList(itemList) {
         itemList.map((item) => this.checkPurchaseItem(item));
     }
 
@@ -114,12 +114,21 @@ class ItemService extends Service {
             `[${uid}]: itemId(${itemId})`);
     }
 
+    throwNoExistItemList(noExistItem) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.noExistItemList,
+            `[${uid}] - [${noExistItem.join(',')}] not exist item`)
+    }
+
     throwPurchaseImpossible(itemId) {
         const uid = this.getUID();
         throw new SSError.Service(
             SSError.Service.Code.purchaseNotPossible,
             `[${uid}]: itemId(${itemId})`);
     }
+
+
 }
 
 module.exports = ItemService;

@@ -72,11 +72,13 @@ class StoryService extends Service {
         }
 
         if (noExistStory.length > 0) {
-            throw new SSError.Service(SSError.Service.Code.noExistItemList, `[${noExistStory.join(',')}] not exist story`)
+            this.throwNoExistItemList(noExistStory);
         }
 
         return existStory;
     }
+
+
 
     startLog(storyId) {
         const uid = this.getUID();
@@ -130,6 +132,13 @@ class StoryService extends Service {
             SSError.Service.Code.noExistStoryList,
             `[${uid}]: storyId(${itemId})`
         )
+    }
+
+    throwNoExistItemList(noExistStory) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.noExistItemList,
+            `[${uid}]: [${noExistStory.join(',')}] not exist story`)
     }
 }
 
