@@ -97,7 +97,7 @@ class ItemService extends Service {
 
         // 구매 가능한 상태가 아니면 에러 
         if (itemInfo.status !== 1) {
-            this.throwNoPurchaseImpossible(itemId);
+            this.throwPurchaseImpossible(itemId);
             return;
         }
     }
@@ -114,7 +114,7 @@ class ItemService extends Service {
             `[${uid}]: itemId(${itemId})`);
     }
 
-    throwNoPossiblePurchase(itemId) {
+    throwPurchaseImpossible(itemId) {
         const uid = this.getUID();
         throw new SSError.Service(
             SSError.Service.Code.purchaseNotPossible,

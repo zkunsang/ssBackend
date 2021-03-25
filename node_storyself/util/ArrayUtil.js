@@ -4,8 +4,8 @@ class ArrayUtil {
     constructor() { }
 
     compareArrayByKey(arrayBefore, arrayAfter, key) {
-        const mapBefore = _.keyBy(arrayBefore, key);
-        const mapAfter = _.keyBy(arrayAfter, key);
+        const mapBefore = this.keyBy(arrayBefore, key);
+        const mapAfter = this.keyBy(arrayAfter, key);
 
         return this.compareArrayByKeyWithMap(mapBefore, mapAfter, arrayBefore, arrayAfter, key)
     }
@@ -57,11 +57,7 @@ class ArrayUtil {
     }
 
     map(array, fn) {
-        const _array = [];
-        for (const item of array) {
-            _array.push(fn(item))
-        }
-        return _array;
+        return array.map(fn);
     }
 }
 

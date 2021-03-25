@@ -81,8 +81,8 @@ class InventoryService extends Service {
 
         const { inventory, uid } = userInfo;
 
-        this[Schema.INVENTORY.key] = inventory ? ArrayUtil.map(inventory, (item) => new Inventory(item)) : [];
-        this[Schema.INVENTORY_MAP.key] = ArrayUtil.keyBy(inventory, "itemId");
+        this[Schema.INVENTORY.key] = (inventory ? ArrayUtil.map(inventory, (item) => new Inventory(item)) : []);
+        this[Schema.INVENTORY_MAP.key] = ArrayUtil.keyBy(this[Schema.INVENTORY.key], "itemId");
         this[Schema.UID.key] = uid;
 
         this[Schema.PUT_LIST.key] = [];

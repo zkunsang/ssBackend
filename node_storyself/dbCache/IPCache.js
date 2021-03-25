@@ -4,7 +4,7 @@ const IPDao = require('../daoMongo/IPDao');
 const IP = require('../models/mongo/IP');
 
 const Cache = require('./Cache');
-const _ = require('lodash');
+const ArrayUtil = require('../util/ArrayUtil');
 
 const tableId = 'ip';
 
@@ -20,21 +20,21 @@ class IpModel {
     async loadData(ipDao) {
         this.ipList = await ipDao.findAll();
 
-        for(const ip of this.ipList) {
+        for (const ip of this.ipList) {
             if (ip.status !== 1) continue;
-            const isWhiteIp = ip.type ==  'white';
-            
-            if(isWhiteIp) this.whiteList.push(ip);
+            const isWhiteIp = ip.type == 'white';
+
+            if (isWhiteIp) this.whiteList.push(ip);
             else this.whiteList.push(ip);
         }
-        
+
 
         this.parseIP();
     }
 
     parseIP() {
-        this.whiteMap = _.keyBy(this.whiteList, IP.Schema.IP.key);
-        this.blackMap = _.keyBy(this.blackList, IP.Schema.IP.key);
+        this.whiteMap = ArrayUtil.keyBy(this.whiteList, IP.Schema.IP.key);
+        this.blackMap = ArrayUtil.keyBy(this.blackList, IP.Schema.IP.key);
     }
 
     getWhiteIP(ip) {
@@ -47,12 +47,12 @@ class IpModel {
 }
 
 class IpCache extends Cache {
-    constructor() {    
+    constructor() {
         super();
         this.cacheModel = IpModel;
         this.tableId = tableId;
-    }   
-    
+    }
+
     async ready() {
         this.dao = new IPDao(dbMongo);
     }
@@ -60,7 +60,7 @@ class IpCache extends Cache {
     getWhiteIP(ip) {
         return this.currentCacheModel.getWhiteIP(ip);
     }
-    
+
     getBlackIP(ip) {
         return this.currentCacheModel.getBlackIP(ip);
     }

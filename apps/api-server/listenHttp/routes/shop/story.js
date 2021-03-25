@@ -13,8 +13,8 @@ module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
     const userDao = ctx.$userDao;
 
-    const itemService = new ItemService();
-    const storyService = new StoryService()
+    const itemService = new ItemService(userInfo);
+    const storyService = new StoryService(userInfo, updateDate)
 
     const needStoryList = reqShopStory.getStoryList();
     storyService.checkStoryList(needStoryList);

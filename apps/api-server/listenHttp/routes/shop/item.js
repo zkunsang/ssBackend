@@ -4,9 +4,6 @@ const UserService = require('@ss/service/UserService');
 const ItemService = require('@ss/service/ItemService');
 const InventoryService = require('@ss/service/InventoryService');
 
-const ItemCache = require('@ss/dbCache/ItemCache');
-const SSError = require('@ss/error');
-
 module.exports = async (ctx, next) => {
     const reqShopItem = new ReqShopItem(ctx.request.body);
     ReqShopItem.validModel(reqShopItem);
@@ -15,7 +12,7 @@ module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
     const userDao = ctx.$userDao;
 
-    const itemService = new ItemService();
+    const itemService = new ItemService(userInfo);
 
     const itemId = reqShopItem.getItemId();
     itemService.getItemList([itemId]);
@@ -36,6 +33,7 @@ module.exports = async (ctx, next) => {
 
     const userService = new UserService(userInfo, userDao, updateDate);
     userService.setInventory(inventory);
+    userService.finalize();
 
     ctx.$res.success({ inventory });
 

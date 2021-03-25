@@ -15,7 +15,7 @@ module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
     const userDao = ctx.$userDao;
 
-    const itemService = new ItemService();
+    const itemService = new ItemService(userInfo);
 
     const itemId = reqShopAccessory.getItemId();
     itemService.getItemList([itemId]);

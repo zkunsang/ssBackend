@@ -3,7 +3,7 @@ const StoryDao = require('../daoMongo/StoryDao');
 
 const Story = require('../models/mongo/Story');
 const Cache = require('./Cache');
-const _ = require('lodash');
+const ArrayUtil = require('../util/ArrayUtil');
 
 const tableId = 'story';
 
@@ -20,7 +20,7 @@ class StoryCacheModel {
     }
 
     parseProductByItemId() {
-        this.storyMap = _.keyBy(this.storyList, Story.Schema.STORY_ID.key);
+        this.storyMap = ArrayUtil.keyBy(this.storyList, Story.Schema.STORY_ID.key);
     }
 
     get(storyId) {
@@ -37,12 +37,12 @@ class StoryCacheModel {
 }
 
 class StoryCache extends Cache {
-    constructor() {    
+    constructor() {
         super();
         this.cacheModel = StoryCacheModel;
         this.tableId = tableId;
-    }   
-    
+    }
+
     async ready() {
         this.dao = new StoryDao(dbMongo);
     }
@@ -50,7 +50,7 @@ class StoryCache extends Cache {
     get(storyId) {
         return this.currentCacheModel.get(storyId);
     }
-    
+
     getList() {
         return this.currentCacheModel.getList();
     }

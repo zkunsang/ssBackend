@@ -5,7 +5,7 @@ const Dao = require('./Dao');
 class NetworkLogDao extends Dao {
     constructor(connection, date) {
         super();
-        this.db = connection.storyConnect.db('log');
+        this.db = connection.logConnect.db('log');
         this.collection = this.db.collection(`network_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 

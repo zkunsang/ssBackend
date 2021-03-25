@@ -2,10 +2,9 @@ const dbMongo = require('../dbMongo');
 const ItemDao = require('../daoMongo/ItemDao');
 
 const Item = require('../models/mongo/Item');
-const Cache =require('./Cache');
+const Cache = require('./Cache');
 
 const ArrayUtil = require('../util/ArrayUtil');
-const _ = require('lodash');
 
 const tableId = 'item';
 
@@ -24,7 +23,7 @@ class ItemCacheModel {
     }
 
     parseItemByItemId() {
-        this.itemMapByItemId = _.keyBy(this.itemList, Item.Schema.ITEM_ID.key);
+        this.itemMapByItemId = ArrayUtil.keyBy(this.itemList, Item.Schema.ITEM_ID.key);
     }
 
     parseItemByGroupId() {
@@ -45,12 +44,12 @@ class ItemCacheModel {
 }
 
 class ItemCache extends Cache {
-    constructor() {    
+    constructor() {
         super();
         this.cacheModel = ItemCacheModel;
         this.tableId = tableId;
-    }   
-    
+    }
+
     async ready() {
         this.dao = new ItemDao(dbMongo);
     }
@@ -62,7 +61,7 @@ class ItemCache extends Cache {
     getListByGroupId(groupId) {
         return this.currentCacheModel.getListByGroupId(groupId);
     }
-    
+
     getList() {
         return this.currentCacheModel.getList();
     }

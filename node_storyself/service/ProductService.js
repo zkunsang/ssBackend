@@ -128,8 +128,7 @@ class ProductService {
         return await receiptDao.findOne({ transactionId });
     }
 
-    getProductRewardList() {
-        const { productId } = this.getReceipt();
+    getForceProductRewardList(productId) {
         const productInfo = ProductCache.get(productId);
 
         if (!productInfo) {
@@ -145,6 +144,11 @@ class ProductService {
         }
 
         return productReward;
+    }
+
+    getProductRewardList() {
+        const { productId } = this.getReceipt();
+        return this.getForceProductRewardList(productId);
     }
 
     createProductLog(productInfo) {

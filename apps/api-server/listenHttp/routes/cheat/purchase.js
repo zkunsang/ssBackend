@@ -1,57 +1,37 @@
 const ReqCheatPurchase = require('@ss/models/controller/ReqCheatPurchase');
 
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
-const ProductLog = require('@ss/models/apilog/ProductLog');
-
 const InventoryService = require('@ss/service/InventoryService');
+const UserService = require('@ss/service/UserService');
+const ProductService = require('@ss/service/ProductService');
 
-const ProductCache = require('@ss/dbCache/ProductCache');
-const ProductRewardCache = require('@ss/dbCache/ProductRewardCache');
-const helper = require('@ss/helper');
-
-function makeInventoryList(productRewardList) {
-    return productRewardList.map((item) => item.makeInventoryObject());
-}
-
-function createProductLog(userInfo, productInfo, purchaseDate) {
-    const uid = userInfo.uid;
-    const productId = productInfo.productId;
-    const cost = productInfo.costKr;
-
-    return new ProductLog({ uid, productId, cost, purchaseDate })
-}
+const ArrayUtil = require('@ss/util/ArrayUtil');
 
 module.exports = async (ctx, next) => {
     const purchaseDate = ctx.$date;
     const userInfo = ctx.$userInfo;
+    const userDao = ctx.$userDao;
 
     const reqCheatPurchase = new ReqCheatPurchase(ctx.request.body);
     ReqCheatPurchase.validModel(reqCheatPurchase);
 
     const productId = reqCheatPurchase.getProductId();
-    const productInfo = ProductCache.get(productId);
 
-    if (!productInfo) {
-        ctx.$res.badRequest({ message: 'no exist product info' });
-        return;
-    }
+    const productService = new ProductService(userInfo, purchaseDate);
+    const productRewardList = productService.getForceProductRewardList(productId);
 
-    const productRewardList = ProductRewardCache.get(productId);
+    const inventoryService = new InventoryService(userInfo, purchaseDate);
 
-    const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, purchaseDate);
-    const inventoryService = new InventoryService(userInfo, purchaseDate, inventoryLogDao);
+    const inventoryList = ArrayUtil.map(productRewardList, (item) => item.makeInventoryObject());
 
-    const inventoryList = makeInventoryList(productRewardList);
-    await inventoryService.processPut(
-        InventoryService.PUT_ACTION.CHEAT,
-        inventoryList);
+    inventoryService.putItem(InventoryService.PUT_ACTION.CHEAT, {}, inventoryList);
 
-    helper.fluent.sendProductLog(createProductLog(userInfo, productInfo, purchaseDate));
+    const inventory = inventoryService.finalize();
 
-    const userInventoryList = await inventoryService.getUserInventoryList();
+    const userService = new UserService(userInfo, userDao, purchaseDate);
+    userService.setInventory(inventory);
+    userService.finalize();
 
-    ctx.status = 200;
-    ctx.body.data = { inventoryList: userInventoryList };
+    ctx.$res.success({ inventory });
 
     await next();
 }

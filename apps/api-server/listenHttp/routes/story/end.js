@@ -7,7 +7,6 @@ const StoryEventService = require('@ss/service/StoryEventService');
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
 const InventoryService = require('@ss/service/InventoryService');
-const ItemService = require('@ss/service/ItemService');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;

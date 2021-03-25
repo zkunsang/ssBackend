@@ -3,7 +3,7 @@ const ProductDao = require('../daoMongo/ProductDao');
 
 const Product = require('../models/mongo/Product');
 const Cache = require('./Cache');
-const _ = require('lodash');
+const ArrayUtil = require('../util/ArrayUtil');
 
 const tableId = 'product'
 
@@ -20,7 +20,7 @@ class ProductCacheModel {
     }
 
     parseProductMap() {
-        this.productMap = _.keyBy(this.productList, Product.Schema.PRODUCT_ID.key);
+        this.productMap = ArrayUtil.keyBy(this.productList, Product.Schema.PRODUCT_ID.key);
     }
 
     get(productId) {
@@ -32,13 +32,13 @@ class ProductCacheModel {
     }
 }
 
-class ProductCache extends Cache{
-    constructor() {    
+class ProductCache extends Cache {
+    constructor() {
         super();
         this.cacheModel = ProductCacheModel;
         this.tableId = tableId;
-    }   
-    
+    }
+
     async ready() {
         this.dao = new ProductDao(dbMongo);
     }
@@ -46,7 +46,7 @@ class ProductCache extends Cache{
     get(productId) {
         return this.currentCacheModel.get(productId);
     }
-    
+
     getList() {
         return this.currentCacheModel.getList();
     }

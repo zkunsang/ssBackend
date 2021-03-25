@@ -3,7 +3,7 @@ const DataTableDao = require('../daoMongo/DataTableDao');
 
 const DataTable = require('../models/mongo/DataTable');
 
-const _ = require('lodash');
+const ArrayUtil = require('../util/ArrayUtil');
 
 class DataTableCacheModel {
     constructor() {
@@ -14,15 +14,15 @@ class DataTableCacheModel {
     async loadData(dataTableDao) {
         this.dataTableList = await dataTableDao.findAll();
 
-        for(const dataTable of this.dataTableList) {
+        for (const dataTable of this.dataTableList) {
             delete dataTable[DataTable.Schema.UPDATE_DATE.key];
         }
-        
+
         this.parseDataTable();
     }
 
     parseDataTable() {
-        this.dataTableMap = _.keyBy(this.dataTableList, DataTable.Schema.TABLE_ID.key);
+        this.dataTableMap = ArrayUtil.keyBy(this.dataTableList, DataTable.Schema.TABLE_ID.key);
     }
 
     get(tableId) {
@@ -35,13 +35,13 @@ class DataTableCacheModel {
 }
 
 class DataTableCache {
-    constructor() {    
+    constructor() {
         this.dataTableDao = null;
         this.cacheManager = {};
         this.version = 1;
         this.currentCacheModel = null;
-    }   
-    
+    }
+
     async ready() {
         this.dataTableDao = new DataTableDao(dbMongo);
     }
@@ -67,7 +67,7 @@ class DataTableCache {
     getListByGroupId(groupId) {
         return this.currentCacheModel.getListByGroupId(groupId);
     }
-    
+
     getList() {
         return this.currentCacheModel.getList();
     }

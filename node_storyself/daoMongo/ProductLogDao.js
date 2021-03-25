@@ -5,7 +5,7 @@ const Dao = require('./Dao');
 class ProductLogDao extends Dao {
     constructor(connection, date) {
         super();
-        this.db = connection.storyConnect.db('log');
+        this.db = connection.logConnect.db('log');
         this.collection = this.db.collection(`product_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 

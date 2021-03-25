@@ -4,7 +4,7 @@ const Dao = require('./Dao');
 class SignUpLogDao extends Dao {
     constructor(connection) {
         super();
-        this.db = connection.storyConnect.db('log');
+        this.db = connection.logConnect.db('log');
         this.collection = this.db.collection('signup');
     }
 

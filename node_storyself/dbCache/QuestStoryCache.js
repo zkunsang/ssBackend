@@ -36,7 +36,7 @@ class QuestStoryCacheModel {
             const questStoryGoalList = this.questStoryGoalMap[storyId];
             const questStoryRewardList = this.questStoryRewardMap[storyId];
 
-            this.questStoryMap[storyId].questMap = _.keyBy(questStoryList, "questId");
+            this.questStoryMap[storyId].questMap = ArrayUtil.keyBy(questStoryList, "questId");
 
             // 퀘스트 목적 퀘스트 아이디로
             this.questStoryMap[storyId].questGoalMap = ArrayUtil.getMapArrayByKey(questStoryGoalList, "questId");
