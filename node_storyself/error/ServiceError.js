@@ -12,6 +12,7 @@ const code = {
     useItemNoUseableItem: { code: 31004, name: 'useItemNoUseableItem', message: 'no useable item' },
     purchaseNotPossible: { code: 31005, name: 'purchaseNotPossible', message: 'purchase not possible' },
     alreadyHaveItem: { code: 31006, name: 'alreadyHaveItem', message: 'alreadyHaveItem' },
+    needPurcahse: { code: 31007, name: 'needPurcahse', message: 'needPurcahse' },
 
     noExistItemList: { code: 32001, name: 'noExistItemList', message: 'found not exist item' },
     noExistStoryList: { code: 32002, name: 'noExistStoryList', message: 'found not exist story' },
@@ -41,6 +42,8 @@ const code = {
     throwAlreadNotReadMail: { code: 38003, name: 'throwAlreadNotReadMail', message: 'throwAlreadNotReadMail' },
 
     noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' }
+
+
 
 }
 

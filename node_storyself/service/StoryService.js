@@ -7,6 +7,8 @@ const { ValidType } = require('../util/ValidateUtil');
 const StoryLog = require('../models/mongo/StoryLog');
 const StoryLogDao = require('../daoMongo/StoryLogDao');
 const User = require('../models/mongo/User');
+
+const dbMongo = require('../dbMongo');
 const shortid = require('shortid');
 
 const Schema = {
@@ -80,22 +82,22 @@ class StoryService extends Service {
 
 
 
-    startLog(storyId) {
+    startLog(storyId, startKey) {
         const uid = this.getUID();
         const updateDate = this.getUpdateDate();
         const type = StoryLog.StoryLogType.START;
 
-        const storyLog = new StoryLog({ uid, storyId, updateDate, type });
+        const storyLog = new StoryLog({ uid, storyId, updateDate, type, startKey });
         this.pushStoryLogList(storyLog);
 
     }
 
-    endLog(storyId) {
+    endLog(storyId, startKey) {
         const uid = this.getUID();
         const updateDate = this.getUpdateDate();
         const type = StoryLog.StoryLogType.END;
 
-        const storyLog = new StoryLog({ uid, storyId, updateDate, type });
+        const storyLog = new StoryLog({ uid, storyId, updateDate, type, startKey });
         this.pushStoryLogList(storyLog);
     }
 
@@ -107,19 +109,17 @@ class StoryService extends Service {
         const userInfo = this.getUserInfo();
         const inventory = userInfo.getInventory();
 
-        inventory.map((item) => {
-            if (item.itemId === storyId) {
-                this.throwAlreadyHasItem(storyId);
-            }
-
-        })
-
+        const userStory = inventory.filter((item) => item.itemId === storyId);
+        if (userStory.length === 0) {
+            this.throwNoPossessionItem(storyId);
+        }
     }
 
     async finalize() {
+        const updateDate = this.getUpdateDate();
         const storyLogList = this.getStoryLogList();
         if (storyLogList.length > 0) {
-            const storyLogDao = new StoryLogDao(ctx.$dbMongo, updateDate);
+            const storyLogDao = new StoryLogDao(dbMongo, updateDate);
             for (const item of storyLogList) {
                 storyLogDao.insertOne(item);
             }
@@ -139,6 +139,13 @@ class StoryService extends Service {
         throw new SSError.Service(
             SSError.Service.Code.noExistItemList,
             `[${uid}]: [${noExistStory.join(',')}] not exist story`)
+    }
+
+    throwNoPossessionItem(storyId) {
+        const uid = this.getUID();
+        throw new SSError.Service(
+            SSError.Service.Code.needPurcahse,
+            `[${uid}]: [${storyId}] need purchase`)
     }
 }
 

@@ -10,7 +10,7 @@ const dbMongo = require('../dbMongo');
 const User = require('../models/mongo/User');
 const UserEventDao = require('../daoMongo/UserEventDao');
 const StoryEventDao = require('../daoMongo/StoryEventDao');
-const MailService = require('./MailService');
+const Inventory = require('@ss/models/mongo/Inventory')
 
 class StoryEventReward {
     constructor({ storyId, eventId }, { action, addInfo, itemList }) {
@@ -59,6 +59,8 @@ class StoryEventService extends Service {
 
         this[Schema.USER_EVENT_DAO.key] = new UserEventDao(dbMongo);
         this[Schema.UPDATE_DATE.key] = updateDate;
+
+        this[Schema.STORY_EVENT_LIST.key] = [];
     }
 
     getUID() {
@@ -78,18 +80,19 @@ class StoryEventService extends Service {
     }
 
     async storyEvent(storyId) {
-        const eventList = [];
+        const uid = this.getUID();
+
         if ("PussInBoots" == storyId) {
             const storyEventDao = new StoryEventDao(dbMongo);;
             const eventInfo = await storyEventDao.findOne({ uid, storyId });
 
             if (!eventInfo) {
-                const eventReward = await this.processBetaEvent(storyEventDao, storyId);
+                const eventReward = this.processBetaEvent(storyEventDao, storyId);
                 this.pushStoryEventList(eventReward);
             }
         }
 
-        return this.getStoryEventList();
+        return this.getStoryEventList() || [];
     }
 
 
@@ -97,7 +100,7 @@ class StoryEventService extends Service {
         const eventId = 100;
         const itemList = [];
 
-        const honey = InventoryService.makeInventoryObject('honey', 50);
+        const honey = new Inventory({ itemId: 'honey', itemQny: 50 });
         itemList.push(honey);
 
         const action = InventoryService.PUT_ACTION.EVENT.STORY_EVENT;

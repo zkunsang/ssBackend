@@ -6,6 +6,7 @@ const StoryEventService = require('@ss/service/StoryEventService');
 
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
+
 const InventoryService = require('@ss/service/InventoryService');
 
 module.exports = async (ctx, next) => {
@@ -15,6 +16,8 @@ module.exports = async (ctx, next) => {
     ReqStoryEnd.validModel(reqStoryEnd);
 
     const storyId = reqStoryEnd.getStoryId();
+    const startKey = reqStoryEnd.getStartKey();
+
     const storyInfo = StoryCache.get(storyId);
 
     if (!storyInfo) {
@@ -29,7 +32,8 @@ module.exports = async (ctx, next) => {
     const userService = new UserService(userInfo, userDao, updateDate);
     const storyService = new StoryService(userInfo, updateDate);
 
-    storyService.startLog(storyId);
+    storyService.checkHasStory(storyId);
+    storyService.endLog(storyId, startKey);
     await storyService.finalize();
 
     const storyEventService = new StoryEventService(userInfo, updateDate);
@@ -37,7 +41,7 @@ module.exports = async (ctx, next) => {
 
     if (eventRewardList.length > 0) {
         const inventoryService = new InventoryService(userInfo, updateDate);
-        inventoryService.putEventRewardList(eventRewardList);
+        inventoryService.putEventItemList(eventRewardList);
 
         const inventory = inventoryService.finalize();
         userService.setInventory(inventory);

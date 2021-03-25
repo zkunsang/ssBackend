@@ -11,11 +11,8 @@ module.exports = async (ctx, next) => {
 
     const dnnResourceDao = new ARStickerResourceDao(ctx.$dbMongo);
 
-    const updateList = ARStickerResourceDao.mappingList(reqARStickerUpdate.getUpdateList()); 
+    const updateList = ARStickerResourceDao.mappingList(reqARStickerUpdate.getUpdateList());
     const insertList = ARStickerResourceDao.mappingList(reqARStickerUpdate.getInsertList());
-
-    console.log(updateList);
-    console.log(insertList);
 
     await updateResourceList(dnnResourceDao, updateList, updateDate);
     await insertResourceList(dnnResourceDao, insertList, updateDate);

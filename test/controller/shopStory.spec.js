@@ -26,7 +26,6 @@ const urlInfo = '/user/info';
 
 const provider = 'google';
 const providerId = 'shopStoryTest';
-const itemId = 'pictureSlot';
 
 const reqAuthLogin = {
     email: 'zkunsang@gmail.com',

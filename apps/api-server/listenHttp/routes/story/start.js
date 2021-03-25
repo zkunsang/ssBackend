@@ -4,7 +4,6 @@ const StoryService = require('@ss/service/StoryService');
 
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
-const ArrayUtil = require('@ss/util/ArrayUtil');
 
 module.exports = async (ctx, next) => {
     const updateDate = ctx.$date;

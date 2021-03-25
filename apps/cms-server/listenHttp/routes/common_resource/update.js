@@ -11,11 +11,8 @@ module.exports = async (ctx, next) => {
 
     const commonResourceDao = new CommonResourceDao(ctx.$dbMongo);
 
-    const updateList = CommonResourceDao.mappingList(reqCommonResourceUpdate.getUpdateList()); 
+    const updateList = CommonResourceDao.mappingList(reqCommonResourceUpdate.getUpdateList());
     const insertList = CommonResourceDao.mappingList(reqCommonResourceUpdate.getInsertList());
-
-    console.log(updateList);
-    console.log(insertList);
 
     await updateResourceList(commonResourceDao, updateList, updateDate);
     await insertResourceList(commonResourceDao, insertList, updateDate);

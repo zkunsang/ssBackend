@@ -1,14 +1,35 @@
-const ss = require('@ss');
-const apiConfig = ss.configs.apiServer;
+const ReqStoryEnter = require('@ss/models/controller/ReqStoryEnter');
 
-const DataTableCache = require('@ss/dbCache/DataTableCache');
+const StoryService = require('@ss/service/StoryService');
+
+const StoryCache = require('@ss/dbCache/StoryCache');
+const SSError = require('@ss/error');
 
 module.exports = async (ctx, next) => {
-    // 데이터 버젼 테이블만 내려 받는 형식으로 변경
-    const dataTableList = DataTableCache.getList();
+    const updateDate = ctx.$date;
 
-    const s3Url = apiConfig.cdnUrl;
-    ctx.$res.success({ dataTableList, s3Url });
+    const reqStoryStart = new ReqStoryEnter(ctx.request.body);
+    ReqStoryEnter.validModel(reqStoryStart);
+
+    const storyId = reqStoryStart.getStoryId();
+    const storyInfo = StoryCache.get(storyId);
+
+    if (!storyInfo) {
+        ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
+        return;
+    }
+
+    const userInfo = ctx.$userInfo;
+
+    const storyService = new StoryService(userInfo, updateDate);
+
+    storyService.checkHasStory(storyId);
+    storyService.startLog(storyId);
+    const startKey = storyService.generateStartKey();
+
+    await storyService.finalize();
+
+    ctx.$res.success({ startKey });
     await next();
 }
 

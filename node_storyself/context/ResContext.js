@@ -25,7 +25,7 @@ class ResContext {
     badRequest(errorCode) {
         // return this.ctx.throw(400);
         throw new SSError.Service(errorCode);
-        
+
     }
 
     serviceUnavailable(code, message) {
@@ -60,13 +60,13 @@ class ResContext {
     }
 
     addData(data) {
-        this.ctx.body.data = {...this.ctx.body.data, ...data};
+        this.ctx.body.data = { ...this.ctx.body.data, ...data };
     }
 
     success(data) {
-        if(data) {
-            this.ctx.body.data = {...this.ctx.body.data, ...data};
-        }   
+        if (data) {
+            this.ctx.body.data = { ...this.ctx.body.data, ...data };
+        }
     }
 
     setResultCode(resultCode) {
@@ -74,12 +74,11 @@ class ResContext {
     }
 
     setCookie(name, value, options) {
-        console.log(name, value, options);
         this.ctx.cookies.set(name, value, options)
     }
 
     setSessionCookie(value) {
-        this.setCookie('sessionId', value, { maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: true, path:"/login"});
+        this.setCookie('sessionId', value, { maxAge: 2 * 24 * 60 * 60 * 1000, httpOnly: true, path: "/login" });
     }
 }
 

@@ -19,7 +19,7 @@ module.exports = class Config {
     }
 
     setConfig(configList) {
-        for(const config of configList) {
+        for (const config of configList) {
             this[config] = require(`@cf/${this.configPath}/${config}.json`)
         }
     }

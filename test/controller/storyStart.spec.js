@@ -19,10 +19,8 @@ after(() => {
     server.close();
 })
 
-const urlStoryData = '/story/data';
+const urlStoryStart = '/story/start';
 const urlAuthLogin = '/auth/login';
-
-
 
 async function testRequest(url, params) {
     return await request.post(url)
@@ -30,10 +28,13 @@ async function testRequest(url, params) {
         .send(params);
 }
 
+const provider = 'google';
+const providerId = 'storyStartTest';
+
 const reqAuthLogin = {
     email: 'zkunsang@gmail.com',
-    provider: 'google',
-    providerId: '123',
+    provider,
+    providerId,
     deviceId: '123',
     platform: 'aos',
     clientVersion: '1.0.1',
@@ -43,12 +44,12 @@ const reqAuthLogin = {
     osVersion: '123'
 };
 
-describe('storyData', function () {
+describe('storyStart', function () {
     describe('auth fail', () => {
         it('sessionId', async () => {
             const params = {};
 
-            const result = await testRequest(urlStoryData, params);
+            const result = await testRequest(urlStoryStart, params);
             const { error } = result.body;
             assert.equal(error.code, ModelError.Code.requiredField.code);
         });
@@ -58,13 +59,13 @@ describe('storyData', function () {
                 sessionId: '123'
             };
 
-            const result = await testRequest(urlStoryData, params);
+            const result = await testRequest(urlStoryStart, params);
             const { error } = result.body;
             assert.equal(error.code, ServiceError.Code.noExistSession.code);
         });
-    })
+    });
 
-    describe('success', () => {
+    describe('auth success', () => {
         let sessionId = null;
         before(async () => {
             const result = await testRequest(urlAuthLogin, reqAuthLogin);
@@ -72,17 +73,42 @@ describe('storyData', function () {
             sessionId = data.sessionId;
         })
 
-        it('success data', async () => {
-            const params = {
-                sessionId
-            };
+        it('check required field[storyId]', async () => {
+            const params = { sessionId };
 
-            const result = await testRequest(urlStoryData, params);
+            const result = await testRequest(urlStoryStart, params);
             const { error } = result.body;
+            assert.equal(error.code, ModelError.Code.requiredField.code);
+            assert.notEqual(error.additional.indexOf('[storyId]') === -1, true);
+        });
 
-            assert.isUndefined(error);
+        it('wrong story', async () => {
+            const storyId = 'test';
+            const params = { sessionId, storyId };
+
+            const result = await testRequest(urlStoryStart, params);
+            const { error } = result.body;
+            assert.equal(error.code, ServiceError.Code.storyNoExist.code);
+        });
+
+        it('no possession story', async () => {
+            const storyId = 'nutcracker';
+            const params = { sessionId, storyId };
+
+            const result = await testRequest(urlStoryStart, params);
+            const { error } = result.body;
+            assert.equal(error.code, ServiceError.Code.needPurcahse.code);
+        });
+
+        it('success', async () => {
+            const storyId = 'PussInBoots';
+            const params = { sessionId, storyId };
+
+            const result = await testRequest(urlStoryStart, params);
+            const { error } = result.body;
+            assert.equal(error, undefined);
         })
-    })
+    });
 })
 
 
