@@ -151,7 +151,7 @@ describe('userCheck', function () {
                 const params = { sessionId, storyList };
                 const result = await testRequest(urlShopStory, params);
                 const { data } = result.body;
-                const { inventory } = data;
+                // const { inventory } = data;
             })
 
             it('noExistStoryQuest', async () => {

@@ -3,6 +3,7 @@ const ReqUserAction = require('@ss/models/controller/ReqUserAction');
 const InventoryService = require('@ss/service/InventoryService');
 const QuestService = require('@ss/service/QuestService');
 const UserService = require('@ss/service/UserService');
+const StoryService = require('@ss/service/StoryService');
 
 module.exports = async (ctx, next) => {
     const reqUserAction = new ReqUserAction(ctx.request.body);
@@ -14,6 +15,9 @@ module.exports = async (ctx, next) => {
 
     const actionList = reqUserAction.getActionList();
     const storyId = reqUserAction.getStoryId();
+
+    const storyService = new StoryService(userInfo, logDate);
+    storyService.checkStoryList([storyId]);
 
     const questService = new QuestService(userInfo, logDate);
     const userService = new UserService(userInfo, userDao, logDate);
