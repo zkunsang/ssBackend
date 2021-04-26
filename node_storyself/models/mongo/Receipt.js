@@ -9,11 +9,12 @@ const Schema = {
     TRANSACTION_ID: { key: 'transactionId', required: true, type: ValidType.STRING },
     PRODUCT_ID: { key: 'productId', required: true, type: ValidType.STRING },
     APPSTORE: { key: 'appStore', required: true, type: ValidType.STRING, validRange: Object.values(AppStore) },
-    PURCHASE_TOKEN: { key: 'purchaseToken', required: true, type: ValidType.STRING },
-    PACKAGE_NAME: { key: 'packageName', required: true, type: ValidType.STRING },
-    PURCHASE_STATE: { key: 'purchaseState', required: true, type: ValidType.NUMBER },
     PURCHASE_DATE: { key: 'purchaseDate', required: true, type: ValidType.UNIX_TIMESTAMP },
-    UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP }
+    UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
+
+    PURCHASE_TOKEN: { key: 'purchaseToken', required: false, type: ValidType.STRING },
+    PURCHASE_STATE: { key: 'purchaseState', required: false, type: ValidType.NUMBER },
+    PACKAGE_NAME: { key: 'packageName', required: false, type: ValidType.STRING },
 }
 
 class Receipt extends Model {

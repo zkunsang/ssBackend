@@ -11,21 +11,25 @@ class ProductService {
         this.accessTokenStore = null;
     }
 
-    static async init() {
-        
+    async init() {
+
     }
 
-    static async validateReceipt(uid, reqShopProduct, updateDate) {
-        if (reqShopProduct.getAppStore() === AppStore.GOOGLE) {
+    async validateReceipt(uid, reqShopProduct, updateDate) {
+        const appStore = reqShopProduct.getAppStore();
+        if (appStore === AppStore.GOOGLE) {
             return await this.validateReceiptGoogle(uid, reqShopProduct, updateDate);
+        }
+        else if (appStore === AppStore.AppStore) {
+            return await this.validateReceiptApple(uid, reqShopProduct, updateDate);
         }
     }
 
-    static async validateReceiptGoogle(uid, reqShopProduct, updateDate) {
+    async validateReceiptGoogle(uid, reqShopProduct, updateDate) {
 
         // OAuth token획득
         const accessToken = await this.getAccessToken();
-    
+
         // 구글 벨리 데이트
         const productId = reqShopProduct.getProductId();
         const purchaseToken = reqShopProduct.getPurchaseToken();
@@ -34,7 +38,7 @@ class ProductService {
         let url = `https://www.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/products/${productId}/tokens/${purchaseToken}?access_token=${accessToken}`;
         const result = await this.checkValidate(url);
 
-        if(result.purchaseState !== 0) {
+        if (result.purchaseState !== 0) {
             // throw new SSError.Service(SSError.Service.Code.nonValidGoogleReceipt, `${uid} - ${purchaseToken}`);
         }
 
@@ -48,7 +52,7 @@ class ProductService {
         // purchaseTimeMillis: '1601283067574'
         // purchaseType: 0
         // regionCode: 'KR'
-        
+
         // 영수증 검증 기록 저장(history)
         const transactionId = reqShopProduct.getTransactionId();
         const purchaseDate = reqShopProduct.getPurchaseDate();
@@ -58,16 +62,31 @@ class ProductService {
         return new Receipt({ uid, productId, transactionId, purchaseDate, purchaseState, purchaseToken, packageName, appStore, updateDate });
     }
 
-    static getProductId(productId) {
+    async validateReceiptApple(uid, reqShopProduct, updateDate) {
+        const accessToken = await this.getAccessToken();
+
+        const productId = reqShopProduct.getProductId();
+        const purchaseToken = reqShopProduct.getPurchaseToken();
+        const packageName = reqShopProduct.getPackageName();
+
+        const transactionId = reqShopProduct.getTransactionId();
+        const purchaseDate = reqShopProduct.getPurchaseDate();
+        const purchaseState = reqShopProduct.getPurchaseState();
+        const appStore = reqShopProduct.getAppStore();
+
+        return new Receipt({ uid, productId, transactionId, purchaseDate, purchaseState, purchaseToken, packageName, appStore, updateDate });
+    }
+
+    getProductId(productId) {
         return productId.split('.')[3];
     }
 
-    static async checkValidate(url) {
+    async checkValidate(url) {
         const result = await fetch(url);
         return await result.json();
     }
 
-    static getAccessToken() {
+    getAccessToken() {
         return dbRedisPB.getAccessToken();
     }
 }

@@ -38,8 +38,10 @@ module.exports = async (ctx, next) => {
     const reqShopProduct = new ReqShopProduct(ctx.request.body);
     ReqShopProduct.validModel(reqShopProduct);
 
+    const productService = new ProductService();
+
     const uid = userInfo.getUID();
-    const receipt = await ProductService.validateReceipt(uid, reqShopProduct, purchaseDate);
+    const receipt = await productService.validateReceipt(uid, reqShopProduct, purchaseDate);
 
     if (receipt.purchaseState === PurchaseStatus.FAIL) {
         ctx.$res.badRequest(SSError.Service.Code.shopReceiptFail);
@@ -53,14 +55,14 @@ module.exports = async (ctx, next) => {
     const receiptHistory = await receiptDao.findOne({ transactionId });
 
     // 이미 처리된 내역이 있으면 
-    if(receiptHistory) {
-        ctx.$res.set({purchaseState: 0});
+    if (receiptHistory) {
+        ctx.$res.set({ purchaseState: 0 });
         ctx.$res.badRequest(SSError.Service.Code.shopAlreadyPurchased);
         return;
     }
 
-    const productId = ProductService.getProductId(receipt.productId);
-    
+    const productId = productService.getProductId(receipt.productId);
+
     const productInfo = ProductCache.get(productId);
 
     if (!productInfo) {
@@ -69,9 +71,9 @@ module.exports = async (ctx, next) => {
     }
 
     const inventoryDao = new InventoryDao(ctx.$dbMongo);
-    
+
     const productRewardList = ProductRewardCache.get(productId);
-    
+
     const invenLogDao = new InvenLogDao(ctx.$dbMongo, purchaseDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, purchaseDate, invenLogDao);
 
@@ -87,14 +89,14 @@ module.exports = async (ctx, next) => {
 
     const productLogDao = new ProductLogDao(ctx.$dbMongo, purchaseDate);
     await productLogDao.insertOne(productLog);
-    
+
     const userInventoryList = await inventoryService.getUserInventoryList();
     InventoryService.removeObjectIdList(userInventoryList);
-    
-    ctx.$res.success({ 
+
+    ctx.$res.success({
         inventoryList: userInventoryList,
         purchaseState: 0
-     });
+    });
 
     await next();
 }
