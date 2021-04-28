@@ -1,32 +1,36 @@
-const ValidateUtil = require('../util/ValidateUtil');
-const Receipt = require('../models/mongo/Receipt');
-const dbRedisPB = require('@ss/dbRedisPB');
-const fetch = require('node-fetch');
+const ValidateUtil = require("../util/ValidateUtil");
+const Receipt = require("../models/mongo/Receipt");
+const dbRedisPB = require("@ss/dbRedisPB");
+const fetch = require("node-fetch");
 const AppStore = ValidateUtil.AppStore;
-const helper = require('../helper');
-const SSError = require('../error');
+const helper = require("../helper");
+const SSError = require("../error");
 
 class ProductService {
     constructor() {
         this.accessTokenStore = null;
     }
 
-    async init() {
-
-    }
+    async init() {}
 
     async validateReceipt(uid, reqShopProduct, updateDate) {
         const appStore = reqShopProduct.getAppStore();
         if (appStore === AppStore.GOOGLE) {
-            return await this.validateReceiptGoogle(uid, reqShopProduct, updateDate);
-        }
-        else if (appStore === AppStore.AppStore) {
-            return await this.validateReceiptApple(uid, reqShopProduct, updateDate);
+            return await this.validateReceiptGoogle(
+                uid,
+                reqShopProduct,
+                updateDate
+            );
+        } else if (appStore === AppStore.AppStore) {
+            return await this.validateReceiptApple(
+                uid,
+                reqShopProduct,
+                updateDate
+            );
         }
     }
 
     async validateReceiptGoogle(uid, reqShopProduct, updateDate) {
-
         // OAuth token획득
         const accessToken = await this.getAccessToken();
 
@@ -59,7 +63,17 @@ class ProductService {
         const purchaseState = reqShopProduct.getPurchaseState();
         const appStore = reqShopProduct.getAppStore();
 
-        return new Receipt({ uid, productId, transactionId, purchaseDate, purchaseState, purchaseToken, packageName, appStore, updateDate });
+        return new Receipt({
+            uid,
+            productId,
+            transactionId,
+            purchaseDate,
+            purchaseState,
+            purchaseToken,
+            packageName,
+            appStore,
+            updateDate,
+        });
     }
 
     async validateReceiptApple(uid, reqShopProduct, updateDate) {
@@ -71,14 +85,30 @@ class ProductService {
 
         const transactionId = reqShopProduct.getTransactionId();
         const purchaseDate = reqShopProduct.getPurchaseDate();
-        const purchaseState = reqShopProduct.getPurchaseState();
+
         const appStore = reqShopProduct.getAppStore();
 
-        return new Receipt({ uid, productId, transactionId, purchaseDate, purchaseState, purchaseToken, packageName, appStore, updateDate });
+        //const purchaseState = reqShopProduct.getPurchaseState();
+        const purchaseState = 0;
+
+        console.log("reqShopProudct - ", reqShopProduct);
+
+        return new Receipt({
+            uid,
+            productId,
+            transactionId,
+            purchaseDate,
+            purchaseState,
+            purchaseToken,
+            packageName,
+            appStore,
+            updateDate,
+        });
     }
 
     getProductId(productId) {
-        return productId.split('.')[3];
+        console.log("getProductId - ", productId);
+        return productId.split(".")[3];
     }
 
     async checkValidate(url) {
