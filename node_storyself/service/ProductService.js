@@ -21,7 +21,7 @@ class ProductService {
                 reqShopProduct,
                 updateDate
             );
-        } else if (appStore === AppStore.AppStore) {
+        } else if (appStore === AppStore.APPLE) {
             return await this.validateReceiptApple(
                 uid,
                 reqShopProduct,
