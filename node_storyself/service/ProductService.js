@@ -64,6 +64,8 @@ class ProductService {
     async validateReceipt(reqShopProduct) {
         if (reqShopProduct.getAppStore() === AppStore.GOOGLE) {
             return await this.validateReceiptGoogle(reqShopProduct);
+        } else {
+            return await this.validateReceiptApple(reqShopProduct);
         }
     }
 
@@ -105,6 +107,36 @@ class ProductService {
         this.setReceipt(receipt);
 
         return receipt;
+    }
+
+    async validateReceiptApple(uid, reqShopProduct, updateDate) {
+        const accessToken = await this.getAccessToken();
+
+        const productId = reqShopProduct.getProductId();
+        const purchaseToken = reqShopProduct.getPurchaseToken();
+        const packageName = reqShopProduct.getPackageName();
+
+        const transactionId = reqShopProduct.getTransactionId();
+        const purchaseDate = reqShopProduct.getPurchaseDate();
+
+        const appStore = reqShopProduct.getAppStore();
+
+        //const purchaseState = reqShopProduct.getPurchaseState();
+        const purchaseState = 0;
+
+        console.log("reqShopProudct - ", reqShopProduct);
+
+        return new Receipt({
+            uid,
+            productId,
+            transactionId,
+            purchaseDate,
+            purchaseState,
+            purchaseToken,
+            packageName,
+            appStore,
+            updateDate,
+        });
     }
 
     getProductId(productId) {
