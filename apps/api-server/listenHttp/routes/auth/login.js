@@ -59,9 +59,9 @@ module.exports = async (ctx, next) => {
     const { eventItemList, eventMailList } = eventResult || {};
 
     inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
-    const mail = mailService.putEventMailList(eventMailList);
 
-    if (mail) userService.setMail(mail);
+    // const mail = mailService.putEventMailList(eventMailList);
+    // if (mail) userService.setMail(mail);
 
     const userInventory = inventoryService.finalize();
     userService.setInventory(userInventory);
