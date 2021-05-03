@@ -86,6 +86,8 @@ class ProductService {
             // throw new SSError.Service(SSError.Service.Code.nonValidGoogleReceipt, `${uid} - ${purchaseToken}`);
         }
 
+        console.log(result);
+
         // 구글 영수증 샘플
         // acknowledgementState: 1
         // consumptionState: 0
@@ -180,7 +182,7 @@ class ProductService {
 
     getProductRewardList() {
         const { productId } = this.getReceipt();
-        return this.getForceProductRewardList(productId);
+        return this.getForceProductRewardList(this.getProductId(productId));
     }
 
     createProductLog(productInfo) {
