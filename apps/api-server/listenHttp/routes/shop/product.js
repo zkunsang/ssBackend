@@ -3,6 +3,7 @@ const ReqShopProduct = require('@ss/models/controller/ReqShopProduct');
 const SSError = require('@ss/error');
 const ValidateUtil = require('@ss/util/ValidateUtil')
 const PurchaseStatus = ValidateUtil.PurchaseStatus;
+const ArrayUtil = require('@ss/util/ArrayUtil');
 
 const UserService = require('@ss/service/UserService');
 const ProductService = require('@ss/service/ProductService');
@@ -40,7 +41,7 @@ module.exports = async (ctx, next) => {
 
     const productRewardList = productService.getProductRewardList();
 
-    const inventoryList = inventoryService.makeInventoryList(productRewardList);
+    const inventoryList = ArrayUtil.map(productRewardList, (item) => item.makeInventoryObject());
 
     inventoryService.putItem(InventoryService.PUT_ACTION.PURCHASE.CASH, {}, inventoryList);
 
