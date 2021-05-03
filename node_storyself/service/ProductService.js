@@ -182,7 +182,7 @@ class ProductService {
 
     getProductRewardList() {
         const { productId } = this.getReceipt();
-        return this.getForceProductRewardList(this.getProductId(productId));
+        return this.getForceProductRewardList(productId);
     }
 
     createProductLog(productInfo) {
