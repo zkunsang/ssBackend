@@ -17,7 +17,7 @@ module.exports = async (ctx, next) => {
     const storyService = new StoryService(userInfo, updateDate)
 
     const needStoryList = reqShopStory.getStoryList();
-    storyService.checkStoryList(needStoryList);
+    // storyService.checkStoryList(needStoryList);
     itemService.checkPurchaseItemList(needStoryList);
 
     const inventoryService = new InventoryService(userInfo, updateDate);
