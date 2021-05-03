@@ -98,8 +98,8 @@ class EventService extends Service {
         const honey = { itemId: 'honey', itemQny: 25 };
         itemList.push(honey);
 
-        const goldi = { itemId: 'PussInBoots', itemQny: 1 };
-        itemList.push(goldi);
+        // const goldi = { itemId: 'PussInBoots', itemQny: 1 };
+        // itemList.push(goldi);
 
         // 신규 이벤트 처리
         return itemList;
