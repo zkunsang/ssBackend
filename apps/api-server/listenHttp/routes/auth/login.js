@@ -66,7 +66,8 @@ module.exports = async (ctx, next) => {
     const userInventory = inventoryService.finalize();
     userService.setInventory(userInventory);
 
-    await eventService.finalize();
+    // TODO: 이벤트 서비스 확인하기
+    // await eventService.finalize();
     await userService.finalize();
     authService.finalize();
 

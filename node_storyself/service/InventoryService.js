@@ -248,6 +248,7 @@ class InventoryService extends Service {
     async checkWrongInventory() {
         const uid = this.getUID();
         const userInventory = this.getUserInventory();
+        console.log(`${uid} - ${userInventory}`);
         if (userInventory.length !== 0) return null;
 
         const inventoryDao = new InventoryDao(dbMongo);

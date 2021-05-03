@@ -113,6 +113,8 @@ class UserService extends Service {
             delete copyUserInfo.email;
             delete copyUserInfo.createDate;
 
+            console.log(copyUserInfo);
+
 
             await this.getUserDao().updateOne({ uid }, copyUserInfo);
         } else {

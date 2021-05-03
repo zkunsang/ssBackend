@@ -36,6 +36,7 @@ class UserDao extends Dao {
             User.Schema.FCM_TOKEN.key,
             User.Schema.GOOGLE.key,
             User.Schema.APPLE.key,
+            User.Schema.INVENTORY.key,
         ]
     };
 

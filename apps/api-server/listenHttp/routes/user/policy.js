@@ -19,7 +19,7 @@ module.exports = async (ctx, next) => {
     const userDao = new UserDao(ctx.$dbMongo);
     await userDao.updateOne({ uid: userInfo.getUID() }, { policyVersion: policyVersion.version });
 
-    ctx.res.success({});
+    ctx.$res.success({});
 
     await next();
 };
