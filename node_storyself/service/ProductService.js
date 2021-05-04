@@ -131,7 +131,7 @@ class ProductService {
 
         console.log("reqShopProudct - ", reqShopProduct);
 
-        return new Receipt({
+        const receipt = new Receipt({
             uid,
             productId,
             transactionId,
@@ -141,7 +141,10 @@ class ProductService {
             packageName,
             appStore,
             updateDate,
-        });
+        })
+
+        this.setReceipt(receipt);
+        return receipt;
     }
 
     getProductId(productId) {
