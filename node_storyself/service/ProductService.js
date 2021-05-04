@@ -111,7 +111,9 @@ class ProductService {
         return receipt;
     }
 
-    async validateReceiptApple(uid, reqShopProduct, updateDate) {
+    async validateReceiptApple(reqShopProduct) {
+        const uid = this.getUID();
+
         const accessToken = await this.getAccessToken();
 
         const productId = reqShopProduct.getProductId();
@@ -120,6 +122,7 @@ class ProductService {
 
         const transactionId = reqShopProduct.getTransactionId();
         const purchaseDate = reqShopProduct.getPurchaseDate();
+        const updateDate = purchaseDate;
 
         const appStore = reqShopProduct.getAppStore();
 
