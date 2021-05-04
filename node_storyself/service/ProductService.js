@@ -209,7 +209,9 @@ class ProductService {
         const receiptDao = new ReceiptDao(dbMongo);
         receiptDao.insertOne(receipt);
 
-        const productInfo = ProductCache.get(productId);
+        const { productId } = this.getReceipt();
+
+        const productInfo = ProductCache.get(this.getProductId(productId));
 
         const productLog = this.createProductLog(productInfo);
 
