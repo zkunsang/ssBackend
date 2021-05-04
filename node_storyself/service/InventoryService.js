@@ -18,13 +18,20 @@ const InventoryChangeDelete = require('../models/service/InventoryChangeDelete')
 
 const SSError = require('../error');
 const ItemCache = require('@ss/dbCache/ItemCache');
+const ArrayUtil = require('@ss/util/ArrayUtil');
+const Item = require('@ss/models/mongo/Item');
+
+const Event202105Dao = require('@ss/daoMongo/Event202105Dao');
+const Event202105 = require('@ss/models/mongo/Event202105');
+const dbMongo = require('@ss/dbMongo');
+
 
 const PUT_ACTION = {
     PURCHASE: {
         CASH: [1000, 1]
     },
     ADMIN: [1001, 1],
-    
+
     CHEAT: [1002, 1],
     EXCHANGE: {
         STORY: [1003, 1],
@@ -34,7 +41,8 @@ const PUT_ACTION = {
     USER_INIT: [1004, 1],
     COUPON: [1005, 1],
     EVENT: {
-        BETA_EVENT: [1006, 1]
+        BETA_EVENT: [1006, 1],
+        EVT_202105: [1006, 2]
     },
     STORY_QUEST: [1007, 1],
 };
@@ -218,7 +226,7 @@ class InventoryService extends Service {
         const insertList = putObject.getInsertList()
         const action = putObject.getAction();
         const addInfo = putObject.getAddInfo();
-        
+
         // 신규 추가된 아이템
         const afterInvenMap = {};
 
@@ -263,7 +271,7 @@ class InventoryService extends Service {
         const deleteList = useObject.getDeleteList()
         const action = useObject.getAction();
         const addInfo = useObject.getAddInfo();
-        
+
 
         // 신규 추가된 아이템
         const afterInvenMap = {};
@@ -322,7 +330,49 @@ class InventoryService extends Service {
         }
     }
 
+    async processEvent202105(userInventoryList) {
+        const invenMap = ArrayUtil.getMapArrayByKey(userInventoryList, Item.Schema.ITEM_ID.key);
 
+        // 대상 동화 리스트
+        const freeStoryList = [
+            'Goldilocks',
+            'PussInBoots',
+            'sunandmoon',
+            'nutcracker',
+            'AliceInWonderland',
+            'TheLittlePrince'
+        ];
+
+        // 유저가 보유한 것은 패스 유저가 
+        // 무료로 회수 되어야 할 것들 리스트 저장
+        const inputList = [];
+        for (const story of freeStoryList) {
+            if (invenMap[story]) continue;
+
+            const freeStory = InventoryService.makeInventoryObject(story, 1);
+            inputList.push(freeStory);
+        }
+
+        if (inputList.length > 0) {
+            // 인벤토리에 넣기
+            // 추후 회수를 위해 데이터 넣기
+            await this.processPut(
+                InventoryService.PUT_ACTION.EVENT.EVT_202105,
+                inputList);
+
+            for (const item of inputList) {
+                userInventoryList.push(item);
+            }
+
+            const storyList = [];
+            inputList.map((item) => storyList.push(item.itemId));
+
+            const eventDao = new Event202105Dao(dbMongo);
+            const { uid } = this[Schema.USER_INFO.key];
+            eventDao.insertOne(new Event202105({ uid, storyList, updateDate: this[Schema.UPDATE_DATE.key] }));
+            // {uid, inputList, updateDate}
+        }
+    }
 
     async useItem(useObject) {
         InventoryUseObject.validModel(useObject);
@@ -443,7 +493,7 @@ class InventoryService extends Service {
 
     static checkItemUseable(itemData, itemId, action) {
         if (action[0] == USE_ACTION.ADMIN[0] ||
-            action[0] == USE_ACTION.QUEST_DELETE[0] ) return;
+            action[0] == USE_ACTION.QUEST_DELETE[0]) return;
 
         if (!itemData.getUseable()) {
             throw new SSError.Service(SSError.Service.Code.useItemNoUseableItem, `${itemId} - not useable`);

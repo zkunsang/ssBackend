@@ -14,6 +14,7 @@ const StoryTempEventDao = require('@ss/daoMongo/StoryTempEventDao');
 const SessionDao = require('@ss/daoRedis/SessionDao');
 const UserCountDao = require('@ss/daoRedis/UserCountDao');
 const EventDao = require('@ss/daoMongo/EventDao');
+const Event202105Dao = require('@ss/daoMongo/Event202105Dao');
 
 const InventoryService = require('@ss/service/InventoryService');
 
@@ -32,7 +33,7 @@ const ArrayUtil = require('@ss/util/ArrayUtil');
 module.exports = async (ctx, next) => {
     const loginDate = ctx.$date;
     const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
-    if(!reqAuthLogin.getProvider() || !reqAuthLogin.getProviderId()) {
+    if (!reqAuthLogin.getProvider() || !reqAuthLogin.getProviderId()) {
         ctx.$res.success({});
         return;
     }
@@ -40,7 +41,7 @@ module.exports = async (ctx, next) => {
 
     const provider = reqAuthLogin.getProvider();
     const providerId = reqAuthLogin.getProviderId();
-    
+
     const userDao = new UserDao(dbMongo);
     const sessionDao = new SessionDao(dbRedisSS);
     const inventoryDao = new InventoryDao(dbMongo);
@@ -54,23 +55,23 @@ module.exports = async (ctx, next) => {
     const sessionId = shortid.generate();
 
     let isNewUser = false;
-    
+
     let eventList = [];
     const itemList = [];
 
-    if(dbRedisPB.betaEvent && dbRedisPB.betaEvent.status == 1) {
+    if (dbRedisPB.betaEvent && dbRedisPB.betaEvent.status == 1) {
         eventList.push({ evtCode: dbRedisPB.betaEvent.evtCode, message: dbRedisPB.betaEvent.message });
     }
 
     if (userInfo) {
         const uid = userInfo.getUID();
         const oldSessionId = userInfo.getSessionId();
-        
+
         userInfo.setSessionId(sessionId);
         userInfo.setLastLoginDate(loginDate);
         await userDao.updateOne({ uid }, { sessionId, lastLoginDate: loginDate });
         await sessionDao.del(oldSessionId);
-        
+
         reqAuthLogin.uid = userInfo.getUID();
 
         // TODO: 이벤트 데이터
@@ -82,8 +83,8 @@ module.exports = async (ctx, next) => {
 
         // 유저 정보가 없고
         // 재접속이벤트 5001
-        if( !userEventInfo ) {
-            const createDate = userInfo.getCreateDate();   
+        if (!userEventInfo) {
+            const createDate = userInfo.getCreateDate();
             if (DateUtil.dsToUts("2021-03-13 17:00:00") > createDate / 1000) {
                 itemList.push(InventoryService.makeInventoryObject('honey', 50))
                 await eventDao.insertOne(new Event({ uid, eventInfo: { '5001': loginDate } }));
@@ -98,7 +99,7 @@ module.exports = async (ctx, next) => {
 
         const userCountDao = new UserCountDao(dbRedisSS);
         const userCountInfo = await userCountDao.incr();
-        
+
         reqAuthLogin.uid = userCountInfo.toString();
         userInfo = new User(reqAuthLogin);
         userInfo.setStatus(UserStatus.NONE);
@@ -111,22 +112,27 @@ module.exports = async (ctx, next) => {
 
         eventList.push({ evtCode: 101, complete: 0 });
     }
+
+    // 202105무료 지급 이벤트
+    // 로그인 시 유저에게 아이템 이 있는지 없는지 확인
     const invenLogDao = new InvenLogDao(dbMongo, loginDate);
     const inventoryService = new InventoryService(inventoryDao, userInfo, loginDate, invenLogDao);
 
     const userInventoryList = await inventoryService.getUserInventoryList();
 
-    if(isNewUser || itemList.length > 0) {
+    if (isNewUser || itemList.length > 0) {
         await processUserInitInventory(inventoryService, userInventoryList, itemList);
     }
+
+    await inventoryService.processEvent202105(userInventoryList);
 
     const fcmToken = userInfo.fcmToken;
 
     sessionDao.set(sessionId, userInfo);
-    
+
     InventoryService.removeObjectIdList(userInventoryList);
 
-    ctx.$res.success({ 
+    ctx.$res.success({
         sessionId,
         inventoryList: userInventoryList,
         policyVersion,
@@ -143,6 +149,12 @@ module.exports = async (ctx, next) => {
     await next();
 };
 
+
+async function processEvent202105(userInfo, inventoryService, userInventoryList, updateDate) {
+
+}
+
+
 async function processUserInitInventory(inventoryService, userInventoryList, itemList) {
     // pictureSlot아이템이 존재 하지 않으면 제공
     await processLoginPictureSlot(inventoryService, userInventoryList, itemList);
@@ -150,34 +162,34 @@ async function processUserInitInventory(inventoryService, userInventoryList, ite
 
 async function processLoginPictureSlot(inventoryService, userInventoryList, itemList = []) {
     const invenMap = ArrayUtil.getMapArrayByKey(userInventoryList, Item.Schema.ITEM_ID.key);
-    
+
     const pictureSlotList = invenMap['pictureSlot'];
-    if(!pictureSlotList) { 
+    if (!pictureSlotList) {
         const pictureSlot = InventoryService.makeInventoryObject('pictureSlot', 1);
         itemList.push(pictureSlot);
     }
 
     const honeySlotList = invenMap['honey'];
 
-    if(!honeySlotList) { 
+    if (!honeySlotList) {
         const honey = InventoryService.makeInventoryObject('honey', 25);
         itemList.push(honey);
     }
 
     const goldilocksList = invenMap['PussInBoots'];
 
-    if(!goldilocksList) { 
+    if (!goldilocksList) {
         const goldi = InventoryService.makeInventoryObject('PussInBoots', 1);
         itemList.push(goldi);
     }
 
-    if(itemList.length == 0) return;
-    
+    if (itemList.length == 0) return;
+
     await inventoryService.processPut(
-        InventoryService.PUT_ACTION.USER_INIT, 
+        InventoryService.PUT_ACTION.USER_INIT,
         itemList);
 
-    for(const item of itemList) {
+    for (const item of itemList) {
         userInventoryList.push(item);
     }
 }
@@ -201,7 +213,7 @@ async function processLoginPictureSlot(inventoryService, userInventoryList, item
  *        <br>platform (String): 플랫폼(ios|aos) aos - android os,
  *        <br>appStore (String): 스토어(google|onestore|appstore),
  *        <br>clientVersion (String): 클라이언트 앱 버젼입니다.
- * 
+ *
  *      responseClass: resAuthLogin
  *      nickname: config
  *      consumes:
@@ -250,7 +262,7 @@ async function processLoginPictureSlot(inventoryService, userInventoryList, item
  *     id: resAuthLogin
  *     properties:
  *       common:
- *         type: common 
+ *         type: common
  *       error:
  *         type: error
  *       data:
@@ -258,7 +270,7 @@ async function processLoginPictureSlot(inventoryService, userInventoryList, item
  *   common:
  *     id: common
  *     properties:
- *       serverTime: 
+ *       serverTime:
  *         type: number
  *   error:
  *     id: error
@@ -272,6 +284,6 @@ async function processLoginPictureSlot(inventoryService, userInventoryList, item
  *     properties:
  *       sessionId:
  *         type: String
- *     
+ *
  *
  * */
