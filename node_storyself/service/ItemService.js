@@ -9,6 +9,7 @@ const ValidateUtil = require('../util/ValidateUtil');
 const ValidType = ValidateUtil.ValidType;
 
 const User = require('../models/mongo/User');
+const Inventory = require('../models/mongo/Inventory');
 
 const Schema = {
     USER_INFO: { key: 'userInfo', required: true, type: ValidType.OBJECT, validObject: User },
@@ -84,6 +85,22 @@ class ItemService extends Service {
         // TODO: 할인 쿠폰
         if (couponId === "defaultSale") {
             inventory.setItemQny(parseInt(inventory.getItemQny() * 0.9));
+        }
+    }
+
+    applyStorySale(putInventoryList, useInventoryList) {
+        if (!(putInventoryList.length > 1)) return;
+
+        for (let i = 0; i < useInventoryList.length; i++) {
+            const useInven = useInventoryList[i];
+
+            if (i == 0) continue;
+
+            // 50%할인
+            const cost = useInven.getItemQny();
+            const itemId = useInven.getItemId();
+
+            useInven.minusItem(new Inventory({ itemId, itemQny: parseInt(cost / 2) }));
         }
     }
 

@@ -50,15 +50,13 @@ module.exports = async (ctx, next) => {
         inventoryService.putItem(
             InventoryService.PUT_ACTION.USER_INIT, {},
             ArrayUtil.map(itemList, item => new Inventory(item)));
-    } else {
-        await inventoryService.checkWrongInventory();
     }
 
     const eventResult = await eventService.checkEvent();
 
     const { eventItemList, eventMailList } = eventResult || {};
 
-    inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
+    // inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
 
     // const mail = mailService.putEventMailList(eventMailList);
     // if (mail) userService.setMail(mail);

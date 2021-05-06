@@ -1,6 +1,5 @@
 const ReqLogPicture = require('@ss/models/controller/ReqLogPicture');
-
-
+const LogService = require("@ss/service/LogService");
 
 module.exports = async (ctx, next) => {
     const reqLogPicture = new ReqLogPicture(ctx.request.body);

@@ -108,8 +108,7 @@ class AuthService extends Service {
         const providerInfo = {}
         providerInfo[provider] = providerId;
 
-        const userInfo = await userDao.findOne(providerInfo);
-        return userInfo;
+        return await userDao.findOne(providerInfo);
     }
 
     /**

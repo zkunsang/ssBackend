@@ -1,7 +1,6 @@
 const ReqShopStory = require('@ss/models/controller/ReqShopStory');
 
 const ItemService = require('@ss/service/ItemService');
-const StoryService = require('@ss/service/StoryService');
 const UserService = require('@ss/service/UserService');
 const InventoryService = require('@ss/service/InventoryService');
 
@@ -14,10 +13,8 @@ module.exports = async (ctx, next) => {
     const userDao = ctx.$userDao;
 
     const itemService = new ItemService(userInfo);
-    const storyService = new StoryService(userInfo, updateDate)
 
     const needStoryList = reqShopStory.getStoryList();
-    // storyService.checkStoryList(needStoryList);
     itemService.checkPurchaseItemList(needStoryList);
 
     const inventoryService = new InventoryService(userInfo, updateDate);
@@ -26,7 +23,7 @@ module.exports = async (ctx, next) => {
 
     const { putInventoryList, useInventoryList }
         = itemService.getExchangeInventoryInfo(storyInvenList);
-
+    itemService.applyStorySale(putInventoryList, useInventoryList);
     itemService.applyCoupon(useInventoryList, reqShopStory.getCouponId());
 
     inventoryService.checkAlready(putInventoryList);
