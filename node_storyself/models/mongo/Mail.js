@@ -8,16 +8,22 @@ const Schema = {
     MAIL_ID: { key: 'mailId', required: true, type: ValidType.STRING },
     TITLE: { key: 'title', required: true, type: ValidType.STRING },
     MESSAGE: { key: 'message', required: true, type: ValidType.STRING },
-    SENDER: { key: 'sender', required: true, type: ValidType.NUMBER, validRange: Object.values(MailSender) }, 
+    SENDER: { key: 'sender', required: true, type: ValidType.NUMBER, validRange: Object.values(MailSender) },
+
     ITEM_LIST: { key: 'itemList', required: false, type: ValidType.ARRAY },
     ITEM_INFO: { key: 'itemInfo', required: false, type: ValidType.Object },
+
     STATUS: { key: 'status', required: false, type: ValidType.Object },
+
+    WRITE_DATE: { key: 'writeDate', required: false, type: ValidType.UNIX_TIMESTAMP },
+    READ_DATE: { key: 'readDate', required: false, type: ValidType.UNIX_TIMESTAMP },
+    DUE_DATE: { key: 'dueDate', required: false, type: ValidType.UNIX_TIMESTAMP },
 }
 
 class Mail extends Model {
-    constructor({ mailId, title, message, sender, status, itemList, itemInfo }) {
+    constructor({ mailId, title, message, sender, status, itemList, itemInfo, writeDate, readDate, dueDate }) {
         super();
-           
+
         this[Schema.MAIL_ID.key] = mailId;
         this[Schema.TITLE.key] = title;
         this[Schema.MESSAGE.key] = message;
@@ -25,6 +31,10 @@ class Mail extends Model {
         this[Schema.ITEM_LIST.key] = itemList;
         this[Schema.ITEM_INFO.key] = itemInfo;
         this[Schema.STATUS.key] = status;
+
+        this[Schema.WRITE_DATE.key] = writeDate;
+        this[Schema.READ_DATE.key] = readDate;
+        this[Schema.DUE_DATE.key] = dueDate;
     }
 
     getItemList() {
@@ -34,7 +44,7 @@ class Mail extends Model {
     getItemInfo() {
         return [Schema.ITEM_INFO.key];
     }
-    
+
 }
 
 module.exports = Mail;

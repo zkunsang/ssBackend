@@ -3,8 +3,10 @@ const ValidType = ValidateUtil.ValidType;
 const MailStatus = ValidateUtil.MailStatus;
 const shortid = require('shortid');
 
+const DateUtil = require('../util/DateUtil');
+
 const Service = require('../service/Service');
-const SSError = require('@ss/error');
+const SSError = require('../error');
 
 
 const User = require('../models/mongo/User');
@@ -92,12 +94,17 @@ class MailService extends Service {
     }
 
     sendMail({ title, message, sender, senderId, itemList, itemInfo }) {
+        const ADD_DAY = 5;
         const uid = this.getUID();
         const mailId = shortid.generate();
         const date = this.getUpdateDate();
+        const dueDate = DateUtil.addDay(date, ADD_DAY);
+
+        console.log(dueDate);
+
         const status = MailStatus.SEND;
 
-        const newMail = new Mail({ mailId, title, message, sender, status, itemList, itemInfo });
+        const newMail = new Mail({ mailId, title, message, sender, status, itemList, itemInfo, writeDate: date, dueDate });
         const mailSendLog = new MailSendLog({ uid, date, ...newMail, senderId });
 
         this.pushSendLog(mailSendLog);
@@ -136,6 +143,8 @@ class MailService extends Service {
 
         // 읽기 처리
         userMail[mailId].status = MailStatus.READ;
+        userMail[mailId].readDate = date;
+
         const mailReadLog = new MailReadLog({ uid, date, mailId });
         this.pushReadLog(mailReadLog);
 

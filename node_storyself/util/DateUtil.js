@@ -12,9 +12,9 @@ class DateUtil {
     }
 
     utsToDsObj(object, columnName) {
-        if(!object[columnName])
+        if (!object[columnName])
             return;
-            
+
         const length = object[columnName].toString().length;
         if (length > 10)
             object[columnName] = object[columnName] / 1000;
@@ -42,6 +42,10 @@ class DateUtil {
         return moment.unix(now / 1000).isBetween(
             moment.unix(startDate),
             moment.unix(endDate));
+    }
+
+    addDay(now, day) {
+        return moment.unix(now / 1000).add(day, 'days').valueOf();
     }
 
     getHours() {

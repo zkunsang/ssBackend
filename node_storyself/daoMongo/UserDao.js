@@ -37,6 +37,7 @@ class UserDao extends Dao {
             User.Schema.GOOGLE.key,
             User.Schema.APPLE.key,
             User.Schema.INVENTORY.key,
+            User.Schema.MAIL.key,
         ]
     };
 

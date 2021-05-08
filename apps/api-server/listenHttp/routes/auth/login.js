@@ -58,14 +58,14 @@ module.exports = async (ctx, next) => {
 
     // inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
 
-    // const mail = mailService.putEventMailList(eventMailList);
-    // if (mail) userService.setMail(mail);
+    const mail = mailService.putEventMailList(eventMailList);
+    if (mail) userService.setMail(mail);
 
     const userInventory = inventoryService.finalize();
     userService.setInventory(userInventory);
 
     // TODO: 이벤트 서비스 확인하기
-    // await eventService.finalize();
+    await eventService.finalize();
     await userService.finalize();
     authService.finalize();
 
@@ -79,7 +79,7 @@ module.exports = async (ctx, next) => {
         policyVersion: 1,
         fcmToken,
         eventList,
-        mail: userService.getMail(),
+        mail: userService.getMailList(),
         inventory: userService.getInventory(),
     });
 

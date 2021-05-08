@@ -61,6 +61,11 @@ class UserService extends Service {
         return this[Schema.USER_INFO.key][Schema.MAIL.key];
     }
 
+    getMailList() {
+        const mailMap = this.getMail();
+        return Object.values(mailMap);
+    }
+
     getUserDao() {
         return this[Schema.USER_DAO.key];
     }

@@ -12,7 +12,7 @@ const Schema = {
     MAIL_ID: { key: 'mailId', required: false, type: ValidType.STRING },
     TITLE: { key: 'title', required: true, type: ValidType.STRING },
     MESSAGE: { key: 'message', required: true, type: ValidType.STRING },
-    SENDER: { key: 'sender', required: true, type: ValidType.NUMBER, validRange: Object.values(MailSender) }, 
+    SENDER: { key: 'sender', required: true, type: ValidType.NUMBER, validRange: Object.values(MailSender) },
     SENDER_ID: { key: 'senderId', required: false, type: ValidType.STRING },
     STATUS: { key: 'status', required: false, type: ValidType.NUMBER, validRange: Object.values(MailStatus) },
     DATE: { key: 'date', required: false, type: ValidType.UNIX_TIMESTAMP },
@@ -32,12 +32,12 @@ class MailSendLog extends Model {
         this[Schema.SENDER.key] = sender;
         this[Schema.SENDER_ID.key] = senderId;
         this[Schema.STATUS.key] = status;
-        
+
         this[Schema.ITEM_LIST.key] = itemList;
         this[Schema.ITEM_INFO.key] = itemInfo;
 
         this[Schema.DATE.key] = date;
-        
+
         this.dateTZ = DateUtil.utsToDs(date);
     }
 }
