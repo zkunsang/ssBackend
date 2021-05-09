@@ -19,6 +19,7 @@ const dbMongo = require('../dbMongo');
 const SSError = require('../error');
 const ItemCache = require('@ss/dbCache/ItemCache');
 const ArrayUtil = require('@ss/util/ArrayUtil');
+const HoneyHistory = require('@ss/models/mongo/HoneyHistory');
 
 const PUT_ACTION = {
     PURCHASE: {
@@ -41,6 +42,7 @@ const PUT_ACTION = {
         STORY_EVENT: [1006, 3]
     },
     STORY_QUEST: [1007, 1],
+
     WRONG_INVENTORY: [9000, 1],
 };
 
@@ -119,6 +121,12 @@ class InventoryService extends Service {
         return this[Schema.USER_INFO.key];
     }
 
+    exchangeItem(useAction, useAddInfo, useInvenList, putAction, putAddInfo, putInvenList) {
+        const useList = this.useItem(useAction, useAddInfo, useInvenList);
+        const putList = this.putItem(putAction, putAddInfo, putInvenList);
+
+        return { useList, putList };
+    }
     /**
      * 
      * @param {*} action 
@@ -140,7 +148,10 @@ class InventoryService extends Service {
             }
         }
         this.isChange = true;
-        this.putListPush(Object.values(putMap));
+        const putList = Object.values(putMap);
+        this.putListPush(putList);
+
+        return putList;
     }
 
     useItem(action, addInfo, useInvenList) {
@@ -158,7 +169,10 @@ class InventoryService extends Service {
         }
 
         this.isChange = true;
-        this.useListPush(Object.values(useMap));
+        const useList = Object.values(useMap);
+        this.useListPush(useList);
+
+        return useList;
     }
 
     checkAlready(putInvenList) {
@@ -180,6 +194,22 @@ class InventoryService extends Service {
             const { action, addInfo, itemList } = rewardInfo;
             this.putItem(action, addInfo, itemList);
         }
+    }
+
+    createPutHoneyHistory(putItem, action) {
+        const updateDate = this.getUpdateDate();
+
+        return new HoneyHistory({ putItem, action, updateDate });
+    }
+
+    createUseHoneyHistory(useItem, action) {
+        const updateDate = this.getUpdateDate();
+        return new HoneyHistory({ useItem, action, updateDate });
+    }
+
+    createExchangeHoneyHistory(putItem, useItem, action) {
+        const updateDate = this.getUpdateDate();
+        return new HoneyHistory({ putItem, useItem, action, updateDate });
     }
 
     finalize() {

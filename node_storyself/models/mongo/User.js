@@ -21,11 +21,12 @@ const Schema = {
 
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
     MAIL: { key: 'mail', required: false, type: ValidType.OBJECT },
+    HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY }
 
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -38,6 +39,7 @@ class User extends Model {
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
         this[Schema.INVENTORY.key] = inventory || [];
         this[Schema.MAIL.key] = mail || {};
+        this[Schema.HONEY_HISTORY.key] = honeyHistory || [];
     }
 
     getSessionId() {

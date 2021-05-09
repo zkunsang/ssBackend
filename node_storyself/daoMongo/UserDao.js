@@ -16,6 +16,7 @@ class UserDao extends Dao {
             User.Schema.EMAIL.key,
             User.Schema.LAST_LOGIN_DATE.key,
             User.Schema.CREATE_DATE.key,
+            User.Schema.HONEY_HISTORY.key,
         ];
     }
 
@@ -38,6 +39,7 @@ class UserDao extends Dao {
             User.Schema.APPLE.key,
             User.Schema.INVENTORY.key,
             User.Schema.MAIL.key,
+            User.Schema.HONEY_HISTORY.key
         ]
     };
 

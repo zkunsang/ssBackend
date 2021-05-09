@@ -81,6 +81,7 @@ module.exports = async (ctx, next) => {
         eventList,
         mail: userService.getMailList(),
         inventory: userService.getInventory(),
+        honeyHistory: userService.getHoneyHistory()
     });
 
     await next();

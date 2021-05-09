@@ -16,6 +16,7 @@ const Schema = {
 
     UPDATE_DATE: { key: 'updateDate', required: false, type: ValidType.UNIX_TIMESTAMP },
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
+    HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY },
     MAIL: { key: 'mail', required: false, type: ValidType },
 }
 
@@ -74,9 +75,19 @@ class UserService extends Service {
         return this[Schema.USER_INFO.key];
     }
 
+    getHoneyHistory() {
+        return this[Schema.USER_INFO.key][Schema.HONEY_HISTORY.key];
+    }
+
+
     setInventory(inventory) {
         this.setChange();
         this[Schema.USER_INFO.key][Schema.INVENTORY.key] = inventory;
+    }
+
+    addHoneyHistory(honeyHistory) {
+        this.setChange();
+        this[Schema.USER_INFO.key][Schema.HONEY_HISTORY.key].push(honeyHistory);
     }
 
     setMail(mail) {
