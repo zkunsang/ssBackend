@@ -124,7 +124,7 @@ module.exports = async (ctx, next) => {
         await processUserInitInventory(inventoryService, userInventoryList, itemList);
     }
 
-    await inventoryService.processEvent202105(userInventoryList);
+    // await inventoryService.processEvent202105(userInventoryList);
 
     const fcmToken = userInfo.fcmToken;
 
