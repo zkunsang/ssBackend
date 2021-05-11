@@ -26,16 +26,23 @@ module.exports = async (ctx, next) => {
         = itemService.getExchangeInventoryInfo([itemInventory]);
 
     // inventoryService.checkAlready(putInventoryList);
-    inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.SLOT, {}, useInventoryList);
-    inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.SLOT, {}, putInventoryList);
+    const useItem = inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.SLOT, {}, useInventoryList);
+    const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.SLOT, {}, putInventoryList);
+
+    const honeyHistory = inventoryService.createExchangeHoneyHistory(putItem, useItem, InventoryService.USE_ACTION.EXCHANGE.SLOT);
 
     const inventory = inventoryService.finalize();
 
     const userService = new UserService(userInfo, userDao, updateDate);
+
+    userService.addHoneyHistory(honeyHistory);
     userService.setInventory(inventory);
     userService.finalize();
 
-    ctx.$res.success({ inventory });
+    ctx.$res.success({
+        inventory,
+        honeyHistory: userService.getHoneyHistory()
+    });
 
     await next();
 }

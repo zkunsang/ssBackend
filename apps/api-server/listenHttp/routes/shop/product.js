@@ -43,17 +43,21 @@ module.exports = async (ctx, next) => {
 
     const inventoryList = ArrayUtil.map(productRewardList, (item) => item.makeInventoryObject());
 
-    inventoryService.putItem(InventoryService.PUT_ACTION.PURCHASE.CASH, {}, inventoryList);
+    const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.PURCHASE.CASH, {}, inventoryList);
+    const honeyHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.PURCHASE.CASH);
 
     const inventory = inventoryService.finalize();
-    userService.setInventory(inventory);
 
+    userService.setInventory(inventory);
+    userService.addHoneyHistory(honeyHistory);
     userService.finalize();
+
     productService.finalize();
 
     ctx.$res.success({
         inventory,
-        purchaseState: 0
+        purchaseState: 0,
+        honeyHistory: userService.getHoneyHistory()
     });
 
     await next();

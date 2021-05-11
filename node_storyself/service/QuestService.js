@@ -12,6 +12,7 @@ const UserQuestStory = require('../models/mongo/UserQuestStory');
 const QuestAcceptLog = require('../models/apilog/QuestAcceptLog');
 
 const SSError = require('../error');
+const ActionLog = require('../models/apilog/ActionLog');
 const ActionLogDao = require('../daoMongo/ActionLogDao');
 const QuestCompleteLog = require('../models/apilog/QuestCompleteLog');
 

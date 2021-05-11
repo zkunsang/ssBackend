@@ -27,16 +27,23 @@ module.exports = async (ctx, next) => {
     itemService.applyCoupon(useInventoryList, reqShopStory.getCouponId());
 
     inventoryService.checkAlready(putInventoryList);
-    inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.STORY, {}, useInventoryList);
-    inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.STORY, {}, putInventoryList);
+
+    const useItem = inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.STORY, {}, useInventoryList);
+    const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.STORY, {}, putInventoryList);
+
+    const honeyHistory = inventoryService.createExchangeHoneyHistory(putItem, useItem, InventoryService.USE_ACTION.EXCHANGE.STORY);
 
     const inventory = inventoryService.finalize();
 
     const userService = new UserService(userInfo, userDao, updateDate);
+    userService.addHoneyHistory(honeyHistory);
     userService.setInventory(inventory);
     userService.finalize();
 
-    ctx.$res.success({ inventory });
+    ctx.$res.success({
+        inventory,
+        honeyHistory: userService.getHoneyHistory()
+    });
 
     await next();
 }

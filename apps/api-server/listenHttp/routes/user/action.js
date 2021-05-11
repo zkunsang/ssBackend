@@ -28,7 +28,12 @@ module.exports = async (ctx, next) => {
         const inventoryService = new InventoryService(userInfo, logDate);
         for (const reward of rewardList) {
             const { addInfo, action, itemList } = reward;
-            inventoryService.putItem(action, addInfo, itemList);
+            const putItem = inventoryService.putItem(action, addInfo, itemList);
+            const honeHistory = inventoryService.createPutHoneyHistory(putItem, action);
+
+            userService.addHoneyHistory(honeHistory);
+
+            ctx.$res.addData({ honeyHistory: userService.getHoneyHistory() });
         }
 
         const inventory = inventoryService.finalize();

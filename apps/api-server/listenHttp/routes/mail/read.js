@@ -21,7 +21,11 @@ module.exports = async (ctx, next) => {
     const inventoryService = new InventoryService(userInfo, updateDate);
     if (itemList.length > 0) {
         const { action, addInfo } = itemInfo;
-        inventoryService.putItem(action, addInfo, itemList);
+        const putItem = inventoryService.putItem(action, addInfo, itemList);
+
+        const cheatPutHistory = inventoryService.createPutHoneyHistory(putItem, action);
+        userService.addHoneyHistory(cheatPutHistory);
+        ctx.$res.addData({ honeyHistory: userService.getHoneyHistory() });
     }
 
     const inventory = inventoryService.finalize();
@@ -33,7 +37,10 @@ module.exports = async (ctx, next) => {
     mailService.finalize();
     await userService.finalize();
 
-    ctx.$res.success({ mail: Object.values(userMail), inventory });
+    ctx.$res.success({
+        mail: Object.values(userMail),
+        inventory
+    });
 
     await next();
 }

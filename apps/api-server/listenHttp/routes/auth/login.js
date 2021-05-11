@@ -47,9 +47,12 @@ module.exports = async (ctx, next) => {
 
     if (userService.isNewUser()) {
         const itemList = eventService.newUserEvent();
-        inventoryService.putItem(
+        const putItem = inventoryService.putItem(
             InventoryService.PUT_ACTION.USER_INIT, {},
             ArrayUtil.map(itemList, item => new Inventory(item)));
+
+        const initHoneyHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.USER_INIT);
+        userService.addHoneyHistory(initHoneyHistory);
     }
 
     const eventResult = await eventService.checkEvent();
@@ -64,7 +67,6 @@ module.exports = async (ctx, next) => {
     const userInventory = inventoryService.finalize();
     userService.setInventory(userInventory);
 
-    // TODO: 이벤트 서비스 확인하기
     await eventService.finalize();
     await userService.finalize();
     authService.finalize();
