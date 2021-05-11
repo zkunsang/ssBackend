@@ -10,6 +10,7 @@ const CouponRewardCache = require('@ss/dbCache/CouponRewardCache');
 const CouponCache = require('@ss/dbCache/CouponCache');
 
 const InventoryService = require('@ss/service/InventoryService');
+const UserService = require('@ss/service/UserService');
 
 const SSError = require('@ss/error');
 const DateUtil = require('@ss/util/DateUtil');
@@ -90,23 +91,28 @@ module.exports = async (ctx, next) => {
 
     await couponUseDao.insertOne(new CouponUse({ uid, couponCode, couponId, updateDate }));
 
+    const userDao = ctx.$userDao;
+    const userService = new UserService(userInfo, userDao, updateDate);
+
     const inventoryLogDao = new InventoryLogDao(ctx.$dbMongo, updateDate);
     const inventoryService = new InventoryService(userInfo, updateDate, inventoryLogDao);
     InventoryService.validModel(inventoryService);
 
     const rewardList = CouponRewardCache.get(couponId);
 
-    const putInventoryList = InventoryService.makeInventoryList(rewardList);
+    const putInventoryList = inventoryService.makeInventoryList(rewardList);
 
-    await inventoryService.processPut(
-        InventoryService.PUT_ACTION.COUPON,
-        putInventoryList);
+    const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.COUPON, {}, putInventoryList);
 
-    const userInventoryList = await inventoryService.getUserInventoryList();
+    const inventory = inventoryService.finalize();
 
-    ctx.$res.success({
-        inventoryList: userInventoryList
-    });
+    const couponPutHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.COUPON);
+    userService.addHoneyHistory(couponPutHistory);
+    userService.setInventory(inventory);
+    await userService.finalize();
+
+    ctx.$res.addData({ honeyHistory: userService.getHoneyHistory() });
+    ctx.$res.success({ inventory });
 
     await next();
 }
