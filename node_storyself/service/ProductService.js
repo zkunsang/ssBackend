@@ -148,7 +148,8 @@ class ProductService {
     }
 
     getProductId(productId) {
-        return productId.split('.')[3];
+        const splitProductList = productId.split('.');
+        return splitProductList[splitProductList.length - 1];
     }
 
     async checkValidate(url) {
