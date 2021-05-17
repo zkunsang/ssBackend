@@ -95,7 +95,7 @@ const MailSender = {
 }
 
 const MailStatus = {
-    SEND: 1, 
+    SEND: 1,
     READ: 2,
     DELETE: 3,
     ADMIN_DELETE: 4
@@ -110,6 +110,7 @@ class ValidateUtil {
         this.validFunc[ValidType.UNIX_TIMESTAMP] = this.validUnixTimeStamp;
         this.validFunc[ValidType.ARRAY] = this.validArray;
         this.validFunc[ValidType.OBJECT] = this.validObject;
+        this.validFunc[ValidType.BOOLEAN] = this.validBoolean;
     }
 
     valid(model, schema, obj, nullable) {
@@ -168,6 +169,12 @@ class ValidateUtil {
             return;
         }
         this._checkArrayType(model, field, item);
+    }
+
+    validBoolean(model, field, item, nullable) {
+        if (this._checkIsNull(model, field, item, nullable)) {
+            return;
+        }
     }
 
     validObject(model, field, item, nullable, validObject) {
@@ -240,7 +247,7 @@ class ValidateUtil {
     }
 
     setNullUndefined(item) {
-        if(item === 0) return item;
+        if (item === 0) return item;
         return item || undefined;
     }
 }

@@ -1,4 +1,5 @@
 const Model = require('../../models');
+const Inventory = require('../../models/mongo/Inventory');
 
 const ValidateUtil = require('../../util/ValidateUtil')
 const ValidType = ValidateUtil.ValidType;
@@ -13,12 +14,22 @@ const Schema = {
 class QuestStoryReward extends Model {
     constructor({ storyId, questId, itemId, itemQny }) {
         super();
-        
+
         this[Schema.STORY_ID.key] = ValidateUtil.setNullUndefined(storyId);
         this[Schema.QUEST_ID.key] = ValidateUtil.setNullUndefined(questId);
         this[Schema.ITEM_ID.key] = ValidateUtil.setNullUndefined(itemId);
         this[Schema.ITEM_QNY.key] = ValidateUtil.setNullUndefined(itemQny);
     }
+
+    makeInventoryObject() {
+
+        let inventoryObj = {}
+        inventoryObj[Inventory.Schema.ITEM_ID.key] = this[Schema.ITEM_ID.key];
+        inventoryObj[Inventory.Schema.ITEM_QNY.key] = this[Schema.ITEM_QNY.key];
+
+        return new Inventory(inventoryObj);
+    }
+
 }
 
 module.exports = QuestStoryReward;

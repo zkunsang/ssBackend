@@ -251,6 +251,7 @@ class QuestService extends Service {
 
             // TODO: clearQuest
             // ctx.$res.addData({ clearQuest });
+            const itemList = rewardList.map(item => item.makeInventoryObject());
 
             const addInfo = { questId, questSID: storyId };
             const action = InventoryService.PUT_ACTION.STORY_QUEST;

@@ -2,14 +2,21 @@ const ss = require('@ss');
 const apiConfig = ss.configs.apiServer;
 
 const DataTableCache = require('@ss/dbCache/DataTableCache');
+const ServiceVariableCache = require('@ss/dbCache/ServiceVariableCache');
+
+const ServiceVariable = require('@ss/models/mongo/ServiceVariable');
+const VariableKey = ServiceVariable.VariableKey;
 
 module.exports = async (ctx, next) => {
     // 데이터 버젼 테이블만 내려 받는 형식으로 변경
     const dataTableList = DataTableCache.getList();
+    const couponEnable = JSON.parse(ServiceVariableCache.get(VariableKey.couponEnable).value);
 
     const s3Url = apiConfig.cdnUrl;
-    ctx.$res.success({ dataTableList, s3Url });
+    ctx.$res.success({ dataTableList, s3Url, couponEnable });
+
     await next();
+
 }
 
 /**

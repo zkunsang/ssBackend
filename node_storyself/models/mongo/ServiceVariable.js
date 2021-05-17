@@ -6,6 +6,7 @@ const ValidType = ValidateUtil.ValidType;
 const VariableKey = {
     aosAppVersion: 'aosAppVersion',
     iosAppVersion: 'iosAppVersion',
+    couponEnable: 'couponEnable'
 }
 
 const Schema = {
@@ -19,7 +20,7 @@ class ServiceVariable extends Model {
         super();
         this[Schema.KEY.key] = ValidateUtil.setNullUndefined(key);
         this[Schema.VALUE.key] = ValidateUtil.setNullUndefined(value);
-        this[Schema.UPDATE_DATE.key] = ValidateUtil.setNullUndefined(updateDate);        
+        this[Schema.UPDATE_DATE.key] = ValidateUtil.setNullUndefined(updateDate);
     }
 };
 
