@@ -15,6 +15,8 @@ const UserCountDao = require('../daoRedis/UserCountDao');
 const LoginLogDao = require('../daoMongo/LoginLogDao');
 const LoginLog = require('../models/apilog/LoginLog');
 
+const nanoid = require('nanoid');
+
 
 const Schema = {
     REQ_AUTH_LOGIN: { key: 'reqAuthLogin', required: true, type: ValidType.OBJECT },
@@ -123,6 +125,13 @@ class AuthService extends Service {
         userInfo.setSessionId(sessionId);
         userInfo.setLastLoginDate(loginDate);
 
+        if (!userInfo.getPUID()) {
+            const puid = nanoid(10);
+
+            console.log(`puid generated - ${puid}`);
+            userInfo.setPUID(puid);
+        }
+
         return oldSessionId;
     }
 
@@ -136,6 +145,8 @@ class AuthService extends Service {
         const loginDate = this.getLoginDate();
         const provider = this.getProvider();
         const providerId = this.getProviderId();
+        const puid = nanoid(10);
+        // 유저 shortId
 
         userInfo.setUID(uid);
         userInfo.setStatus(UserStatus.NONE);
@@ -143,6 +154,7 @@ class AuthService extends Service {
         userInfo.setLastLoginDate(loginDate);
         userInfo.setCreateDate(loginDate);
         userInfo.setProvider(provider, providerId);
+        userInfo.setPUID(puid)
 
         return userInfo;
     }

@@ -28,6 +28,7 @@
     "module-alias": "^2.2.2",
     "moment": "^2.27.0",
     "mongo": "^0.1.0",
+    "nanoid": "^2.1.11",
     "node-fetch": "^2.6.1",
     "shortid": "^2.2.15",
     "swagger-jsdoc": "^4.0.0",

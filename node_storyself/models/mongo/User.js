@@ -21,12 +21,13 @@ const Schema = {
 
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
     MAIL: { key: 'mail', required: false, type: ValidType.OBJECT },
-    HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY }
+    HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY },
 
+    PUID: { key: 'puid', required: false, type: ValidType.STRING },
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -37,6 +38,8 @@ class User extends Model {
         this[Schema.POLICY_VERSION.key] = ValidateUtil.setNullUndefined(policyVersion);
         this[Schema.SESSION_ID.key] = ValidateUtil.setNullUndefined(sessionId);
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
+        this[Schema.PUID.key] = ValidateUtil.setNullUndefined(puid);
+
         this[Schema.INVENTORY.key] = inventory || [];
         this[Schema.MAIL.key] = mail || {};
         this[Schema.HONEY_HISTORY.key] = honeyHistory || [];
@@ -56,6 +59,10 @@ class User extends Model {
 
     getCreateDate() {
         return this[Schema.CREATE_DATE.key];
+    }
+
+    getPUID() {
+        return this[Schema.PUID.key];
     }
 
     setSessionId(sessionId) {
@@ -86,6 +93,9 @@ class User extends Model {
         this[Schema.UID.key] = uid;
     }
 
+    setPUID(puid) {
+        this[Schema.PUID.key] = puid;
+    }
 };
 
 module.exports = User;

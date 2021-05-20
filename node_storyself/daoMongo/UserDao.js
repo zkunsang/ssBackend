@@ -39,7 +39,8 @@ class UserDao extends Dao {
             User.Schema.APPLE.key,
             User.Schema.INVENTORY.key,
             User.Schema.MAIL.key,
-            User.Schema.HONEY_HISTORY.key
+            User.Schema.HONEY_HISTORY.key,
+            User.Schema.PUID.key,
         ]
     };
 

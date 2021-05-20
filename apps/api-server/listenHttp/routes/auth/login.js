@@ -75,9 +75,13 @@ module.exports = async (ctx, next) => {
     const eventList = [];
 
     sessionDao.set(sessionId, userInfo);
+
     ctx.$userInfo = userInfo;
+    const puid = userInfo.getPUID();
+
     ctx.$res.success({
         sessionId,
+        puid,
         policyVersion: 1,
         fcmToken,
         eventList,
