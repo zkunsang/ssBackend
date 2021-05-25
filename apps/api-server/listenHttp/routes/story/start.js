@@ -19,6 +19,14 @@ module.exports = async (ctx, next) => {
         return;
     }
 
+    if (true) {
+        const userInfo = ctx.$userInfo;
+        const storyService = new StoryService(userInfo, updateDate);
+        const startKey = storyService.generateStartKey();
+        ctx.$res.success({ startKey });
+        return await next();
+    }
+
     const userInfo = ctx.$userInfo;
 
     const storyService = new StoryService(userInfo, updateDate);
