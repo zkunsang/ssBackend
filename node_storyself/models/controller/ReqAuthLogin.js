@@ -45,6 +45,12 @@ class ReqAuthLogin extends Model {
     getProvider() {
         return this[Schema.PROVIDER.key];
     }
+
+    blockIOS() {
+        if (this[Schema.PROVIDER.key] === Provider.APPLE) throw new Error({ errMessage: 'wrong login method' })
+
+    }
+
 }
 
 module.exports = ReqAuthLogin;
