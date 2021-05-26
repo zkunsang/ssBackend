@@ -22,7 +22,7 @@ module.exports = async (ctx, next) => {
     const ip = ctx.$req.clientIp;
 
     ReqAuthLogin.validModel(reqAuthLogin);
-    reqAuthLogin.blockIOS();
+    // reqAuthLogin.blockIOS();
 
     const userDao = new UserDao(dbMongo);
     const sessionDao = new SessionDao(dbRedisSS);
