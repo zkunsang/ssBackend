@@ -108,7 +108,7 @@ class EventService extends Service {
     async checkEvent() {
         // TODO: 임시 이벤트
         // 이벤트 리스트에서 이벤트들을 확인
-        const eventId = "123";
+        const eventId = "12354";
         const uid = this.getUID();
 
         const userEventInfo = await this.getUserEventDao().findOne({ uid });
@@ -126,12 +126,13 @@ class EventService extends Service {
             new EventReward({ eventId }, { action, addInfo, itemList })
         ];
 
-        const title = '임시 타이틀';
-        const message = '임시 메시지';
+        const title = '안녕하세요';
+        const message = '만나서 반가워요';
 
         const sender = MailSender.EVENT;
         const senderId = eventId;
-        const emailItemList = [{ itemId: 'honey', itemQny: 3 }];
+        // const emailItemList = [{ itemId: 'honey', itemQny: 3 }];
+        const emailItemList = [];
 
         const itemInfo = {
             action: InventoryService.PUT_ACTION.EVENT.TEMP_EVENT,

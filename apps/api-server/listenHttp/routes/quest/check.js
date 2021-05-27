@@ -1,4 +1,4 @@
-const ReqQuestAccept = require('@ss/models/controller/ReqQuestAccept');
+const ReqQuestCheck = require('@ss/models/controller/ReqQuestCheck');
 
 const StoryCache = require('@ss/dbCache/StoryCache');
 const SSError = require('@ss/error');
@@ -7,14 +7,14 @@ const QuestService = require('@ss/service/QuestService');
 const StoryService = require('@ss/service/StoryService');
 
 module.exports = async (ctx, next) => {
-    const reqQuestAccept = new ReqQuestAccept(ctx.request.body);
-    ReqQuestAccept.validModel(reqQuestAccept);
+    const reqQuestCheck = new ReqQuestCheck(ctx.request.body);
+    ReqQuestCheck.validModel(reqQuestCheck);
 
     const logDate = ctx.$date;
     const userInfo = ctx.$userInfo;
 
-    const storyId = reqQuestAccept.getStoryId();
-    const questId = reqQuestAccept.getQuestId();
+    const storyId = reqQuestCheck.getStoryId();
+    const questId = reqQuestCheck.getQuestId();
 
     const storyData = StoryCache.get(storyId);
 
@@ -24,11 +24,13 @@ module.exports = async (ctx, next) => {
     }
 
     const questService = new QuestService(userInfo, logDate);
+    const questInfo = await questService.getQuestInfo(storyId, questId);
 
-    await questService.acceptQuest(storyId, questId);
-    await questService.finalize();
+    const actionList = questService.parseAction(questInfo.storyAction);
 
-    ctx.$res.success({});
+    console.log("** questInfo", actionList);
+
+    ctx.$res.success({ actionList });
 
     await next();
 }

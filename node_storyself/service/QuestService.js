@@ -110,6 +110,29 @@ class QuestService extends Service {
         }
     }
 
+    parseAction(actionList) {
+        const parsedActionList = [];
+        if (!actionList) return parsedActionList;
+        const keyList = Object.keys(actionList);
+        for (const key of keyList) {
+            parsedActionList.push(`${key}_${actionList[key]}`);
+        }
+
+        return parsedActionList;
+    }
+
+    async getQuestInfo(storyId, questId) {
+        const uid = this.getUID();
+        const questData = QuestStoryCache.getQuestInfo(storyId, questId);
+
+        if (!questData) {
+            this.throwNoExistQuest(uid, storyId, questId);
+        }
+
+        const questInfo = await this.getUserQuestStoryDao().findOne({ storyId, uid });
+        return questInfo ? questInfo : undefined;
+    }
+
     async acceptQuest(storyId, questId) {
         // 퀘스트 수락 로그
         const uid = this.getUID();
@@ -129,7 +152,6 @@ class QuestService extends Service {
             const questAccept = {};
             questAccept[questId] = logDate;
             this.pushAcceptInsertList(new UserQuestStory({ storyId, uid, questAccept }));
-
         }
         else {
             let userQuestAccept = userQuestStory.getQuestAccept();
@@ -151,7 +173,6 @@ class QuestService extends Service {
 
         if (questAccepted) {
             this.pushAcceptLogList(new QuestAcceptLog({ uid, storyId, questId, logDate }));
-
         }
     }
 
@@ -247,10 +268,8 @@ class QuestService extends Service {
 
         for (const questId of newClearQuest) {
             const rewardList = QuestStoryCache.getQuestRewardList(storyId, questId);
-            clearQuest.push({ questId, rewardList });
+            clearQuest.push({ storyId, questId, rewardList });
 
-            // TODO: clearQuest
-            // ctx.$res.addData({ clearQuest });
             const itemList = rewardList.map(item => item.makeInventoryObject());
 
             const addInfo = { questId, questSID: storyId };
@@ -271,7 +290,7 @@ class QuestService extends Service {
             this.pushCompleteLog(completeLogList.map((item) => new QuestCompleteLog({ ...item })));
         }
 
-        return { clearQuest, rewardList: putInvenRewardList };
+        return { clearQuest, rewardList: putInvenRewardList, storyAction: userStoryAction };
     }
 
     async finalize() {

@@ -1,8 +1,8 @@
 const SSError = require('../error');
 
 class Dao {
-    constructor() {}
-    
+    constructor() { }
+
     async insertOne(resource) {
         this.constructor.insertValid.call(this, resource);
         await this.collection.insertOne(resource);
@@ -10,7 +10,7 @@ class Dao {
 
     async insertMany(resourceList) {
         this.constructor.insertValidList.call(this, resourceList);
-        if(resourceList.length === 0) return;
+        if (resourceList.length === 0) return;
         await this.collection.insertMany(resourceList);
     }
 
@@ -72,7 +72,7 @@ class Dao {
     async deleteMany(where, expectCount) {
         this.constructor.checkWhere.call(this, where);
         const result = await this.collection.deleteMany(where);
-        if(expectCount)
+        if (expectCount)
             this.constructor.checkDeleteCount.call(this, result.deletedCount, expectCount, where);
     }
 
@@ -118,8 +118,10 @@ class Dao {
     }
 
     static checkAllowSetField($set) {
-        if (this.constructor.allowSetFieldList().reduce((acc, item) =>
-            $set[item] !== undefined && $set[item] !== null ? ++acc : acc, 0) === 0) {
+        if (this.constructor.allowSetFieldList().reduce((acc, item) => {
+            return $set[item] !== undefined && $set[item] !== null ? ++acc : acc
+        }
+            , 0) === 0) {
             throw new SSError.Dao(SSError.Dao.Code.noAffectedField);
         }
     }

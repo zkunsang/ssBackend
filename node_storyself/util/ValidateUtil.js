@@ -189,6 +189,7 @@ class ValidateUtil {
         if (nullable) return item === undefined || item === null;
 
         if (item === undefined || item === null) {
+            console.log(`${model.name} - [${field}] can't be null`);
             throw new SSError.Model(SSError.Model.Code.requiredField, `${model.name} - [${field}] can't be null`);
         }
 

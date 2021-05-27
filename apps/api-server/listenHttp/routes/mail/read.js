@@ -18,7 +18,9 @@ module.exports = async (ctx, next) => {
 
     const { userMail, itemList, itemInfo } = mailService.readMail(mailId);
 
+    const userService = new UserService(userInfo, userDao, updateDate);
     const inventoryService = new InventoryService(userInfo, updateDate);
+
     if (itemList.length > 0) {
         const { action, addInfo } = itemInfo;
         const putItem = inventoryService.putItem(action, addInfo, itemList);
@@ -29,7 +31,6 @@ module.exports = async (ctx, next) => {
     }
 
     const inventory = inventoryService.finalize();
-    const userService = new UserService(userInfo, userDao, updateDate);
 
     userService.setInventory(inventory);
     userService.setMail(userMail);

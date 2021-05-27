@@ -13,7 +13,7 @@ module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
     const userDao = ctx.$userDao;
 
-    const actionList = reqUserAction.getActionList();
+    const reqActionList = reqUserAction.getActionList();
     const storyId = reqUserAction.getStoryId();
 
     const storyService = new StoryService(userInfo, logDate);
@@ -22,7 +22,9 @@ module.exports = async (ctx, next) => {
     const questService = new QuestService(userInfo, logDate);
     const userService = new UserService(userInfo, userDao, logDate);
 
-    const { clearQuest, rewardList } = await questService.checkUserAction(storyId, actionList);
+    const { clearQuest, rewardList, storyAction } = await questService.checkUserAction(storyId, reqActionList);
+
+    const actionList = questService.parseAction(storyAction);
 
     if (rewardList.length > 0) {
         const inventoryService = new InventoryService(userInfo, logDate);
@@ -38,11 +40,13 @@ module.exports = async (ctx, next) => {
 
         const inventory = inventoryService.finalize();
         userService.setInventory(inventory);
+        await userService.finalize();
 
         ctx.$res.addData({ inventory });
         ctx.$res.addData({ clearQuest });
     }
 
+    ctx.$res.addData({ actionList });
     ctx.$res.success();
 
     await next();

@@ -104,8 +104,20 @@ class ProductService {
         const purchaseDate = reqShopProduct.getPurchaseDate();
         const purchaseState = reqShopProduct.getPurchaseState();
         const appStore = reqShopProduct.getAppStore();
+        const updateDate = purchaseDate;
 
-        const receipt = new Receipt({ uid, productId, transactionId, purchaseDate, purchaseState, purchaseToken, packageName, appStore, purchaseDate });
+        const receipt = new Receipt({
+            uid,
+            productId,
+            transactionId,
+            purchaseDate,
+            purchaseState,
+            purchaseToken,
+            packageName,
+            appStore,
+            purchaseDate,
+            updateDate
+        });
         this.setReceipt(receipt);
 
         return receipt;

@@ -22,7 +22,9 @@ class UserEventDao extends Dao {
     }
 
     static allowSetFieldList() {
-        return []
+        return [
+            UserEvent.Schema.EVENT_INFO.key,
+        ]
     };
 
     static notAllowSetFieldList() {

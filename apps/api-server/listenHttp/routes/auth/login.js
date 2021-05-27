@@ -9,6 +9,7 @@ const UserService = require('@ss/service/UserService');
 const AuthService = require('@ss/service/AuthService');
 const EventService = require('@ss/service/EventService');
 const MailService = require('@ss/service/MailService');
+const QuestService = require('@ss/service/MailService');
 
 const ReqAuthLogin = require('@ss/models/controller/ReqAuthLogin');
 const Inventory = require('@ss/models/mongo/Inventory');
@@ -21,6 +22,7 @@ module.exports = async (ctx, next) => {
     const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
     const ip = ctx.$req.clientIp;
 
+    console.log("reqAuthLogin - ", reqAuthLogin);
     ReqAuthLogin.validModel(reqAuthLogin);
     // reqAuthLogin.blockIOS();
 
@@ -88,7 +90,7 @@ module.exports = async (ctx, next) => {
         eventList,
         mail: userService.getMailList(),
         inventory: userService.getInventory(),
-        honeyHistory: userService.getHoneyHistory()
+        honeyHistory: userService.getHoneyHistory(),
     });
 
     await next();
