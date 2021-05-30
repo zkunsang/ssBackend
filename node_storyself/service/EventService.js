@@ -95,7 +95,7 @@ class EventService extends Service {
         const pictureSlot = { itemId: 'pictureSlot', itemQny: 1 };
         itemList.push(pictureSlot);
 
-        const honey = { itemId: 'honey', itemQny: 1000 };
+        const honey = { itemId: 'honey', itemQny: 25 };
         itemList.push(honey);
 
         // const goldi = { itemId: 'PussInBoots', itemQny: 1 };

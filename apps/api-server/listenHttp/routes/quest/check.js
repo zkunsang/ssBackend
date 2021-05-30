@@ -26,11 +26,13 @@ module.exports = async (ctx, next) => {
     const questService = new QuestService(userInfo, logDate);
     const questInfo = await questService.getQuestInfo(storyId, questId);
 
-    const actionList = questService.parseAction(questInfo.storyAction);
-
-    console.log("** questInfo", actionList);
-
-    ctx.$res.success({ actionList });
+    if (questInfo) {
+        const actionList = questService.parseAction(questInfo.storyAction);
+        ctx.$res.success({ actionList });
+    }
+    else {
+        ctx.$res.success({ actionList: [] });
+    }
 
     await next();
 }
