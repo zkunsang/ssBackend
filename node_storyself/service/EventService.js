@@ -127,7 +127,7 @@ class EventService extends Service {
         ];
 
         const title = '스토리셀프에 오신걸 환영합니다!';
-        const message = '온 가족이 동화 속 주인공이 되는 스토리셀프! 스토리셀프에 오신걸 환영합니다!<br>다양한 스토리 세계로 여행을 떠나봐요.</br>';
+        const message = '온 가족이 동화 속 주인공이 되는 스토리셀프! 스토리셀프에 오신걸 환영합니다!<br>다양한 스토리 세계로 여행을 떠나봐요.';
 
         const sender = MailSender.EVENT;
         const senderId = eventId;
