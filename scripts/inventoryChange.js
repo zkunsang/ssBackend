@@ -33,9 +33,9 @@ async function test() {
         const userService = new UserService(userInfo, userDao, updateDate);
         const inventoryService = new InventoryService(userInfo, updateDate);
         await inventoryService.checkWrongInventory();
-        const userInventory = inventoryService.finalize();
-        userService.setInventory(userInventory);
+        // const userInventory = inventoryService.finalize();
+        // userService.setInventory(userInventory);
 
-        await userService.finalize();
+        // await userService.finalize();
     }
 }

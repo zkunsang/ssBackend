@@ -108,7 +108,7 @@ class EventService extends Service {
     async checkEvent() {
         // TODO: 임시 이벤트
         // 이벤트 리스트에서 이벤트들을 확인
-        const eventId = "12354";
+        const eventId = "1";
         const uid = this.getUID();
 
         const userEventInfo = await this.getUserEventDao().findOne({ uid });
@@ -126,8 +126,8 @@ class EventService extends Service {
             new EventReward({ eventId }, { action, addInfo, itemList })
         ];
 
-        const title = '안녕하세요';
-        const message = '만나서 반가워요';
+        const title = '스토리셀프에 오신걸 환영합니다!';
+        const message = '온 가족이 동화 속 주인공이 되는 스토리셀프! 스토리셀프에 오신걸 환영합니다!<br>다양한 스토리 세계로 여행을 떠나봐요.</br>';
 
         const sender = MailSender.EVENT;
         const senderId = eventId;
