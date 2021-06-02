@@ -19,8 +19,9 @@ class ServiceVariable extends Model {
     constructor({ key, value, updateDate }) {
         super();
         this[Schema.KEY.key] = ValidateUtil.setNullUndefined(key);
-        this[Schema.VALUE.key] = ValidateUtil.setNullUndefined(value);
         this[Schema.UPDATE_DATE.key] = ValidateUtil.setNullUndefined(updateDate);
+
+        this[Schema.VALUE.key] = value;
     }
 };
 
