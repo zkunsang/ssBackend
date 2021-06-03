@@ -14,10 +14,14 @@ const Schema = {
     START_KEY: { key: 'startKey', required: true, type: ValidType.STRING },
     TYPE: { key: 'type', required: true, type: ValidType.NUMBER },
     UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
+
+    ITEM_LIST: { key: 'itemList', required: false, type: ValidType.ARRAY },
+    FACE_LIST: { key: 'faceList', required: false, type: ValidType.ARRAY },
+    READ_TIME: { key: 'readTime', required: false, type: ValidType.NUMBER },
 }
 
 class StoryLog extends Model {
-    constructor({ uid, storyId, type, updateDate, startKey }) {
+    constructor({ uid, storyId, type, updateDate, startKey, faceList, itemList, readTime }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -26,6 +30,9 @@ class StoryLog extends Model {
         this[Schema.TYPE.key] = ValidateUtil.setNullUndefined(type);
         this[Schema.UPDATE_DATE.key] = ValidateUtil.setNullUndefined(updateDate);
 
+        this[Schema.FACE_LIST.key] = faceList;
+        this[Schema.ITEM_LIST.key] = itemList;
+        this[Schema.READ_TIME.key] = readTime;
     }
 }
 

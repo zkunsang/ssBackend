@@ -17,6 +17,7 @@ module.exports = async (ctx, next) => {
 
     const storyId = reqStoryEnd.getStoryId();
     const startKey = reqStoryEnd.getStartKey();
+    const readTime = reqStoryEnd.getReadTime();
 
     const storyInfo = StoryCache.get(storyId);
 
@@ -32,26 +33,26 @@ module.exports = async (ctx, next) => {
     const userService = new UserService(userInfo, userDao, updateDate);
     const storyService = new StoryService(userInfo, updateDate);
 
-    storyService.checkHasStory(storyId);
-    storyService.endLog(storyId, startKey);
+    // storyService.checkHasStory(storyId);
+    storyService.endLog(storyId, startKey, readTime);
     await storyService.finalize();
 
-    const storyEventService = new StoryEventService(userInfo, updateDate);
-    const eventRewardList = await storyEventService.storyEvent(storyId);
+    // const storyEventService = new StoryEventService(userInfo, updateDate);
+    // const eventRewardList = await storyEventService.storyEvent(storyId);
 
-    if (eventRewardList.length > 0) {
-        const inventoryService = new InventoryService(userInfo, updateDate);
-        inventoryService.putEventItemList(eventRewardList);
+    // if (eventRewardList.length > 0) {
+    //     const inventoryService = new InventoryService(userInfo, updateDate);
+    //     inventoryService.putEventItemList(eventRewardList);
 
-        const inventory = inventoryService.finalize();
-        userService.setInventory(inventory);
+    //     const inventory = inventoryService.finalize();
+    //     userService.setInventory(inventory);
 
-        ctx.$res.addData({ inventory });
-    }
+    //     ctx.$res.addData({ inventory });
+    // }
 
-    await userService.finalize();
+    // await userService.finalize();
 
-    ctx.$res.success();
+    ctx.$res.success({ startKey });
 
     await next();
 }

@@ -82,22 +82,22 @@ class StoryService extends Service {
 
 
 
-    startLog(storyId, startKey) {
+    startLog(storyId, startKey, faceList, itemList) {
         const uid = this.getUID();
         const updateDate = this.getUpdateDate();
         const type = StoryLog.StoryLogType.START;
 
-        const storyLog = new StoryLog({ uid, storyId, updateDate, type, startKey });
+        const storyLog = new StoryLog({ uid, storyId, updateDate, type, startKey, faceList, itemList });
         this.pushStoryLogList(storyLog);
 
     }
 
-    endLog(storyId, startKey) {
+    endLog(storyId, startKey, readTime) {
         const uid = this.getUID();
         const updateDate = this.getUpdateDate();
         const type = StoryLog.StoryLogType.END;
 
-        const storyLog = new StoryLog({ uid, storyId, updateDate, type, startKey });
+        const storyLog = new StoryLog({ uid, storyId, updateDate, type, startKey, readTime });
         this.pushStoryLogList(storyLog);
     }
 

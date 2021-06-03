@@ -14,26 +14,29 @@ module.exports = async (ctx, next) => {
     const storyId = reqStoryStart.getStoryId();
     const storyInfo = StoryCache.get(storyId);
 
+    const itemList = reqStoryStart.getItemList();
+    const faceList = reqStoryStart.getFaceList();
+
     if (!storyInfo) {
         ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
         return;
     }
 
-    if (true) {
-        const userInfo = ctx.$userInfo;
-        const storyService = new StoryService(userInfo, updateDate);
-        const startKey = storyService.generateStartKey();
-        ctx.$res.success({ startKey });
-        return await next();
-    }
+    // if (true) {
+    //     const userInfo = ctx.$userInfo;
+    //     const storyService = new StoryService(userInfo, updateDate);
+    //     const startKey = storyService.generateStartKey();
+    //     ctx.$res.success({ startKey });
+    //     return await next();
+    // }
 
     const userInfo = ctx.$userInfo;
 
     const storyService = new StoryService(userInfo, updateDate);
 
-    storyService.checkHasStory(storyId);
-    storyService.startLog(storyId);
+    // storyService.checkHasStory(storyId);
     const startKey = storyService.generateStartKey();
+    storyService.startLog(storyId, startKey, faceList, itemList);
 
     await storyService.finalize();
 

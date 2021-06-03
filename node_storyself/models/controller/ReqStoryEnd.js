@@ -6,15 +6,16 @@ const ValidType = ValidateUtil.ValidType;
 const Schema = {
     STORY_ID: { key: 'storyId', required: true, type: ValidType.STRING },
     START_KEY: { key: 'startKey', required: true, type: ValidType.STRING },
+    READ_TIME: { key: 'readTime', required: true, type: ValidType.NUMBER },
 }
 
 class ReqStoryEnd extends Model {
-    constructor({ storyId, startKey }) {
+    constructor({ storyId, startKey, readTime }) {
         super();
 
         this[Schema.STORY_ID.key] = storyId;
         this[Schema.START_KEY.key] = startKey;
-
+        this[Schema.READ_TIME.key] = readTime;
     }
 
     getStoryId() {
@@ -23,6 +24,10 @@ class ReqStoryEnd extends Model {
 
     getStartKey() {
         return this[Schema.START_KEY.key];
+    }
+
+    getReadTime() {
+        return this[Schema.READ_TIME.key];
     }
 }
 

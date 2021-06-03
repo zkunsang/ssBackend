@@ -8,18 +8,20 @@ const Schema = {
     DEBUG_LOG: { key: 'debugLog', required: true, type: ValidType.STRING },
     LOCATION: { key: 'location', required: true, type: ValidType.NUMBER },
     ERR_CODE: { key: 'errCode', required: false, type: ValidType.STRING },
+    FAIL_CODE: { key: 'failCode', required: false, type: ValidType.NUMBER },
 }
 
 class ReqLogPicture extends Model {
-    constructor({ success, location ,debugLog, errCode }) {
+    constructor({ success, location, debugLog, errCode, failCode }) {
         super();
 
         this[Schema.SUCCESS.key] = success;
         this[Schema.LOCATION.key] = location;
         this[Schema.DEBUG_LOG.key] = debugLog;
         this[Schema.ERR_CODE.key] = errCode;
+        this[Schema.FAIL_CODE.key] = failCode;
     }
-    
+
     getSuccess() {
         return this[Schema.SUCCESS.key];
     }
@@ -34,6 +36,10 @@ class ReqLogPicture extends Model {
 
     getErrCode() {
         return this[Schema.ERR_CODE.key];
+    }
+
+    getFailCode() {
+        return this[Schema.FAIL_CODE.key];
     }
 }
 
