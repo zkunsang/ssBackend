@@ -5,8 +5,8 @@ const ValidType = ValidateUtil.ValidType;
 
 const Schema = {
     STORY_ID: { key: 'storyId', required: true, type: ValidType.STRING },
-    START_KEY: { key: 'startKey', required: true, type: ValidType.STRING },
-    READ_TIME: { key: 'readTime', required: true, type: ValidType.NUMBER },
+    START_KEY: { key: 'startKey', required: false, type: ValidType.STRING },
+    READ_TIME: { key: 'readTime', required: false, type: ValidType.NUMBER },
 }
 
 class ReqStoryEnd extends Model {
