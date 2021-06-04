@@ -72,7 +72,7 @@ module.exports = async (ctx, next) => {
 
     await eventService.finalize();
     await userService.finalize();
-    authService.finalize();
+    authService.finalize(userInfo.uid);
 
     const { fcmToken } = userInfo;
     const eventList = [];

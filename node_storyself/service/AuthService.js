@@ -34,7 +34,7 @@ const Schema = {
     FCM_TOKEN: { key: 'fcmToken', required: false, type: ValidType.STRING },
 
     LOGIN_DATE: { key: 'loginDate', required: true, type: ValidType.UNIX_TIMESTAMP },
-    IP: { key: "ip", required: true, type: ValidType.STRING }
+    IP: { key: "ip", required: true, type: ValidType.STRING },
 }
 
 class AuthService extends Service {
@@ -71,9 +71,12 @@ class AuthService extends Service {
         this[Schema.IP.key] = ip;
     }
 
-    finalize() {
+    finalize(uid) {
         const loginDate = this.getLoginDate();
         const reqAuthLogin = this.getReqAuthLogin();
+
+        reqAuthLogin.uid = uid;
+
         const ip = this.getIP();
 
         const loginLog = new LoginLog(reqAuthLogin, { ip, loginDate });
