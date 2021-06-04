@@ -17,7 +17,7 @@ module.exports = async (ctx, next) => {
 
     const serviceVariableDao = new ServiceVariableDao(ctx.$dbMongo);
 
-    const key = `${platform}_${version}`;
+    const key = `${platform}_${version}_servermessage`;
     const value = serverMessage ? serverMessage : "";
     const versionInfo = await serviceVariableDao.findOne({ key });
 

@@ -15,19 +15,24 @@ module.exports = async (ctx, next) => {
     const clientVersion = reqAuthCheck.getClientVersion();
     const platform = reqAuthCheck.getPlatform();
 
-    const checkKey = `${platform}_${clientVersion}`;
+    const serverMessageKey = `${platform}_${clientVersion}_servermessage`;
 
-    const checkValue = ServiceVariableCache.get(checkKey);
-    if (!checkValue) {
-        return ctx.$res.success({});
+    const serveMessageValue = ServiceVariableCache.get(serverMessageKey);
+    if (serveMessageValue) {
+        const serverMessage = serveMessageValue.value;
+        ctx.$res.addData({ serverMessage });
     }
 
-    const serverMessage = checkValue.value;
+    const couponEnableKey = `${platform}_${clientVersion}_couponenable`;
+    const couponEnableValue = ServiceVariableCache.get(couponEnableKey);
+    if (couponEnableValue) {
+        const couponEnable = couponEnableValue.value;
+        ctx.$res.addData({ couponEnable });
+    }
 
-    ctx.$res.success({ serverMessage });
+    ctx.$res.success();
 
     await next();
-
 }
 
 /**

@@ -13,11 +13,13 @@ module.exports = async (ctx, next) => {
     ReqServiceCouponEnable.validModel(reqServiceCouponEnable);
 
     const couponEnable = reqServiceCouponEnable.getCouponEnable();
+    const platform = reqServiceCouponEnable.getPlatform();
+    const version = reqServiceCouponEnable.getClientVersion();
+
     const serviceVariableDao = new ServiceVariableDao(ctx.$dbMongo);
 
-    const key = VariableKey.couponEnable;
-    const value = couponEnable;
-
+    const key = `${platform}_${version}_couponenable`;
+    const value = couponEnable ? couponEnable : false;
     const versionInfo = await serviceVariableDao.findOne({ key });
 
     if (versionInfo) await serviceVariableDao.updateOne({ key }, { value, updateDate });
