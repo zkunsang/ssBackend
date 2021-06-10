@@ -18,11 +18,11 @@ class ResContext {
 
         const aosVersion = ServiceVariableCache.get(VariableKey.aosAppVersion);
         const iosVersion = ServiceVariableCache.get(VariableKey.iosAppVersion);
-        // const couponEnable = ServiceVariableCache.get(VariableKey.couponEnable);
+        const couponEnable = ServiceVariableCache.get(VariableKey.couponEnable);
 
         this.ctx.body.common.aosAppVersion = aosVersion ? aosVersion.value : undefined;
         this.ctx.body.common.iosAppVersion = iosVersion ? iosVersion.value : undefined;
-        // this.ctx.body.common.couponEnable = couponEnable ? JSON.parse(couponEnable.value) : undefined;
+        this.ctx.body.common.couponEnable = couponEnable ? JSON.parse(couponEnable.value) : undefined;
 
         this.ctx.body.common.serverTime = ctx.$date;
     }
