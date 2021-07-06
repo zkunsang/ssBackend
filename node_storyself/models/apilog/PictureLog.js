@@ -11,10 +11,11 @@ const Schema = {
     DEBUG_LOG: { key: 'debugLog', required: false, type: ValidType.STRING },
     ERR_CODE: { key: 'errCode', required: false, type: ValidType.STRING },
     LOG_DATE: { key: 'logDate', required: false, type: ValidType.UNIX_TIMESTAMP },
+    RETRY: { key: 'retry', required: false, type: ValidType.BOOLEAN },
 }
 
 class PictureLog extends Model {
-    constructor({ uid, success, location, debugLog, logDate, errCode }) {
+    constructor({ uid, success, location, debugLog, logDate, errCode, retry }) {
         super();
         this[Schema.UID.key] = uid;
         this[Schema.SUCCESS.key] = success;
@@ -22,7 +23,8 @@ class PictureLog extends Model {
         this[Schema.LOCATION.key] = location;
         this[Schema.ERR_CODE.key] = errCode;
         this[Schema.LOG_DATE.key] = logDate;
-        
+        this[Schema.RETRY.key] = retry;
+
         this.logDateTZ = DateUtil.utsToDs(logDate);
     }
 }

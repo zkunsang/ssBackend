@@ -58,12 +58,12 @@ class LogService extends Service {
         voiceLogDao.insertOne(new VoiceLog({ uid, logDate, storyId, soundIndex, sceneIndex, length }));
     }
 
-    sendPictureLog({ success, debugLog, location, errCode }) {
+    sendPictureLog({ success, debugLog, location, errCode, retry }) {
         const uid = this.getUID();
         const logDate = this.getUpdateDate();
 
         const pictureLogDao = new PictureLogDao(dbMongo, logDate);
-        pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location }));
+        pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location, retry }));
     }
 
 

@@ -34,7 +34,8 @@ module.exports = async (ctx, next) => {
     const storyService = new StoryService(userInfo, updateDate);
 
     // storyService.checkHasStory(storyId);
-    storyService.endLog(storyId, startKey, readTime);
+    // storyService.endLog(storyId, startKey, readTime);
+    storyService.endLog(reqStoryEnd);
     await storyService.finalize();
 
     // const storyEventService = new StoryEventService(userInfo, updateDate);

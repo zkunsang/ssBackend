@@ -9,10 +9,11 @@ const Schema = {
     LOCATION: { key: 'location', required: true, type: ValidType.NUMBER },
     ERR_CODE: { key: 'errCode', required: false, type: ValidType.STRING },
     FAIL_CODE: { key: 'failCode', required: false, type: ValidType.NUMBER },
+    RETRY: { key: 'retry', required: false, type: ValidType.BOOLEAN },
 }
 
 class ReqLogPicture extends Model {
-    constructor({ success, location, debugLog, errCode, failCode }) {
+    constructor({ success, location, debugLog, errCode, failCode, retry }) {
         super();
 
         this[Schema.SUCCESS.key] = success;
@@ -20,6 +21,7 @@ class ReqLogPicture extends Model {
         this[Schema.DEBUG_LOG.key] = debugLog;
         this[Schema.ERR_CODE.key] = errCode;
         this[Schema.FAIL_CODE.key] = failCode;
+        this[Schema.RETRY.key] = retry;
     }
 
     getSuccess() {

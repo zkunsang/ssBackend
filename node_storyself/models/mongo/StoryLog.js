@@ -18,10 +18,16 @@ const Schema = {
     ITEM_LIST: { key: 'itemList', required: false, type: ValidType.ARRAY },
     FACE_LIST: { key: 'faceList', required: false, type: ValidType.ARRAY },
     READ_TIME: { key: 'readTime', required: false, type: ValidType.NUMBER },
+
+    READ_PAGE: { key: 'readPage', required: false, type: ValidType.NUMBER },
+    RECORD: { key: 'record', required: false, type: ValidType.NUMBER },
+    RECORD_CURRENT: { key: 'recordCurrent', required: false, type: ValidType.NUMBER },
+
+    FORCE_END: { key: 'forceEnd', required: false, type: ValidType.BOOLEAN },
 }
 
 class StoryLog extends Model {
-    constructor({ uid, storyId, type, updateDate, startKey, faceList, itemList, readTime }) {
+    constructor({ uid, storyId, type, updateDate, startKey, faceList, itemList, readTime, readPage, record, recordCurrent, forceEnd }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -33,6 +39,12 @@ class StoryLog extends Model {
         this[Schema.FACE_LIST.key] = faceList;
         this[Schema.ITEM_LIST.key] = itemList;
         this[Schema.READ_TIME.key] = readTime;
+
+        this[Schema.READ_PAGE.key] = readPage;
+        this[Schema.RECORD.key] = record;
+        this[Schema.RECORD_CURRENT.key] = recordCurrent;
+
+        this[Schema.FORCE_END.key] = forceEnd;
     }
 }
 
