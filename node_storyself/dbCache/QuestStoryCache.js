@@ -54,28 +54,28 @@ class QuestStoryCacheModel {
     }
 
     getQuestInfo(storyId, questId) {
-        return this.questStoryMap[storyId]?.questMap[questId];
+        return this.questStoryMap[storyId].questMap[questId];
     }
 
     getQuestListByTargetId(storyId, actionId) {
         if (!this.questStoryMap[storyId])
             return null;
 
-        return this.questStoryMap[storyId]?.questTargetMap[actionId];
+        return this.questStoryMap[storyId].questTargetMap[actionId];
     }
 
     getQuestRewardList(storyId, questId) {
         if (!this.questStoryMap[storyId])
             return null;
 
-        return this.questStoryMap[storyId]?.questRewardMap[questId];
+        return this.questStoryMap[storyId].questRewardMap[questId];
     }
 
     getQuestGoalList(storyId, questId) {
         if (!this.questStoryMap[storyId])
             return null;
 
-        return this.questStoryMap[storyId]?.questGoalMap[questId];
+        return this.questStoryMap[storyId].questGoalMap[questId];
     }
 }
 

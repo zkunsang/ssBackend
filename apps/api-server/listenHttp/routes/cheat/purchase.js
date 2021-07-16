@@ -18,6 +18,7 @@ module.exports = async (ctx, next) => {
 
     const productService = new ProductService(userInfo, purchaseDate);
     const productRewardList = productService.getForceProductRewardList(productId);
+    productService.setProductId(productId);
 
     const inventoryService = new InventoryService(userInfo, purchaseDate);
 
@@ -30,13 +31,15 @@ module.exports = async (ctx, next) => {
 
     const userService = new UserService(userInfo, userDao, purchaseDate);
 
+    userService.addPurchaseInfo(productService.getPurchaseInfo());
     userService.addHoneyHistory(cheatPutHistory);
     userService.setInventory(inventory);
     userService.finalize();
 
     const honeyHistory = userService.getHoneyHistory();
+    const productPurchase = userService.getProductPurhcase();
 
-    ctx.$res.success({ inventory, honeyHistory });
+    ctx.$res.success({ inventory, honeyHistory, productPurchase });
 
     await next();
 }

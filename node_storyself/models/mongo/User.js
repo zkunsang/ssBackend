@@ -22,12 +22,13 @@ const Schema = {
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
     MAIL: { key: 'mail', required: false, type: ValidType.OBJECT },
     HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY },
+    PRODUCT_PURCHASE: { key: 'productPurchase', required: false, type: ValidType.ARRAY },
 
     PUID: { key: 'puid', required: false, type: ValidType.STRING },
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -40,9 +41,12 @@ class User extends Model {
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
         this[Schema.PUID.key] = ValidateUtil.setNullUndefined(puid);
 
+
         this[Schema.INVENTORY.key] = inventory || [];
         this[Schema.MAIL.key] = mail || {};
         this[Schema.HONEY_HISTORY.key] = honeyHistory || [];
+
+        this[Schema.PRODUCT_PURCHASE.key] = productPurchase || [];
     }
 
     getSessionId() {

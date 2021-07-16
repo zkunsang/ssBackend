@@ -17,6 +17,7 @@ const Schema = {
     UPDATE_DATE: { key: 'updateDate', required: false, type: ValidType.UNIX_TIMESTAMP },
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
     HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY },
+    PRODUCT_PURCHASE: { key: 'productPurchase', required: false, type: ValidType.ARRAY },
     MAIL: { key: 'mail', required: false, type: ValidType },
 }
 
@@ -79,6 +80,15 @@ class UserService extends Service {
         return this[Schema.USER_INFO.key][Schema.HONEY_HISTORY.key];
     }
 
+    getProductPurhcase() {
+        return this[Schema.USER_INFO.key][Schema.PRODUCT_PURCHASE.key];
+    }
+
+    addPurchaseInfo(productInfo) {
+        if (!productInfo) return;
+        this.setChange();
+        return this[Schema.USER_INFO.key][Schema.PRODUCT_PURCHASE.key].push(productInfo);
+    }
 
     setInventory(inventory) {
         this.setChange();

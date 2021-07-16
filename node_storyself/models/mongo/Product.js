@@ -22,7 +22,7 @@ const Schema = {
 class Product extends Model {
     constructor({ productId, groupId, productType, costKr, costKrOrigin, apple, google, startDate, endDate, serverLimit, userLimit, tagColor }) {
         super();
-        
+
         this[Schema.PRODUCT_ID.key] = ValidateUtil.setNullUndefined(productId);
         this[Schema.GROUP_ID.key] = ValidateUtil.setNullUndefined(groupId);
         this[Schema.PRODUCT_TYPE.key] = ValidateUtil.setNullUndefined(productType);
@@ -43,6 +43,10 @@ class Product extends Model {
 
     getProductId() {
         return this[Schema.PRODUCT_ID.key];
+    }
+
+    getProductType() {
+        return this[Schema.PRODUCT_TYPE.key];
     }
 }
 
