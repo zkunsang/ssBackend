@@ -12,6 +12,9 @@ const VoiceLog = require('../models/apilog/VoiceLog');
 const PictureLogDao = require('../daoMongo/PictureLogDao');
 const PictureLog = require('../models/apilog/PictureLog');
 
+const SceneLogDao = require('../daoMongo/SceneLogDao');
+const SceneLog = require('../models/apilog/SceneLog');
+
 const dbMongo = require('../dbMongo');
 
 const Schema = {
@@ -64,6 +67,14 @@ class LogService extends Service {
 
         const pictureLogDao = new PictureLogDao(dbMongo, logDate);
         pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location, retry }));
+    }
+
+    sendSceneLog({ storyId, lang, sceneIndex, elapsedTime }) {
+        const uid = this.getUID();
+        const logDate = this.getUpdateDate();
+
+        const sceneLogDao = new SceneLogDao(dbMongo, logDate);
+        sceneLogDao.insertOne(new SceneLog({ uid, storyId, lang, sceneIndex, elapsedTime, logDate }));
     }
 
 
