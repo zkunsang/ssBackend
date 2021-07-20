@@ -43,6 +43,7 @@ const PUT_ACTION = {
     },
     STORY_QUEST: [1007, 1],
 
+    READING_TOWN_PRICE_SALE: [1100, 1],
     WRONG_INVENTORY: [9000, 1],
 };
 

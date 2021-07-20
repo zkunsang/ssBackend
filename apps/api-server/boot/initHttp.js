@@ -39,7 +39,7 @@ module.exports = async () => {
         console.info('Listen API Server OK => ' + 'http:' + ss.configs.apiServer.port);
     });
 
-    if(!ss.configs.apiServer.sslKey)
+    if (!ss.configs.apiServer.isSsl)
         return;
 
     https.createServer({

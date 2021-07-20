@@ -21,7 +21,6 @@ const Schema = {
     MAIL: { key: 'mail', required: false, type: ValidType },
 }
 
-
 class UserService extends Service {
     /**
      * 
