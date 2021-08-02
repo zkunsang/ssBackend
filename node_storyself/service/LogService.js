@@ -12,6 +12,9 @@ const VoiceLog = require('../models/apilog/VoiceLog');
 const PictureLogDao = require('../daoMongo/PictureLogDao');
 const PictureLog = require('../models/apilog/PictureLog');
 
+const FeedbackLogDao = require('../daoMongo/FeedbackLogDao');
+const FeedbackLog = require('../models/apilog/FeedbackLog');
+
 const dbMongo = require('../dbMongo');
 
 const Schema = {
@@ -66,7 +69,13 @@ class LogService extends Service {
         pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location, retry }));
     }
 
+    sendFeedbackLog({ point, desc, debugString }) {
+        const uid = this.getUID();
+        const logDate = this.getUpdateDate();
 
+        const feedbackLogDao = new FeedbackLogDao(dbMongo, logDate);
+        feedbackLogDao.insertOne(new FeedbackLog({ uid, logDate, point, desc, debugString }));
+    }
 
     throwNoExitMail(uid, mailId) {
         throw new SSError.Service(

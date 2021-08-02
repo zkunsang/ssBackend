@@ -19,7 +19,7 @@ class ReqLogVoice extends Model {
         this[Schema.SOUND_INDEX.key] = soundIndex;
         this[Schema.LENGTH.key] = length;
     }
-    
+
     getStoryId() {
         return this[Schema.STORY_ID.key];
     }
