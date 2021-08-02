@@ -100,8 +100,6 @@ class MailService extends Service {
         const date = this.getUpdateDate();
         const dueDate = DateUtil.addDay(date, ADD_DAY);
 
-        console.log(dueDate);
-
         const status = MailStatus.SEND;
 
         const newMail = new Mail({ mailId, title, message, sender, status, itemList, itemInfo, writeDate: date, dueDate });

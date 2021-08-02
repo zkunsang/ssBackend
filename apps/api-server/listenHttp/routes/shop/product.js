@@ -48,6 +48,7 @@ module.exports = async (ctx, next) => {
 
     const inventory = inventoryService.finalize();
 
+    userService.addPurchaseInfo(productService.getPurchaseInfo());
     userService.setInventory(inventory);
     userService.addHoneyHistory(honeyHistory);
     userService.finalize();
@@ -57,7 +58,8 @@ module.exports = async (ctx, next) => {
     ctx.$res.success({
         inventory,
         purchaseState: 0,
-        honeyHistory: userService.getHoneyHistory()
+        honeyHistory: userService.getHoneyHistory(),
+        productPurchase: userService.getProductPurhcase()
     });
 
     await next();

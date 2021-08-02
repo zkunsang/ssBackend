@@ -26,7 +26,8 @@ const Schema = {
     PURCHASE_DATE: { key: 'purchaseDate', required: true, type: ValidType.UNIX_TIMESTAMP },
 
     UID: { key: 'uid', required: false, type: ValidType.STRING },
-    RECEIPT: { key: 'receipt', required: false, type: ValidType.STRING }
+    RECEIPT: { key: 'receipt', required: false, type: ValidType.STRING },
+    PRODUCT_ID: { key: 'productId', required: false, type: ValidType.STRING },
 }
 
 
@@ -39,6 +40,7 @@ class ProductService {
         this[Schema.UID.key] = uid;
 
         this[Schema.RECEIPT.key] = null;
+        this[Schema.PRODUCT_ID.key] = null;
     }
 
     getUID() {
@@ -159,9 +161,25 @@ class ProductService {
         return receipt;
     }
 
-    getProductId(productId) {
+    parseProductId(productId) {
         const splitProductList = productId.split('.');
         return splitProductList[splitProductList.length - 1];
+    }
+
+    setProductId(productId) {
+        this[Schema.PRODUCT_ID.key] = productId;
+    }
+
+    getProductId() {
+        return this[Schema.PRODUCT_ID.key];
+    }
+
+    getPurchaseInfo() {
+        const productId = this.getProductId();
+        const purchaseDate = this.getPurchaseDate();
+        const productInfo = ProductCache.get(productId);
+        if (productInfo.getProductType() === "package") return { productId, purchaseDate };
+        return null;
     }
 
     async checkValidate(url) {
@@ -201,7 +219,9 @@ class ProductService {
 
     getProductRewardList() {
         const { productId } = this.getReceipt();
-        return this.getForceProductRewardList(this.getProductId(productId));
+        const _productId = this.parseProductId(productId);
+        this.setProductId(_productId);
+        return this.getForceProductRewardList(_productId);
     }
 
     createProductLog(productInfo) {
@@ -224,7 +244,7 @@ class ProductService {
 
         const { productId } = this.getReceipt();
 
-        const productInfo = ProductCache.get(this.getProductId(productId));
+        const productInfo = ProductCache.get(this.parseProductId(productId));
 
         const productLog = this.createProductLog(productInfo);
 

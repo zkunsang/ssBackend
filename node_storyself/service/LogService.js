@@ -12,8 +12,12 @@ const VoiceLog = require('../models/apilog/VoiceLog');
 const PictureLogDao = require('../daoMongo/PictureLogDao');
 const PictureLog = require('../models/apilog/PictureLog');
 
+
 const FeedbackLogDao = require('../daoMongo/FeedbackLogDao');
 const FeedbackLog = require('../models/apilog/FeedbackLog');
+
+const SceneLogDao = require('../daoMongo/SceneLogDao');
+const SceneLog = require('../models/apilog/SceneLog');
 
 const dbMongo = require('../dbMongo');
 
@@ -75,6 +79,14 @@ class LogService extends Service {
 
         const feedbackLogDao = new FeedbackLogDao(dbMongo, logDate);
         feedbackLogDao.insertOne(new FeedbackLog({ uid, logDate, point, desc, debugString }));
+    }
+
+    sendSceneLog({ storyId, lang, sceneIndex, elapsedTime }) {
+        const uid = this.getUID();
+        const logDate = this.getUpdateDate();
+
+        const sceneLogDao = new SceneLogDao(dbMongo, logDate);
+        sceneLogDao.insertOne(new SceneLog({ uid, storyId, lang, sceneIndex, elapsedTime, logDate }));
     }
 
     throwNoExitMail(uid, mailId) {
