@@ -12,6 +12,8 @@ const VoiceLog = require('../models/apilog/VoiceLog');
 const PictureLogDao = require('../daoMongo/PictureLogDao');
 const PictureLog = require('../models/apilog/PictureLog');
 
+const PreviewLogDao = require('../daoMongo/PreviewLogDao');
+const PreviewLog = require('../models/apilog/PreviewLog');
 
 const FeedbackLogDao = require('../daoMongo/FeedbackLogDao');
 const FeedbackLog = require('../models/apilog/FeedbackLog');
@@ -71,6 +73,14 @@ class LogService extends Service {
 
         const pictureLogDao = new PictureLogDao(dbMongo, logDate);
         pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location, retry }));
+    }
+
+    sendPreviewLog({ success, debugLog, location, errCode, retry }) {
+        const uid = this.getUID();
+        const logDate = this.getUpdateDate();
+
+        const previewLogDao = new PreviewLogDao(dbMongo, logDate);
+        previewLogDao.insertOne(new PreviewLog({ uid, success, debugLog, errCode, logDate, location, retry }));
     }
 
     sendFeedbackLog({ point, desc, debugString }) {

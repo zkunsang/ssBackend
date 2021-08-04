@@ -48,6 +48,8 @@ module.exports = async (ctx, next) => {
     const inventoryService = new InventoryService(userInfo, loginDate);
     const mailService = new MailService(userInfo, loginDate);
 
+    let isNewUser = false;
+
     if (userService.isNewUser()) {
         const itemList = eventService.newUserEvent();
         const putItem = inventoryService.putItem(
@@ -56,6 +58,7 @@ module.exports = async (ctx, next) => {
 
         const initHoneyHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.USER_INIT);
         userService.addHoneyHistory(initHoneyHistory);
+        isNewUser = true;
     }
 
     const eventResult = await eventService.checkEvent();
@@ -91,7 +94,8 @@ module.exports = async (ctx, next) => {
         mail: userService.getMailList(),
         inventory: userService.getInventory(),
         honeyHistory: userService.getHoneyHistory(),
-        productPurchase: userService.getProductPurhcase()
+        productPurchase: userService.getProductPurhcase(),
+        isNewUser
     });
 
     await next();
