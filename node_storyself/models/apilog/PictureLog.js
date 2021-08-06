@@ -12,10 +12,11 @@ const Schema = {
     ERR_CODE: { key: 'errCode', required: false, type: ValidType.STRING },
     LOG_DATE: { key: 'logDate', required: false, type: ValidType.UNIX_TIMESTAMP },
     RETRY: { key: 'retry', required: false, type: ValidType.BOOLEAN },
+    PICTURE_TYPE: { key: 'pictureType', required: false, type: ValidType.NUMBER },
 }
 
 class PictureLog extends Model {
-    constructor({ uid, success, location, debugLog, logDate, errCode, retry }) {
+    constructor({ uid, success, location, debugLog, logDate, errCode, retry, pictureType }) {
         super();
         this[Schema.UID.key] = uid;
         this[Schema.SUCCESS.key] = success;
@@ -24,6 +25,7 @@ class PictureLog extends Model {
         this[Schema.ERR_CODE.key] = errCode;
         this[Schema.LOG_DATE.key] = logDate;
         this[Schema.RETRY.key] = retry;
+        this[Schema.PICTURE_TYPE.key] = pictureType;
 
         this.logDateTZ = DateUtil.utsToDs(logDate);
     }
