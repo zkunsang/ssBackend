@@ -12,7 +12,7 @@ const InventoryUse = require('../models/service/InventoryUse');
 const InventoryLog = require('../models/apilog/InventoryLog');
 const InventoryLogDao = require('../daoMongo/InventoryLogDao');
 
-const InventoryDao = require('../daoMongo/InventoryDao');
+// const InventoryDao = require('../daoMongo/InventoryDao');
 
 const dbMongo = require('../dbMongo');
 
@@ -276,18 +276,18 @@ class InventoryService extends Service {
 
     // 처음 인벤토리 구조를 rdb구조로 잘못 구성
     // rdb구조의 inventory -> mongodb구조의 inventory로 처리해주는 로직
-    async checkWrongInventory() {
-        const uid = this.getUID();
-        const userInventory = this.getUserInventory();
-        if (userInventory.length !== 0) return null;
+    // async checkWrongInventory() {
+    //     const uid = this.getUID();
+    //     const userInventory = this.getUserInventory();
+    //     if (userInventory.length !== 0) return null;
 
-        const inventoryDao = new InventoryDao(dbMongo);
-        const inventoryList = await inventoryDao.findMany({ uid });
+    //     const inventoryDao = new InventoryDao(dbMongo);
+    //     const inventoryList = await inventoryDao.findMany({ uid });
 
-        this.putItem(
-            PUT_ACTION.WRONG_INVENTORY, {},
-            inventoryList.map(item => new Inventory(item)));
-    }
+    //     this.putItem(
+    //         PUT_ACTION.WRONG_INVENTORY, {},
+    //         inventoryList.map(item => new Inventory(item)));
+    // }
 
 
     createInvenLog(origin, update, logType) {
