@@ -15,11 +15,15 @@ const Schema = {
     TEXTFILE: { key: 'textFile', required: false, type: ValidType.STRING },
     TEXTFILE_CRC32: { key: 'textFileCrc32', required: false, type: ValidType.STRING },
     TEXTFILE_VERSION: { key: 'textFileVersion', required: false, type: ValidType.NUMBER },
+
     FACE_TAG: { key: 'faceTag', required: true, type: ValidType.STRING },
+
+    LANG: { key: 'lang', required: true, type: ValidType.NUMBER },
+    PUBLISHER: { key: 'publisher', required: true, type: ValidType.NUMBER },
 }
 
 class Story extends Model {
-    constructor({ storyId, status, version, thumbnail, thumbnailCrc32, thumbnailVersion, textFile, textFileVersion, textFileCrc32, faceTag }) {
+    constructor({ storyId, status, version, thumbnail, thumbnailCrc32, thumbnailVersion, textFile, textFileVersion, textFileCrc32, faceTag, lang, publisher }) {
         super();
 
         this[Schema.STORY_ID.key] = ValidateUtil.setNullUndefined(storyId);
@@ -35,7 +39,9 @@ class Story extends Model {
         this[Schema.TEXTFILE_VERSION.key] = ValidateUtil.setNullUndefined(textFileVersion);
 
         this[Schema.FACE_TAG.key] = ValidateUtil.setNullUndefined(faceTag);
-        
+
+        this[Schema.LANG.key] = ValidateUtil.setNullUndefined(lang);
+        this[Schema.PUBLISHER.key] = ValidateUtil.setNullUndefined(publisher);
     }
 
     setVersion(version) {

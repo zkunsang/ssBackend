@@ -14,10 +14,12 @@ const Schema = {
     TEXTFILE_CRC32: { key: 'textFileCrc32', required: false, type: ValidType.STRING },
     TEXTFILE_VERSION: { key: 'textFileVersion', required: false, type: ValidType.NUMBER },
     FACE_TAG: { key: 'faceTag', required: true, type: ValidType.STRING },
+    LANG: { key: 'lang', required: true, type: ValidType.NUMBER },
+    PUBLISHER: { key: 'publisher', required: true, type: ValidType.NUMBER },
 }
 
 class ReqStoryCreate extends Model {
-    constructor({ storyId, status, thumbnail, thumbnailCrc32, thumbnailVersion, textFile, textFileCrc32, textFileVersion, faceTag}) {
+    constructor({ storyId, status, thumbnail, thumbnailCrc32, thumbnailVersion, textFile, textFileCrc32, textFileVersion, faceTag, lang, publisher }) {
         super();
         this[Schema.STORY_ID.key] = storyId;
         this[Schema.STATUS.key] = status;
@@ -31,6 +33,9 @@ class ReqStoryCreate extends Model {
         this[Schema.TEXTFILE_VERSION.key] = textFileVersion;
 
         this[Schema.FACE_TAG.key] = faceTag;
+
+        this[Schema.LANG.key] = lang;
+        this[Schema.PUBLISHER.key] = publisher;
     }
 
     getStoryId() {
