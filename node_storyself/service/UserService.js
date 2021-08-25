@@ -18,7 +18,8 @@ const Schema = {
     INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
     HONEY_HISTORY: { key: 'honeyHistory', required: false, type: ValidType.ARRAY },
     PRODUCT_PURCHASE: { key: 'productPurchase', required: false, type: ValidType.ARRAY },
-    MAIL: { key: 'mail', required: false, type: ValidType },
+    MAIL: { key: 'mail', required: false, type: ValidType.OBJECT },
+    SMC: { key: 'smc', required: false, type: ValidType.BOOLEAN }
 }
 
 class UserService extends Service {
@@ -87,6 +88,12 @@ class UserService extends Service {
         if (!productInfo) return;
         this.setChange();
         return this[Schema.USER_INFO.key][Schema.PRODUCT_PURCHASE.key].push(productInfo);
+    }
+
+    setSMC(smc) {
+        if (!smc) return;
+        this.setChange();
+        this[Schema.USER_INFO.key][Schema.SMC.key] = smc;
     }
 
     setInventory(inventory) {

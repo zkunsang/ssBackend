@@ -70,6 +70,9 @@ module.exports = async (ctx, next) => {
     const mail = mailService.putEventMailList(eventMailList);
     if (mail) userService.setMail(mail);
 
+    const smc = inventoryService.checkStoryMerge();
+    userService.setSMC(smc);
+
     const userInventory = inventoryService.finalize();
     userService.setInventory(userInventory);
 

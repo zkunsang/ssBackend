@@ -25,10 +25,11 @@ const Schema = {
     PRODUCT_PURCHASE: { key: 'productPurchase', required: false, type: ValidType.ARRAY },
 
     PUID: { key: 'puid', required: false, type: ValidType.STRING },
+    SMC: { key: 'smc', required: false, type: ValidType.BOOLEAN } // Story Merge Complete
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -40,7 +41,7 @@ class User extends Model {
         this[Schema.SESSION_ID.key] = ValidateUtil.setNullUndefined(sessionId);
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
         this[Schema.PUID.key] = ValidateUtil.setNullUndefined(puid);
-
+        this[Schema.SMC.key] = ValidateUtil.setNullUndefined(smc);
 
         this[Schema.INVENTORY.key] = inventory || [];
         this[Schema.MAIL.key] = mail || {};

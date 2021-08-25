@@ -30,6 +30,7 @@ const Schema = {
     RESOURCE_IOS_CACHE: 'resourceIosCache',
 
     QUEST_STORY_CACHE: 'questStoryCache',
+    SALE_EVENT_CACHE: 'saleEventCache',
 
     STORY_CACHE: 'storyCache',
     DATA_TABLE_CACHE: 'dataTableCache',
@@ -56,7 +57,7 @@ class CacheManager {
         this.cache[Schema.COUPON_REWARD_CACHE] = CouponRewardCache;
         this.cache[Schema.DATA_TABLE_CACHE] = DataTableCache;
         this.cache[Schema.QUEST_STORY_CACHE] = QuestStoryCache;
-        
+
         this.cache[Schema.IP_CACHE] = IPCache;
         this.cache[Schema.SERVICE_VARIABLE] = ServiceVariableCache;
     }
@@ -78,7 +79,7 @@ class CacheManager {
 
         await this.cache[Schema.IP_CACHE].ready();
         await this.cache[Schema.SERVICE_VARIABLE].ready();
-        
+
         await this.reloadDataTableCache();
         await this.reloadIPCache();
         await this.reloadServiceVariable();
@@ -121,7 +122,11 @@ class CacheManager {
     async reloadQuestStory() {
         await this.cache[Schema.QUEST_STORY_CACHE].loadDataWithoutVersion();
     }
- 
+
+    async reloadSaleEvent() {
+        await this.cache[Schema.SALE_EVENT_CACHE].loadDataWithoutVersion();
+    }
+
     async updateCache(tableName, version) {
         this.cache[tableName].loadData(version);
     }

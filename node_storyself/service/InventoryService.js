@@ -45,6 +45,7 @@ const PUT_ACTION = {
 
     READING_TOWN_PRICE_SALE: [1100, 1],
     WRONG_INVENTORY: [9000, 1],
+    STORY_MERGE: [9001, 1]
 };
 
 const USE_ACTION = {
@@ -228,6 +229,33 @@ class InventoryService extends Service {
         inventoryLogDao.insertMany([...putLogList, ...useLogList]);
 
         return Object.values(userInventoryMap);
+    }
+
+    checkStoryMerge() {
+        const userInfo = this.getUserInfo();
+        if (userInfo.smc) return false;
+
+        console.log("checkStoryMerge - start");
+
+        const inventoryList = this.getUserInventory();
+        const storySet = new Set();
+        for (let i = 0; i < inventoryList.length; i++) {
+            const inventory = inventoryList[i];
+            const itemData = ItemCache.get(inventory.itemId);
+            if (itemData.itemCategory !== 'story') continue;
+
+            storySet.add(itemData.groupId);
+        }
+
+        if (storySet.size == 0) return true;
+        const putList = Array.from(storySet.values());
+
+        for (let i = 0; i < putList.length; i++) {
+            const putItem = this.makeInventoryObject(`${putList[i]}_book`, 1);
+            this.putItem(PUT_ACTION.STORY_MERGE, {}, [putItem]);
+        }
+
+        return true;
     }
 
     processPut(userInvenMap) {
