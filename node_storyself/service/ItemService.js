@@ -10,6 +10,7 @@ const ValidType = ValidateUtil.ValidType;
 
 const User = require('../models/mongo/User');
 const Inventory = require('../models/mongo/Inventory');
+const SaleEventCache = require('@ss/dbCache/SaleEventCache');
 
 const Schema = {
     USER_INFO: { key: 'userInfo', required: true, type: ValidType.OBJECT, validObject: User },
@@ -88,19 +89,29 @@ class ItemService extends Service {
         }
     }
 
-    applyStorySale(putInventoryList, useInventoryList) {
-        if (!(putInventoryList.length > 1)) return;
+    applyStorySale(putInventoryList, useInventoryList, updateDate) {
+        const putItem = putInventoryList[0];
+        const storyId = putItem.itemId.replace("_book", "");
 
         for (let i = 0; i < useInventoryList.length; i++) {
             const useInven = useInventoryList[i];
 
-            if (i == 0) continue;
-
             // 50%할인
-            const cost = useInven.getItemQny();
+            let cost = useInven.getItemQny();
             const itemId = useInven.getItemId();
 
-            useInven.minusItem(new Inventory({ itemId, itemQny: parseInt(cost / 2) }));
+            const saleInfo = SaleEventCache.getSaleInfo(storyId, updateDate);
+
+            if (saleInfo) {
+                if (saleInfo.method === ValidateUtil.SaleEventMethod.PRICE) {
+                    cost = parseInt(saleInfo.value);
+                }
+                else if (saleInfo.method === ValidateUtil.SaleEventMethod.RATIO) {
+                    cost = cost * (1 - parseInt(saleInfo.value) / 100)
+                }
+            }
+
+            useInven.minusItem(new Inventory({ itemId, itemQny: cost }));
         }
     }
 

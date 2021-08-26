@@ -101,6 +101,17 @@ const MailStatus = {
     ADMIN_DELETE: 4
 }
 
+const SaleEventTarget = {
+    ALL: "ALL",
+    GROUP: "GROUP",
+    SPECIFIC: "SPECIFIC"
+}
+
+const SaleEventMethod = {
+    RATIO: "RATIO",
+    PRICE: "PRICE"
+}
+
 class ValidateUtil {
     constructor() {
         this.validFunc = {};
@@ -269,5 +280,7 @@ module.exports.IpManageType = IpManageType;
 module.exports.QuestActionType = QuestActionType;
 module.exports.MailSender = MailSender;
 module.exports.MailStatus = MailStatus;
+module.exports.SaleEventTarget = SaleEventTarget;
+module.exports.SaleEventMethod = SaleEventMethod;
 
 

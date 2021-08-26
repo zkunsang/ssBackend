@@ -10,6 +10,7 @@ const DataTableCache = require('@ss/dbCache/DataTableCache');
 const CouponCache = require('@ss/dbCache/CouponCache');
 const CouponRewardCache = require('@ss/dbCache/CouponRewardCache');
 const QuestStoryCache = require('@ss/dbCache/QuestStoryCache');
+const SaleEventCache = require('@ss/dbCache/SaleEventCache');
 
 
 const IPCache = require('@ss/dbCache/IPCache');
@@ -30,7 +31,6 @@ const Schema = {
     RESOURCE_IOS_CACHE: 'resourceIosCache',
 
     QUEST_STORY_CACHE: 'questStoryCache',
-    SALE_EVENT_CACHE: 'saleEventCache',
 
     STORY_CACHE: 'storyCache',
     DATA_TABLE_CACHE: 'dataTableCache',
@@ -39,7 +39,9 @@ const Schema = {
     COUPON_REWARD_CACHE: 'couponRewardCache',
 
     IP_CACHE: 'ipCache',
-    SERVICE_VARIABLE: 'serviceVariable'
+    SERVICE_VARIABLE: 'serviceVariable',
+
+    SALE_EVENT_CACHE: 'saleEventCache'
 }
 
 class CacheManager {
@@ -57,6 +59,7 @@ class CacheManager {
         this.cache[Schema.COUPON_REWARD_CACHE] = CouponRewardCache;
         this.cache[Schema.DATA_TABLE_CACHE] = DataTableCache;
         this.cache[Schema.QUEST_STORY_CACHE] = QuestStoryCache;
+        this.cache[Schema.SALE_EVENT_CACHE] = SaleEventCache;
 
         this.cache[Schema.IP_CACHE] = IPCache;
         this.cache[Schema.SERVICE_VARIABLE] = ServiceVariableCache;
@@ -76,6 +79,7 @@ class CacheManager {
         await this.cache[Schema.COUPON_CACHE].ready();
         await this.cache[Schema.COUPON_REWARD_CACHE].ready();
         await this.cache[Schema.QUEST_STORY_CACHE].ready();
+        await this.cache[Schema.SALE_EVENT_CACHE].ready();
 
         await this.cache[Schema.IP_CACHE].ready();
         await this.cache[Schema.SERVICE_VARIABLE].ready();
@@ -85,6 +89,8 @@ class CacheManager {
         await this.reloadServiceVariable();
         await this.reloadCoupon();
         await this.reloadQuestStory();
+
+        await this.reloadSaleEvent();
     }
 
     // pubsub으로 받음

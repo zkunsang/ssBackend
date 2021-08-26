@@ -23,7 +23,7 @@ module.exports = async (ctx, next) => {
 
     const { putInventoryList, useInventoryList }
         = itemService.getExchangeInventoryInfo(storyInvenList);
-    itemService.applyStorySale(putInventoryList, useInventoryList);
+    itemService.applyStorySale(putInventoryList, useInventoryList, updateDate);
     itemService.applyCoupon(useInventoryList, reqShopStory.getCouponId());
 
     inventoryService.checkAlready(putInventoryList);
