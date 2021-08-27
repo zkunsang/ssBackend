@@ -242,6 +242,7 @@ class InventoryService extends Service {
         for (let i = 0; i < inventoryList.length; i++) {
             const inventory = inventoryList[i];
             const itemData = ItemCache.get(inventory.itemId);
+            if (!itemData) { console.log(`${inventory.itemId} is null`); }
             if (itemData.itemCategory !== 'story') continue;
 
             storySet.add(itemData.groupId);
