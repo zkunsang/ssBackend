@@ -97,21 +97,22 @@ class ItemService extends Service {
             const useInven = useInventoryList[i];
 
             // 50%할인
-            let cost = useInven.getItemQny();
+            const cost = useInven.getItemQny();
             const itemId = useInven.getItemId();
+            let saleCost = 0;
 
             const saleInfo = SaleEventCache.getSaleInfo(storyId, updateDate);
 
             if (saleInfo) {
-                if (saleInfo.method === ValidateUtil.SaleEventMethod.PRICE) {
-                    cost = parseInt(saleInfo.value);
+                if (saleInfo.saleMethod === ValidateUtil.SaleEventMethod.PRICE) {
+                    saleCost = cost - parseInt(saleInfo.value);
                 }
-                else if (saleInfo.method === ValidateUtil.SaleEventMethod.RATIO) {
-                    cost = cost * (1 - parseInt(saleInfo.value) / 100)
+                else if (saleInfo.saleMethod === ValidateUtil.SaleEventMethod.RATIO) {
+                    saleCost = cost * (parseInt(saleInfo.value) / 100);
                 }
             }
 
-            useInven.minusItem(new Inventory({ itemId, itemQny: cost }));
+            useInven.minusItem(new Inventory({ itemId, itemQny: saleCost }));
         }
     }
 

@@ -24,8 +24,8 @@ class SaleEventCacheModel {
         const storySaleList = this.saleEventList[0].story;
         for (let i = 0; i < storySaleList.length; i++) {
             const storySale = storySaleList[i];
-            if (storySale.startDate > now) continue;
-            if (storySale.endDate < now) continue;
+            if (storySale.startDate > now / 1000) continue;
+            if (storySale.endDate < now / 1000) continue;
 
             if (storySale.target === SaleEventTarget.ALL) return storySale;
 
