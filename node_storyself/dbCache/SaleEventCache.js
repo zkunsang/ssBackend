@@ -8,7 +8,7 @@ const SaleStoryEvent = require('@ss/models/mongo/SaleStoryEvent');
 const { SaleEventTarget } = require('@ss/util/ValidateUtil');
 const StoryCache = require('./StoryCache');
 
-const tableId = 'coupon';
+const tableId = 'saleEvent';
 
 class SaleEventCacheModel {
     constructor() {
@@ -31,11 +31,11 @@ class SaleEventCacheModel {
 
             if (storySale.target === SaleEventTarget.GROUP) {
                 const storyData = StoryCache.get(storyId);
-                if (storyData.publisher === storySale.group) return storySale;
+                if (storyData.publisher === storySale.publisher) return storySale;
             }
 
             if (storySale.target === SaleEventTarget.SPECIFIC) {
-                const _specific = storySale.storyList.includes(item => item === storyId)
+                const _specific = storySale.storyList.includes(storyId)
                 if (_specific) return storySale;
             }
         }
