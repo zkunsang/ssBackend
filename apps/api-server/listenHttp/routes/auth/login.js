@@ -37,7 +37,7 @@ module.exports = async (ctx, next) => {
 
     if (userInfo) {
         const oldSessionId = authService.login(userInfo, sessionId);
-        await sessionDao.del(oldSessionId);
+        // await sessionDao.del(oldSessionId);
     }
     else {
         userInfo = await authService.signIn(sessionId);

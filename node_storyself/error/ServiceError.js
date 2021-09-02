@@ -23,6 +23,7 @@ const code = {
     noExistSession: { code: 34001, name: 'noExistSession', message: 'noExistSession' },
     serviceUnavailable: { code: 34002, name: 'serviceUnavailable', message: 'serviceUnavailable' },
     prepareService: { code: 34003, name: 'prepareService', message: 'prepareService' },
+    loginFromOtherDevice: { code: 34004, name: 'logged in from other device', message: 'logged in from other device' },
 
     couponNoExist: { code: 35001, name: 'couponNoExist', message: 'couponNoExist' },
     couponAlreadyUsed: { code: 35002, name: 'couponAlreadyUsed', message: 'couponAlreadyUsed' },

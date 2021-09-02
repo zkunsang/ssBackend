@@ -14,13 +14,14 @@ const ResContext = require('../context/ResContext');
 module.exports = async (ctx, next) => {
     const reqSession = new ReqSession(ctx.request.body);
     ReqSession.validModel(reqSession);
-    
+
     const sessionDao = new SessionDao(dbRedis);
 
     const sessionId = reqSession.getSessionId();
-    const sessionObj = await sessionDao.get(sessionId)
+    const sessionObj = await sessionDao.get(sessionId);
 
-    if(!sessionObj) {
+    // 세션 종료
+    if (!sessionObj) {
         ctx.$res.unauthorized(SSError.Service.Code.noExistSession);
         return;
     }
@@ -30,6 +31,12 @@ module.exports = async (ctx, next) => {
 
     const userDao = new UserDao(dbMongo);
     const userInfo = await userDao.findOne({ uid: userSessionInfo.getUID() });
+
+    if (userInfo.sessionId !== userSessionInfo.sessionId) {
+        ctx.$res.unauthorized(SSError.Service.Code.loginFromOtherDevice);
+        return;
+    }
+
 
     ctx.$dbMongo = dbMongo;
     ctx.$dbRedis = dbRedis;
