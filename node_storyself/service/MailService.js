@@ -93,7 +93,7 @@ class MailService extends Service {
         this[Schema.DEL_LOG.key].push(delLog);
     }
 
-    sendMail({ title, message, sender, senderId, itemList, itemInfo }) {
+    sendMail({ title, title_en, message, message_en, sender, senderId, itemList, itemInfo }) {
         const ADD_DAY = 5;
         const uid = this.getUID();
         const mailId = shortid.generate();
@@ -102,7 +102,7 @@ class MailService extends Service {
 
         const status = MailStatus.SEND;
 
-        const newMail = new Mail({ mailId, title, message, sender, status, itemList, itemInfo, writeDate: date, dueDate });
+        const newMail = new Mail({ mailId, title, title_en, message, message_en, sender, status, itemList, itemInfo, writeDate: date, dueDate });
         const mailSendLog = new MailSendLog({ uid, date, ...newMail, senderId });
 
         this.pushSendLog(mailSendLog);

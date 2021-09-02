@@ -6,8 +6,11 @@ const MailSender = ValidateUtil.MailSender;
 
 const Schema = {
     MAIL_ID: { key: 'mailId', required: true, type: ValidType.STRING },
-    TITLE: { key: 'title', required: true, type: ValidType.STRING },
-    MESSAGE: { key: 'message', required: true, type: ValidType.STRING },
+
+    TITLE: { key: 'title', required: false, type: ValidType.STRING },
+    TITLE_EN: { key: 'title_en', required: false, type: ValidType.STRING },
+    MESSAGE: { key: 'message', required: false, type: ValidType.STRING },
+    MESSAGE_EN: { key: 'message_en', required: false, type: ValidType.STRING },
     SENDER: { key: 'sender', required: true, type: ValidType.NUMBER, validRange: Object.values(MailSender) },
 
     ITEM_LIST: { key: 'itemList', required: false, type: ValidType.ARRAY },
@@ -21,12 +24,17 @@ const Schema = {
 }
 
 class Mail extends Model {
-    constructor({ mailId, title, message, sender, status, itemList, itemInfo, writeDate, readDate, dueDate }) {
+    constructor({ mailId, title, title_en, message, message_en, sender, status, itemList, itemInfo, writeDate, readDate, dueDate }) {
         super();
 
         this[Schema.MAIL_ID.key] = mailId;
+
         this[Schema.TITLE.key] = title;
+        this[Schema.TITLE_EN.key] = title_en;
+
         this[Schema.MESSAGE.key] = message;
+        this[Schema.MESSAGE_EN.key] = message_en;
+
         this[Schema.SENDER.key] = sender;
         this[Schema.ITEM_LIST.key] = itemList;
         this[Schema.ITEM_INFO.key] = itemInfo;

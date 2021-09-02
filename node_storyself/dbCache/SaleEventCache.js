@@ -39,7 +39,6 @@ class SaleEventCacheModel {
                 if (_specific) return storySale;
             }
         }
-
     }
 }
 

@@ -126,8 +126,10 @@ class EventService extends Service {
             new EventReward({ eventId }, { action, addInfo, itemList })
         ];
 
-        const title = '스토리셀프에 오신걸 환영합니다!';
+        const title = '첫 방문 기념 25꿀 증정';
+        const title_en = '25 honey gift for the first visit!'
         const message = '온 가족이 동화 속 주인공이 되는 스토리셀프! 스토리셀프에 오신걸 환영합니다!<br>다양한 스토리 세계로 여행을 떠나봐요.';
+        const message_en = `Welcome to StorySelf!!<br>Make own story with the family!<br>Let's travel to the various stories.`;
 
         const sender = MailSender.EVENT;
         const senderId = eventId;
@@ -140,7 +142,7 @@ class EventService extends Service {
         };
 
         const eventMailList = [
-            { title, message, sender, senderId, itemList: emailItemList, itemInfo }
+            { title, title_en, message, message_en, sender, senderId, itemList: emailItemList, itemInfo }
         ];
 
         this.pushEventCheckList(eventInfo);
