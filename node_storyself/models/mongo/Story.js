@@ -16,14 +16,15 @@ const Schema = {
     TEXTFILE_CRC32: { key: 'textFileCrc32', required: false, type: ValidType.STRING },
     TEXTFILE_VERSION: { key: 'textFileVersion', required: false, type: ValidType.NUMBER },
 
-    FACE_TAG: { key: 'faceTag', required: true, type: ValidType.STRING },
+    FACE_TAG: { key: 'faceTag', required: false, type: ValidType.STRING },
 
-    LANG: { key: 'lang', required: true, type: ValidType.NUMBER },
-    PUBLISHER: { key: 'publisher', required: true, type: ValidType.NUMBER },
+    LANG: { key: 'lang', required: false, type: ValidType.NUMBER },
+    PUBLISHER: { key: 'publisher', required: false, type: ValidType.NUMBER },
+    EXPOSE: { key: 'expose', required: false, type: ValidType.NUMBER },
 }
 
 class Story extends Model {
-    constructor({ storyId, status, version, thumbnail, thumbnailCrc32, thumbnailVersion, textFile, textFileVersion, textFileCrc32, faceTag, lang, publisher }) {
+    constructor({ storyId, status, version, thumbnail, thumbnailCrc32, thumbnailVersion, textFile, textFileVersion, textFileCrc32, faceTag, lang, publisher, expose }) {
         super();
 
         this[Schema.STORY_ID.key] = ValidateUtil.setNullUndefined(storyId);
@@ -42,6 +43,7 @@ class Story extends Model {
 
         this[Schema.LANG.key] = ValidateUtil.setNullUndefined(lang);
         this[Schema.PUBLISHER.key] = ValidateUtil.setNullUndefined(publisher);
+        this[Schema.EXPOSE.key] = ValidateUtil.setNullUndefined(expose);
     }
 
     setVersion(version) {
