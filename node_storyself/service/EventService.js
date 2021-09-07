@@ -127,9 +127,9 @@ class EventService extends Service {
         ];
 
         const title = '첫 방문 기념 25꿀 증정';
-        const title_en = '25 honey gift for the first visit!'
-        const message = '온 가족이 동화 속 주인공이 되는 스토리셀프! 스토리셀프에 오신걸 환영합니다!<br>다양한 스토리 세계로 여행을 떠나봐요.';
-        const message_en = `Welcome to StorySelf!!<br>Make own story with the family!<br>Let's travel to the various stories.`;
+        const title_en = 'Get 25 honey jar for your first visit.'
+        const message = '첫 방문 기념 25꿀을 드려요. 다양한 스토리 구매, 악세사리 구매에 활용해보세요.';
+        const message_en = `Your free 25 Honey jars for the first visit. You can use them to purchase stories or in app accesorries.`;
 
         const sender = MailSender.EVENT;
         const senderId = eventId;
