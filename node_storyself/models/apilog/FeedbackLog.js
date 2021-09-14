@@ -11,7 +11,7 @@ const Schema = {
     DEBUG_STRING: { key: 'debugString', required: false, type: ValidType.STRING },
 }
 
-class PictureLog extends Model {
+class FeedbackLog extends Model {
     constructor({ uid, point, desc, debugString, logDate }) {
         super();
         this[Schema.UID.key] = uid;
@@ -23,5 +23,5 @@ class PictureLog extends Model {
     }
 }
 
-module.exports = PictureLog;
+module.exports = FeedbackLog;
 module.exports.Schema = Schema;

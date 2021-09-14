@@ -1,5 +1,10 @@
+const InventoryService = require('@ss/service/InventoryService');
+const UserService = require('@ss/service/UserService');
+
 const ReqLogFeedback = require('@ss/models/controller/ReqLogFeedback');
 const LogService = require("@ss/service/LogService");
+
+const Inventory = require('@ss/models/mongo/Inventory');
 
 module.exports = async (ctx, next) => {
     const reqLogFeedback = new ReqLogFeedback(ctx.request.body);
@@ -8,12 +13,39 @@ module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
     const logDate = ctx.$date;
 
+    // 만약 이미 feedback을 받았다면
+    if (userInfo.feedBack) ctx.$res.success({ feedback: true });
+
+    const userService = new UserService(userInfo, null, logDate);
+
+    const inventoryService = new InventoryService(userInfo, logDate);
+
+    inventoryService.putItem(
+        InventoryService.PUT_ACTION.EVENT, {},
+        [new Inventory({ itemId: 'honey', itemQny: 5 })]);
+
+    const inventory = inventoryService.finalize();
+
+    userService.setInventory(inventory);
+    userService.setFeedback(true);
+    userService.finalize();
+
     const logService = new LogService(userInfo, logDate);
     logService.sendFeedbackLog(reqLogFeedback);
 
-    ctx.$res.success({});
+    ctx.$res.success({ inventory, feedback: true });
 
     await next();
+
+
+}
+
+function getFeedbackReward() {
+    const itemList = [];
+    const honey = { itemId: 'honey', itemQny: 5 };
+    itemList.push(honey);
+
+    return itemList;
 }
 
 /**

@@ -25,11 +25,14 @@ const Schema = {
     PRODUCT_PURCHASE: { key: 'productPurchase', required: false, type: ValidType.ARRAY },
 
     PUID: { key: 'puid', required: false, type: ValidType.STRING },
-    SMC: { key: 'smc', required: false, type: ValidType.BOOLEAN } // Story Merge Complete
+    // Story Merge Complete
+    SMC: { key: 'smc', required: false, type: ValidType.BOOLEAN },
+
+    FEEDBACK: { key: 'feedback', required: false, type: ValidType.BOOLEAN }
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc, feedback }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -42,6 +45,7 @@ class User extends Model {
         this[Schema.FCM_TOKEN.key] = ValidateUtil.setNullUndefined(fcmToken);
         this[Schema.PUID.key] = ValidateUtil.setNullUndefined(puid);
         this[Schema.SMC.key] = ValidateUtil.setNullUndefined(smc);
+        this[Schema.FEEDBACK.key] = ValidateUtil.setNullUndefined(feedback);
 
         this[Schema.INVENTORY.key] = inventory || [];
         this[Schema.MAIL.key] = mail || {};
@@ -100,6 +104,14 @@ class User extends Model {
 
     setPUID(puid) {
         this[Schema.PUID.key] = puid;
+    }
+
+    setFeedback(feedback) {
+        this[Schema.FEEDBACK.key] = feedback;
+    }
+
+    getFeedback() {
+        return this[Schema.FEEDBACK.key];
     }
 };
 

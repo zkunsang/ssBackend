@@ -9,7 +9,7 @@ module.exports = async (ctx, next) => {
     const logDate = ctx.$date;
 
     const logService = new LogService(userInfo, logDate);
-    logService.sendPictureLog(reqLogPreview);
+    logService.sendPreviewLog(reqLogPreview);
 
     ctx.$res.success({});
 

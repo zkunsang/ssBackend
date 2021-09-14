@@ -84,6 +84,10 @@ class UserService extends Service {
         return this[Schema.USER_INFO.key][Schema.PRODUCT_PURCHASE.key];
     }
 
+    getFeedback() {
+        return this[Schema.USER_INFO.key].getFeedback();
+    }
+
     addPurchaseInfo(productInfo) {
         if (!productInfo) return;
         this.setChange();
@@ -94,6 +98,11 @@ class UserService extends Service {
         if (!smc) return;
         this.setChange();
         this[Schema.USER_INFO.key][Schema.SMC.key] = smc;
+    }
+
+    setFeedback() {
+        this.setChange();
+        this[Schema.USER_INFO.key].setFeedback(true);
     }
 
     setInventory(inventory) {

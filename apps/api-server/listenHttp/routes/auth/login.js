@@ -98,7 +98,8 @@ module.exports = async (ctx, next) => {
         inventory: userService.getInventory(),
         honeyHistory: userService.getHoneyHistory(),
         productPurchase: userService.getProductPurhcase(),
-        isNewUser
+        isNewUser,
+        feedback: userService.getFeedback()
     });
 
     await next();
