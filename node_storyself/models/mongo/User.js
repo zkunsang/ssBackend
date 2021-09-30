@@ -28,11 +28,12 @@ const Schema = {
     // Story Merge Complete
     SMC: { key: 'smc', required: false, type: ValidType.BOOLEAN },
 
-    FEEDBACK: { key: 'feedback', required: false, type: ValidType.BOOLEAN }
+    FEEDBACK: { key: 'feedback', required: false, type: ValidType.BOOLEAN },
+    SUBSCRIBER_ID: { key: 'subscriberId', required: false, type: ValidType.STRING }
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc, feedback }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc, feedback, subscriberId }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -46,6 +47,7 @@ class User extends Model {
         this[Schema.PUID.key] = ValidateUtil.setNullUndefined(puid);
         this[Schema.SMC.key] = ValidateUtil.setNullUndefined(smc);
         this[Schema.FEEDBACK.key] = ValidateUtil.setNullUndefined(feedback);
+        this[Schema.SUBSCRIBER_ID.key] = ValidateUtil.setNullUndefined(subscriberId);
 
         this[Schema.INVENTORY.key] = inventory || [];
         this[Schema.MAIL.key] = mail || {};
@@ -112,6 +114,14 @@ class User extends Model {
 
     getFeedback() {
         return this[Schema.FEEDBACK.key];
+    }
+
+    setSubscriber(subId) {
+        this[Schema.SUBSCRIBER_ID.key] = subId;
+    }
+
+    getSubscriber() {
+        return this[Schema.SUBSCRIBER_ID.key];
     }
 };
 

@@ -106,9 +106,17 @@ module.exports = async (ctx, next) => {
 
     const inventory = inventoryService.finalize();
 
+
+
     const couponPutHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.COUPON);
     userService.addHoneyHistory(couponPutHistory);
     userService.setInventory(inventory);
+
+    if (couponId === "TSUBS_202110") {
+        userService.setSubscriber("TSUBS_202110");
+        ctx.$res.addData({ subscriber: "TSUBS_202110" });
+    }
+
     await userService.finalize();
 
     ctx.$res.addData({ honeyHistory: userService.getHoneyHistory() });

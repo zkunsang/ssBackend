@@ -88,6 +88,10 @@ class UserService extends Service {
         return this[Schema.USER_INFO.key].getFeedback();
     }
 
+    getSubscriber() {
+        return this[Schema.USER_INFO.key].getSubscriber();
+    }
+
     addPurchaseInfo(productInfo) {
         if (!productInfo) return;
         this.setChange();
@@ -108,6 +112,11 @@ class UserService extends Service {
     setInventory(inventory) {
         this.setChange();
         this[Schema.USER_INFO.key][Schema.INVENTORY.key] = inventory;
+    }
+
+    setSubscriber(subId) {
+        this.setChange();
+        this[Schema.USER_INFO.key].setSubscriber(subId);
     }
 
     addHoneyHistory(honeyHistory) {
