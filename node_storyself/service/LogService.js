@@ -75,12 +75,12 @@ class LogService extends Service {
         pictureLogDao.insertOne(new PictureLog({ uid, success, debugLog, errCode, logDate, location, retry }));
     }
 
-    sendPreviewLog({ success, debugLog, location, errCode, retry }) {
+    sendPreviewLog({ after, before, storyId }) {
         const uid = this.getUID();
         const logDate = this.getUpdateDate();
 
         const previewLogDao = new PreviewLogDao(dbMongo, logDate);
-        previewLogDao.insertOne(new PreviewLog({ uid, success, debugLog, errCode, logDate, location, retry }));
+        previewLogDao.insertOne(new PreviewLog({ uid, logDate, after, before, storyId }));
     }
 
     sendFeedbackLog({ point, desc, debugString }) {
