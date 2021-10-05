@@ -152,6 +152,13 @@ class UserService extends Service {
         return this[Schema.NEW_USER.key];
     }
 
+    getItemQny(itemId) {
+        const itemList = this[Schema.USER_INFO.key][Schema.INVENTORY.key];
+        return itemList
+            .filter((item) => itemId === item.itemId)
+            .reduce((pred, item) => pred + item.itemQny, 0);
+    }
+
     async finalize() {
         if (!this.isChange()) return false;
 

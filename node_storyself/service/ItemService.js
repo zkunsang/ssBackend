@@ -129,6 +129,8 @@ class ItemService extends Service {
             this.throwPurchaseImpossible(itemId);
             return;
         }
+
+        return itemInfo;
     }
 
     checkPurchaseItemList(itemList) {

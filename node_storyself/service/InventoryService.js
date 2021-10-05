@@ -32,6 +32,7 @@ const PUT_ACTION = {
         STORY: [1003, 1],
         ACCESSORY: [1003, 2],
         SLOT: [1003, 3],
+        STICKER: [1003, 4]
     },
     USER_INIT: [1004, 1],
     COUPON: [1005, 1],
@@ -55,6 +56,7 @@ const USE_ACTION = {
         STORY: [2003, 1],
         ACCESSORY: [2003, 2],
         SLOT: [2003, 3],
+        STICKER: [2003, 4],
     },
     QUEST_DELETE: [2004, 1]
 };
