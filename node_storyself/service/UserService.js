@@ -159,6 +159,15 @@ class UserService extends Service {
             .reduce((pred, item) => pred + item.itemQny, 0);
     }
 
+    setPageSticker(pageSticker) {
+        this.setChange();
+        this[Schema.USER_INFO.key].setPageSticker(pageSticker);
+    }
+
+    getPageSticker() {
+        return this[Schema.USER_INFO.key].getPageSticker();
+    }
+
     async finalize() {
         if (!this.isChange()) return false;
 

@@ -10,7 +10,7 @@ module.exports = async (ctx, next) => {
 
     const reqCheatPutItem = new ReqCheatPutItem(ctx.request.body);
     ReqCheatPutItem.validModel(reqCheatPutItem);
-    
+
     const inventoryService = new InventoryService(userInfo, updateDate);
     const userService = new UserService(userInfo, userDao, updateDate);
 
@@ -20,7 +20,7 @@ module.exports = async (ctx, next) => {
         reqCheatPutItem.getInventoryList());
 
     const inventory = inventoryService.finalize();
-    
+
     userService.setInventory(inventory);
 
     await userService.finalize();

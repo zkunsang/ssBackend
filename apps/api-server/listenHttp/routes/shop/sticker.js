@@ -25,7 +25,6 @@ module.exports = async (ctx, next) => {
     const { putInventoryList, useInventoryList }
         = itemService.getExchangeInventoryInfo([itemInventory]);
 
-    inventoryService.checkAlready(putInventoryList);
     const useItem = inventoryService.useItem(InventoryService.USE_ACTION.EXCHANGE.STICKER, {}, useInventoryList);
     const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.EXCHANGE.STICKER, {}, putInventoryList);
 

@@ -6,7 +6,7 @@ const CommonBoolean = ValidateUtil.CommonBoolean;
 
 const Schema = {
     ITEM_ID: { key: 'itemId', required: true, type: ValidType.STRING },
-    ITEM_CATEGORY: { key: 'itemCategory', required: true, type: ValidType.STRING,  },
+    ITEM_CATEGORY: { key: 'itemCategory', required: true, type: ValidType.STRING, },
     GROUP_ID: { key: 'groupId', required: true, type: ValidType.STRING },
     USEABLE: { key: 'useable', required: true, type: ValidType.NUMBER, validRange: Object.values(CommonBoolean) },
     OVERLAP: { key: 'overlap', required: true, type: ValidType.NUMBER, validRange: Object.values(CommonBoolean) },
@@ -14,11 +14,12 @@ const Schema = {
     VOLATILE_SECONDS: { key: 'volatileSeconds', required: true, type: ValidType.NUMBER },
     PRIORITY: { key: 'priority', required: true, type: ValidType.NUMBER },
     STATUS: { key: 'status', required: true, type: ValidType.NUMBER },
-    UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP }
+    UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
+    ITEM_QNY: { key: 'itemQny', required: false, type: ValidType.NUMBER },
 }
 
 class Item extends Model {
-    constructor({ itemId, itemCategory, groupId, useable, overlap, maxQny, volatileSeconds, priority, status }) {
+    constructor({ itemId, itemCategory, groupId, useable, overlap, maxQny, volatileSeconds, priority, status, itemQny }) {
         super();
         this[Schema.ITEM_ID.key] = ValidateUtil.setNullUndefined(itemId);
         this[Schema.ITEM_CATEGORY.key] = ValidateUtil.setNullUndefined(itemCategory);
@@ -29,6 +30,7 @@ class Item extends Model {
         this[Schema.VOLATILE_SECONDS.key] = ValidateUtil.setNullUndefined(volatileSeconds);
         this[Schema.STATUS.key] = ValidateUtil.setNullUndefined(status);
         this[Schema.PRIORITY.key] = ValidateUtil.setNullUndefined(priority);
+        this[Schema.ITEM_QNY.key] = ValidateUtil.setNullUndefined(itemQny);
     }
 
     setUpdateDate(updateDate) {
@@ -61,6 +63,10 @@ class Item extends Model {
 
     getUseable() {
         return this[Schema.USEABLE.key];
+    }
+
+    getItemQny() {
+        return this[Schema.ITEM_QNY.key];
     }
 }
 

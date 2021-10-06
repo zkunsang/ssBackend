@@ -6,17 +6,15 @@ const Inventory = require('../../models/mongo/Inventory');
 
 const Schema = {
     ITEM_ID: { key: 'itemId', required: true, type: ValidType.STRING },
-    ITEM_QNY: { key: 'itemQny', required: false, type: ValidType.NUMBER },
     MATERIAL_ID: { key: 'materialId', required: true, type: ValidType.STRING },
     MATERIAL_QNY: { key: 'materialQny', required: true, type: ValidType.NUMBER },
     UPDATE_DATE: { key: 'updateDate', required: true, type: ValidType.UNIX_TIMESTAMP },
 }
 
 class ItemMaterial extends Model {
-    constructor({ itemId, itemQny, materialId, materialQny }) {
+    constructor({ itemId, materialId, materialQny }) {
         super();
         this[Schema.ITEM_ID.key] = ValidateUtil.setNullUndefined(itemId);
-        this[Schema.ITEM_QNY.key] = ValidateUtil.setNullUndefined(itemQny);
         this[Schema.MATERIAL_ID.key] = ValidateUtil.setNullUndefined(materialId);
         this[Schema.MATERIAL_QNY.key] = ValidateUtil.setNullUndefined(materialQny);
     }

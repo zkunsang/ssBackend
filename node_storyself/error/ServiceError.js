@@ -42,10 +42,9 @@ const code = {
     alreadyReadMail: { code: 38002, name: 'alreadyReadMail', message: 'alreadyReadMail' },
     throwAlreadNotReadMail: { code: 38003, name: 'throwAlreadNotReadMail', message: 'throwAlreadNotReadMail' },
 
-    noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' }
+    noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' },
 
-
-
+    noExistPageSticker: { code: 39101, name: 'noExistSPageSticker', message: 'noExistSPageSticker' }
 }
 
 class ServiceError extends RuntimeError {

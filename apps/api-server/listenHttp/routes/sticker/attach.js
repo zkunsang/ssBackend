@@ -1,10 +1,12 @@
 const ReqStickerAttach = require('@ss/models/controller/ReqStickerAttach');
 const UserService = require('@ss/service/UserService');
 
+const PageSticker = require('@ss/models/mongo/PageSticker');
+
 const SSError = require('@ss/error');
+const nanoid = require('nanoid');
 
 module.exports = async (ctx, next) => {
-    // 데이터 버젼 테이블만 내려 받는 형식으로 변경
     const reqStickerAttach = new ReqStickerAttach(ctx.request.body);
     ReqStickerAttach.validModel(reqStickerAttach);
 
@@ -16,15 +18,14 @@ module.exports = async (ctx, next) => {
 
     const itemId = reqStickerAttach.getItemId();
     const qny = userService.getItemQny(itemId);
+
     if (qny === 0) {
         ctx.$res.badRequest(SSError.Service.Code.useItemNotEnoughItem);
         await next();
         return;
     }
 
-    const stickerInfoList = userService.getStickerInfos(itemId);
-
-    const stickerId = reqStickerAttach.getStickerId();
+    const stickerInfoList = userService.getPageSticker(itemId);
 
     // 사이즈 비교
     if (stickerInfoList.length >= qny) {
@@ -33,24 +34,29 @@ module.exports = async (ctx, next) => {
         return;
     }
 
-    let _stickerInfo = null;
-    for (const stickerInfo in stickerInfoList) {
-        if (stickerInfo.stickerId = stickerId) {
-            _stickerInfo = stickerInfo;
-        }
+    let stickerId = reqStickerAttach.getStickerId();
+    if (stickerId) {
+        const stickerInfo = stickerInfoList.find((item) => item.stickerId === stickerId)
+        stickerInfo.x = reqStickerAttach.x;
+        stickerInfo.y = reqStickerAttach.y;
+        stickerInfo.rot = reqStickerAttach.rot;
+        stickerInfo.scaleX = reqStickerAttach.scaleX;
+        stickerInfo.scaleY = reqStickerAttach.scaleY;
+        stickerInfo.depth = reqStickerAttach.depth;
+    } else {
+        if (!stickerInfoList) stickerInfoList = [];
+        // 신규 스티커 아이디 발급
+        stickerId = nanoid(6);
+        stickerInfoList.push(new PageSticker({ ...reqStickerAttach, stickerId }))
     }
 
-    if (!_stickerInfo) stickerInfoList.push(new StickerInfo());
-
+    userService.setPageSticker(stickerInfoList);
+    userService.finalize();
     // userService업데이트
 
-    // 있으면 update
-    // 없으면 insert
-
-
-
-
+    ctx.$res.success({
+        stickerId
+    });
 
     await next();
-
 }

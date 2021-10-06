@@ -29,11 +29,13 @@ const Schema = {
     SMC: { key: 'smc', required: false, type: ValidType.BOOLEAN },
 
     FEEDBACK: { key: 'feedback', required: false, type: ValidType.BOOLEAN },
-    SUBSCRIBER_ID: { key: 'subscriberId', required: false, type: ValidType.STRING }
+    SUBSCRIBER_ID: { key: 'subscriberId', required: false, type: ValidType.STRING },
+
+    PAGE_STICKER: { key: 'pageSticker', required: false, type: ValidType.ARRAY }
 }
 
 class User extends Model {
-    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc, feedback, subscriberId }) {
+    constructor({ uid, email, status, createDate, lastLoginDate, policyVersion, sessionId, fcmToken, inventory, mail, honeyHistory, puid, productPurchase, smc, feedback, subscriberId, pageSticker }) {
         super();
 
         this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -54,6 +56,8 @@ class User extends Model {
         this[Schema.HONEY_HISTORY.key] = honeyHistory || [];
 
         this[Schema.PRODUCT_PURCHASE.key] = productPurchase || [];
+
+        this[Schema.PAGE_STICKER.key] = pageSticker || [];
     }
 
     getSessionId() {
@@ -122,6 +126,13 @@ class User extends Model {
 
     getSubscriber() {
         return this[Schema.SUBSCRIBER_ID.key];
+    }
+
+    setPageSticker(pageSticker) {
+        this[Schema.PAGE_STICKER.key] = pageSticker;
+    }
+    getPageSticker() {
+        return this[Schema.PAGE_STICKER.key];
     }
 };
 

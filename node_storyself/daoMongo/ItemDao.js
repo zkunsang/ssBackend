@@ -20,6 +20,7 @@ class ItemDao extends Dao {
             Item.Schema.MAX_QNY.key,
             Item.Schema.VOLATILE_SECONDS.key,
             Item.Schema.PRIORITY.key,
+            Item.Schema.ITEM_QNY.key,
             Item.Schema.UPDATE_DATE.key,
         ];
     }
@@ -41,6 +42,7 @@ class ItemDao extends Dao {
             Item.Schema.VOLATILE_SECONDS.key,
             Item.Schema.PRIORITY.key,
             Item.Schema.UPDATE_DATE.key,
+            Item.Schema.ITEM_QNY.key,
         ]
     };
 

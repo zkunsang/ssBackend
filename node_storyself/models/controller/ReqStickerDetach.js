@@ -1,3 +1,8 @@
+const Model = require('../../models');
+
+const ValidateUtil = require('../../util/ValidateUtil')
+const ValidType = ValidateUtil.ValidType;
+
 const Schema = {
     STORY_ID: { key: 'storyId', required: true, type: ValidType.STRING },
     SCENE_INDEX: { key: 'sceneIndex', required: true, type: ValidType.NUMBER },
