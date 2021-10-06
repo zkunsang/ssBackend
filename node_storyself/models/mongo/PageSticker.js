@@ -22,13 +22,13 @@ class PageSticker extends Model {
 
         this[Schema.ITEM_ID.key] = ValidateUtil.setNullUndefined(itemId);
         this[Schema.STORY_ID.key] = ValidateUtil.setNullUndefined(storyId);
-        this[Schema.SCENE_INDEXkey] = ValidateUtil.setNullUndefined(sceneIndex);
+        this[Schema.SCENE_INDEX.key] = ValidateUtil.setNullUndefined(sceneIndex);
         this[Schema.STICKER_ID.key] = ValidateUtil.setNullUndefined(stickerId);
-        this[Schema.Xkey] = ValidateUtil.setNullUndefined(x);
+        this[Schema.X.key] = ValidateUtil.setNullUndefined(x);
         this[Schema.Y.key] = ValidateUtil.setNullUndefined(y);
-        this[Schema.ROTkey] = ValidateUtil.setNullUndefined(rot);
+        this[Schema.ROT.key] = ValidateUtil.setNullUndefined(rot);
         this[Schema.SCALE_X.key] = ValidateUtil.setNullUndefined(scaleX);
-        this[Schema.SCALE_Ykey] = ValidateUtil.setNullUndefined(scaleY);
+        this[Schema.SCALE_Y.key] = ValidateUtil.setNullUndefined(scaleY);
         this[Schema.DEPTH.key] = ValidateUtil.setNullUndefined(depth);
     }
 
@@ -37,11 +37,11 @@ class PageSticker extends Model {
     }
 
     update({ x, y, rot, scaleX, scaleY, depth }) {
-        this[Schema.Xkey] = ValidateUtil.setNullUndefined(x);
+        this[Schema.X.key] = ValidateUtil.setNullUndefined(x);
         this[Schema.Y.key] = ValidateUtil.setNullUndefined(y);
-        this[Schema.ROTkey] = ValidateUtil.setNullUndefined(rot);
+        this[Schema.ROT.key] = ValidateUtil.setNullUndefined(rot);
         this[Schema.SCALE_X.key] = ValidateUtil.setNullUndefined(scaleX);
-        this[Schema.SCALE_Ykey] = ValidateUtil.setNullUndefined(scaleY);
+        this[Schema.SCALE_Y.key] = ValidateUtil.setNullUndefined(scaleY);
         this[Schema.DEPTH.key] = ValidateUtil.setNullUndefined(depth);
     }
 }

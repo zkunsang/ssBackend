@@ -1,3 +1,4 @@
+const { isNumber } = require('lodash');
 const Model = require('../../models');
 
 const ValidateUtil = require('../../util/ValidateUtil')
@@ -11,7 +12,7 @@ const Schema = {
 class Inventory extends Model {
     constructor({ itemId, itemQny }) {
         super();
-            
+
         this[Schema.ITEM_ID.key] = ValidateUtil.setNullUndefined(itemId);
         this[Schema.ITEM_QNY.key] = ValidateUtil.setNullUndefined(itemQny);
     }
@@ -29,7 +30,8 @@ class Inventory extends Model {
      * @param {*} inventoryPut 
      */
     addItem(inventoryPut) {
-        this[Schema.ITEM_QNY.key] += inventoryPut.getItemQny();
+        if (isNumber(this[Schema.ITEM_QNY.key])) this[Schema.ITEM_QNY.key] += inventoryPut.getItemQny();
+        else this[Schema.ITEM_QNY.key] = inventoryPut.getItemQny();
     }
 
     /**
@@ -38,10 +40,12 @@ class Inventory extends Model {
      */
 
     minusItem(inventoryUse) {
-        this[Schema.ITEM_QNY.key] -= inventoryUse.getItemQny();
+        if (isNumber(this[Schema.ITEM_QNY.key])) this[Schema.ITEM_QNY.key] -= inventoryUse.getItemQny();
+        else this[Schema.ITEM_QNY.key] = inventoryPut.getItemQny() * -1;
+
     }
 
-    
+
 }
 
 module.exports = Inventory;

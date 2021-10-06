@@ -25,6 +25,7 @@ module.exports = async (ctx, next) => {
     pageStickerList.splice(pageStickerIdx, 1);
 
     userService.setPageSticker(pageStickerList);
+    userService.finalize();
 
     ctx.$res.success();
 

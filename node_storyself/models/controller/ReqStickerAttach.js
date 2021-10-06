@@ -6,7 +6,7 @@ const ValidType = ValidateUtil.ValidType;
 const Schema = {
     STORY_ID: { key: 'storyId', required: true, type: ValidType.STRING },
     SCENE_INDEX: { key: 'sceneIndex', required: true, type: ValidType.NUMBER },
-    STICKER_ID: { key: 'stickerId', required: true, type: ValidType.STRING },
+    STICKER_ID: { key: 'stickerId', required: false, type: ValidType.STRING },
     ITEM_ID: { key: 'itemId', required: true, type: ValidType.STRING },
     X: { key: 'x', required: true, type: ValidType.NUMBER },
     Y: { key: 'y', required: true, type: ValidType.NUMBER },
@@ -43,6 +43,10 @@ class ReqStickerAttach extends Model {
 
     getStickerId() {
         return this[Schema.STICKER_ID.key];
+    }
+
+    getItemId() {
+        return this[Schema.ITEM_ID.key];
     }
 }
 

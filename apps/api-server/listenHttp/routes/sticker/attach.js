@@ -37,6 +37,10 @@ module.exports = async (ctx, next) => {
     let stickerId = reqStickerAttach.getStickerId();
     if (stickerId) {
         const stickerInfo = stickerInfoList.find((item) => item.stickerId === stickerId)
+        if (!stickerInfo) {
+            ctx.$res.badRequest(SSError.Service.Code.noExistPageSticker);
+            return;
+        }
         stickerInfo.x = reqStickerAttach.x;
         stickerInfo.y = reqStickerAttach.y;
         stickerInfo.rot = reqStickerAttach.rot;
