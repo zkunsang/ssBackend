@@ -15,6 +15,7 @@ module.exports = async (ctx, next) => {
 
     const stickerId = reqStickerDetach.getStickerId();
     let pageStickerList = userService.getPageSticker();
+
     const pageStickerIdx = pageStickerList.findIndex((item) => item.stickerId === stickerId);
 
     if (pageStickerIdx < 0) {
