@@ -1,23 +1,22 @@
-const Model = require('../../models');
+const Model = require("../../models");
 
-const ValidateUtil = require('../../util/ValidateUtil')
+const ValidateUtil = require("../../util/ValidateUtil");
 const ValidType = ValidateUtil.ValidType;
 
 const Schema = {
-    STICKER_ID: { key: 'stickerId', required: true, type: ValidType.STRING }
-}
-
+  STICKER_IDS: { key: "stickerIds", required: true, type: ValidType.ARRAY },
+};
 
 class ReqStickerDetach extends Model {
-    constructor({ stickerId }) {
-        super();
+  constructor({ stickerIds }) {
+    super();
 
-        this[Schema.STICKER_ID.key] = stickerId;
-    }
+    this[Schema.STICKER_IDS.key] = stickerIds;
+  }
 
-    getStickerId() {
-        return this[Schema.STICKER_ID.key];
-    }
+  getStickerIds() {
+    return this[Schema.STICKER_IDS.key];
+  }
 }
 
 module.exports = ReqStickerDetach;
