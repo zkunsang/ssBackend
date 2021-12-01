@@ -28,7 +28,7 @@ module.exports = async (ctx, next) => {
   const stickerInfoList = userService.getPageSticker(itemId);
 
   // 사이즈 비교
-  if (stickerInfoList.length >= qny) {
+  if (!reqStickerAttach.stickerId && stickerInfoList.length >= qny) {
     ctx.$res.badRequest(SSError.Service.Code.useItemNotEnoughItem);
     await next();
     return;
