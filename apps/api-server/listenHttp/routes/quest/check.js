@@ -1,41 +1,44 @@
-const ReqQuestCheck = require('@ss/models/controller/ReqQuestCheck');
+const ReqQuestCheck = require("@ss/models/controller/ReqQuestCheck");
 
-const StoryCache = require('@ss/dbCache/StoryCache');
-const SSError = require('@ss/error');
+const StoryCache = require("@ss/dbCache/StoryCache");
+const SSError = require("@ss/error");
 
-const QuestService = require('@ss/service/QuestService');
-const StoryService = require('@ss/service/StoryService');
+const QuestService = require("@ss/service/QuestService");
+const StoryService = require("@ss/service/StoryService");
 
 module.exports = async (ctx, next) => {
-    const reqQuestCheck = new ReqQuestCheck(ctx.request.body);
-    ReqQuestCheck.validModel(reqQuestCheck);
+  const reqQuestCheck = new ReqQuestCheck(ctx.request.body);
+  ReqQuestCheck.validModel(reqQuestCheck);
 
-    const logDate = ctx.$date;
-    const userInfo = ctx.$userInfo;
+  const logDate = ctx.$date;
+  const userInfo = ctx.$userInfo;
 
-    const storyId = reqQuestCheck.getStoryId();
-    const questId = reqQuestCheck.getQuestId();
+  const storyId = reqQuestCheck.getStoryId();
+  const questId = reqQuestCheck.getQuestId();
 
-    const storyData = StoryCache.get(storyId);
+  const storyData = StoryCache.get(storyId);
 
-    if (!storyData) {
-        ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
-        return;
-    }
+  if (!storyData) {
+    ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
+    return;
+  }
 
-    const questService = new QuestService(userInfo, logDate);
-    const questInfo = await questService.getQuestInfo(storyId, questId);
+  if (!questId) {
+  }
 
-    if (questInfo) {
-        const actionList = questService.parseAction(questInfo.storyAction);
-        ctx.$res.success({ actionList });
-    }
-    else {
-        ctx.$res.success({ actionList: [] });
-    }
+  const questService = new QuestService(userInfo, logDate);
+  const questInfo = await questService.getQuestInfo(storyId);
 
-    await next();
-}
+  if (questInfo) {
+    const actionList = questService.parseAction(questInfo.storyAction);
+    const clearList = questService.parseClear(questInfo.questClear);
+    ctx.$res.success({ actionList, clearList });
+  } else {
+    ctx.$res.success({ actionList: [], clearList: [] });
+  }
+
+  await next();
+};
 
 /**
  * @swagger
