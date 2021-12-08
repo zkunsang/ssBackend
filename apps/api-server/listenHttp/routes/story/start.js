@@ -1,48 +1,58 @@
-const ReqStoryStart = require('@ss/models/controller/ReqStoryStart');
+const ReqStoryStart = require("@ss/models/controller/ReqStoryStart");
 
-const StoryService = require('@ss/service/StoryService');
+const StoryService = require("@ss/service/StoryService");
 
-const StoryCache = require('@ss/dbCache/StoryCache');
-const SSError = require('@ss/error');
+const StoryCache = require("@ss/dbCache/StoryCache");
+const SSError = require("@ss/error");
+const QuestService = require("@ss/service/QuestService");
 
 module.exports = async (ctx, next) => {
-    const updateDate = ctx.$date;
+  const updateDate = ctx.$date;
 
-    const reqStoryStart = new ReqStoryStart(ctx.request.body);
-    ReqStoryStart.validModel(reqStoryStart);
+  const reqStoryStart = new ReqStoryStart(ctx.request.body);
+  ReqStoryStart.validModel(reqStoryStart);
 
-    const storyId = reqStoryStart.getStoryId();
-    const storyInfo = StoryCache.get(storyId);
+  const storyId = reqStoryStart.getStoryId();
+  const storyInfo = StoryCache.get(storyId);
 
-    const itemList = reqStoryStart.getItemList();
-    const faceList = reqStoryStart.getFaceList();
+  const itemList = reqStoryStart.getItemList();
+  const faceList = reqStoryStart.getFaceList();
 
-    if (!storyInfo) {
-        ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
-        return;
-    }
+  if (!storyInfo) {
+    ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
+    return;
+  }
 
-    // if (true) {
-    //     const userInfo = ctx.$userInfo;
-    //     const storyService = new StoryService(userInfo, updateDate);
-    //     const startKey = storyService.generateStartKey();
-    //     ctx.$res.success({ startKey });
-    //     return await next();
-    // }
+  // if (true) {
+  //     const userInfo = ctx.$userInfo;
+  //     const storyService = new StoryService(userInfo, updateDate);
+  //     const startKey = storyService.generateStartKey();
+  //     ctx.$res.success({ startKey });
+  //     return await next();
+  // }
 
-    const userInfo = ctx.$userInfo;
+  const userInfo = ctx.$userInfo;
 
-    const storyService = new StoryService(userInfo, updateDate);
+  const storyService = new StoryService(userInfo, updateDate);
 
-    // storyService.checkHasStory(storyId);
-    const startKey = storyService.generateStartKey();
-    storyService.startLog(storyId, startKey, faceList, itemList);
+  // storyService.checkHasStory(storyId);
+  const startKey = storyService.generateStartKey();
+  storyService.startLog(storyId, startKey, faceList, itemList);
 
-    await storyService.finalize();
+  await storyService.finalize();
 
-    ctx.$res.success({ startKey });
-    await next();
-}
+  const questService = new QuestService(userInfo, updateDate);
+  const questInfo = await questService.getQuestInfo(storyId);
+
+  if (questInfo) {
+    const actionList = questService.parseAction(questInfo.storyAction);
+    const clearList = questService.parseClear(questInfo.questClear);
+    ctx.$res.addData({ clearList, actionList });
+  }
+
+  ctx.$res.success({ startKey });
+  await next();
+};
 
 /**
  * @swagger

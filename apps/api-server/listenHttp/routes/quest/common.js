@@ -30,7 +30,7 @@ module.exports = async (ctx, next) => {
   }
 
   const questService = new QuestService(userInfo, logDate);
-  const { clearQuests, rewardMailList } =
+  const { newClearQuests, clearQuests, rewardMailList } =
     await questService.completeCommonQuest({ storyId, questIds });
 
   const userService = new UserService(userInfo, null, logDate);
@@ -39,21 +39,17 @@ module.exports = async (ctx, next) => {
   if (rewardMailList) {
     const mailService = new MailService(userInfo, logDate);
 
-    const itemInfo = {
-      action: InventoryService.PUT_ACTION.STORY_QUEST,
-    };
-
     for (const reward of rewardMailList) {
-      mailService.sendMail({ ...reward, itemInfo });
+      mailService.sendMail({ ...reward });
     }
 
     const newMail = mailService.finalize();
     userService.setMail(newMail);
-
+    ctx.$res.addData({ mail: Object.values(newMail) });
     await userService.finalize();
   }
 
-  ctx.$res.success({ clearQuests });
+  ctx.$res.success({ clearQuests: Object.keys(clearQuests), newClearQuests });
 
   await next();
 };

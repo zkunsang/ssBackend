@@ -403,7 +403,7 @@ class QuestService extends Service {
 
     // 우편 발송
     for (const questId of newClearQuest) {
-      rewardMailList.push(this.getCommonRewardList(questId));
+      rewardMailList.push(this.getCommonRewardList(storyId, questId));
       clearQuests.push(questId);
     }
 
@@ -423,21 +423,28 @@ class QuestService extends Service {
     }
 
     return {
-      clearQuests,
+      newClearQuests: clearQuests,
+      clearQuests: userClearQuest,
       rewardMailList,
     };
   }
 
-  getCommonRewardList(questId) {
+  getCommonRewardList(storyId, questId) {
     const title = `스토리 셀프 240꿀을 드립니다. ${questId}`;
-    const message = `스토리 셀프를 구매해 주셔서 감사합니다`;
+    const message = `미션 완료`;
     const title_en = `스토리 셀프 240꿀을 드립니다. ${questId}`;
-    const message_en = `스토리 셀프를 구매해 주셔서 감사합니다`;
+    const message_en = `mission Complete`;
 
     const sender = MailSender.ADMIN;
-    const itemList = [{ itemId: "honey", itemQny: 240 }];
+    const itemList = [{ itemId: "honey", itemQny: 5 }];
+
+    const itemInfo = {
+      action: InventoryService.PUT_ACTION.STORY_QUEST,
+      questInfo: { storyId, questId },
+    };
 
     return {
+      itemInfo,
       title,
       title_en,
       message,
