@@ -21,7 +21,7 @@ class NetworkLog extends Model {
     this.res = ctx.body;
     this.status = ctx.status;
     this.ms = endDate - startDate;
-    this.ctx.body.common.ms = this.ms;
+    ctx.body.common.ms = this.ms;
     this.endDate = DateUtil.utsToDs(endDate);
     this.startDate = DateUtil.utsToDs(startDate);
 
