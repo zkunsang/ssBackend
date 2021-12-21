@@ -429,14 +429,25 @@ class QuestService extends Service {
     };
   }
 
+  getCommonMissionReward(questId) {
+    if (questId === 999) return 1;
+    if (questId === 1000) return 2;
+    if (questId === 1001) return 3;
+    if (questId === 1002) return 4;
+    return 1;
+  }
+
   getCommonRewardList(storyId, questId) {
-    const title = `스토리 셀프 240꿀을 드립니다. ${questId}`;
-    const message = `미션 완료`;
-    const title_en = `스토리 셀프 240꿀을 드립니다. ${questId}`;
+    //
+    const title = `${questId}`;
+    const title_en = `${questId}`;
+    const message = `mission_complete`;
     const message_en = `mission Complete`;
 
+    const itemQny = this.getCommonMissionReward(questId);
+
     const sender = MailSender.ADMIN;
-    const itemList = [{ itemId: "honey", itemQny: 5 }];
+    const itemList = [{ itemId: "honey", itemQny }];
 
     const itemInfo = {
       action: InventoryService.PUT_ACTION.STORY_QUEST,
