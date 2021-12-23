@@ -465,6 +465,19 @@ class QuestService extends Service {
     };
   }
 
+  async cheatDel(storyId, qId) {
+    const uid = this.getUID();
+    const userQuestStoryDao = this.getUserQuestStoryDao();
+    const userQuestStory = await userQuestStoryDao.findOne({ storyId, uid });
+    const questClear = userQuestStory.getQuestClear();
+    delete questClear[qId];
+
+    const _id = userQuestStory._id;
+    await userQuestStoryDao.updateOne({ _id }, { questClear });
+
+    return Object.keys(questClear);
+  }
+
   async finalize() {
     const logDate = this.getUpdateDate();
     const acceptInsertList = this.getAcceptInsertList();

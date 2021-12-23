@@ -1,109 +1,113 @@
-const dbMongo = require('@ss/dbMongo');
-const dbRedisSS = require('@ss/dbRedisSS');
+const dbMongo = require("@ss/dbMongo");
+const dbRedisSS = require("@ss/dbRedisSS");
 
-const SessionDao = require('@ss/daoRedis/SessionDao');
+const SessionDao = require("@ss/daoRedis/SessionDao");
 const UserDao = require("@ss/daoMongo/UserDao");
 
-const InventoryService = require('@ss/service/InventoryService');
-const UserService = require('@ss/service/UserService');
-const AuthService = require('@ss/service/AuthService');
-const EventService = require('@ss/service/EventService');
-const MailService = require('@ss/service/MailService');
-const QuestService = require('@ss/service/MailService');
+const InventoryService = require("@ss/service/InventoryService");
+const UserService = require("@ss/service/UserService");
+const AuthService = require("@ss/service/AuthService");
+const EventService = require("@ss/service/EventService");
+const MailService = require("@ss/service/MailService");
+const QuestService = require("@ss/service/QuestService");
 
-const ReqAuthLogin = require('@ss/models/controller/ReqAuthLogin');
-const Inventory = require('@ss/models/mongo/Inventory');
+const ReqAuthLogin = require("@ss/models/controller/ReqAuthLogin");
+const Inventory = require("@ss/models/mongo/Inventory");
 
-const shortid = require('shortid');
-const ArrayUtil = require('@ss/util/ArrayUtil');
+const shortid = require("shortid");
+const ArrayUtil = require("@ss/util/ArrayUtil");
 
 module.exports = async (ctx, next) => {
-    const loginDate = ctx.$date;
-    const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
-    const ip = ctx.$req.clientIp;
+  const loginDate = ctx.$date;
+  const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
+  const ip = ctx.$req.clientIp;
 
-    console.log("reqAuthLogin - ", reqAuthLogin);
-    ReqAuthLogin.validModel(reqAuthLogin);
-    // reqAuthLogin.blockIOS();
+  console.log("reqAuthLogin - ", reqAuthLogin);
+  ReqAuthLogin.validModel(reqAuthLogin);
+  // reqAuthLogin.blockIOS();
 
-    const userDao = new UserDao(dbMongo);
-    const sessionDao = new SessionDao(dbRedisSS);
-    const authService = new AuthService(reqAuthLogin, ip, loginDate)
+  const userDao = new UserDao(dbMongo);
+  const sessionDao = new SessionDao(dbRedisSS);
+  const authService = new AuthService(reqAuthLogin, ip, loginDate);
 
-    let userInfo = await authService.findUser(userDao);
-    const userService = new UserService(userInfo, userDao, loginDate);
+  let userInfo = await authService.findUser(userDao);
+  const userService = new UserService(userInfo, userDao, loginDate);
 
-    const sessionId = shortid.generate();
+  const sessionId = shortid.generate();
 
-    if (userInfo) {
-        const oldSessionId = authService.login(userInfo, sessionId);
-        // await sessionDao.del(oldSessionId);
-    }
-    else {
-        userInfo = await authService.signIn(sessionId);
-        userService.setUserInfo(userInfo);
-    }
+  if (userInfo) {
+    const oldSessionId = authService.login(userInfo, sessionId);
+    // await sessionDao.del(oldSessionId);
+  } else {
+    userInfo = await authService.signIn(sessionId);
+    userService.setUserInfo(userInfo);
+  }
 
-    const eventService = new EventService(userInfo, loginDate);
-    const inventoryService = new InventoryService(userInfo, loginDate);
-    const mailService = new MailService(userInfo, loginDate);
+  const eventService = new EventService(userInfo, loginDate);
+  const inventoryService = new InventoryService(userInfo, loginDate);
+  const mailService = new MailService(userInfo, loginDate);
 
-    let isNewUser = false;
+  let isNewUser = false;
 
-    if (userService.isNewUser()) {
-        const itemList = eventService.newUserEvent();
-        const putItem = inventoryService.putItem(
-            InventoryService.PUT_ACTION.USER_INIT, {},
-            ArrayUtil.map(itemList, item => new Inventory(item)));
+  if (userService.isNewUser()) {
+    const itemList = eventService.newUserEvent();
+    const putItem = inventoryService.putItem(
+      InventoryService.PUT_ACTION.USER_INIT,
+      {},
+      ArrayUtil.map(itemList, (item) => new Inventory(item))
+    );
 
-        const initHoneyHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.USER_INIT);
-        userService.addHoneyHistory(initHoneyHistory);
-        isNewUser = true;
-    }
+    const initHoneyHistory = inventoryService.createPutHoneyHistory(
+      putItem,
+      InventoryService.PUT_ACTION.USER_INIT
+    );
+    userService.addHoneyHistory(initHoneyHistory);
+    isNewUser = true;
+  }
 
-    const eventResult = await eventService.checkEvent();
+  const eventResult = await eventService.checkEvent();
 
-    const { eventItemList, eventMailList } = eventResult || {};
+  const { eventItemList, eventMailList } = eventResult || {};
 
-    // inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
+  // inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
 
-    const mail = mailService.putEventMailList(eventMailList);
-    if (mail) userService.setMail(mail);
+  const mail = mailService.putEventMailList(eventMailList);
+  if (mail) userService.setMail(mail);
 
-    const smc = inventoryService.checkStoryMerge();
-    userService.setSMC(smc);
+  const smc = inventoryService.checkStoryMerge();
+  userService.setSMC(smc);
 
-    const userInventory = inventoryService.finalize();
-    userService.setInventory(userInventory);
+  const userInventory = inventoryService.finalize();
+  userService.setInventory(userInventory);
 
-    await eventService.finalize();
-    await userService.finalize();
-    authService.finalize(userInfo.uid);
+  await eventService.finalize();
+  await userService.finalize();
+  authService.finalize(userInfo.uid);
 
-    const { fcmToken } = userInfo;
-    const eventList = [];
+  const { fcmToken } = userInfo;
+  const eventList = [];
 
-    sessionDao.set(sessionId, userInfo);
+  sessionDao.set(sessionId, userInfo);
 
-    ctx.$userInfo = userInfo;
-    const puid = userInfo.getPUID();
+  ctx.$userInfo = userInfo;
+  const puid = userInfo.getPUID();
 
-    ctx.$res.success({
-        sessionId,
-        puid,
-        policyVersion: 1,
-        fcmToken,
-        eventList,
-        mail: userService.getMailList(),
-        inventory: userService.getInventory(),
-        honeyHistory: userService.getHoneyHistory(),
-        productPurchase: userService.getProductPurhcase(),
-        isNewUser,
-        feedback: userService.getFeedback(),
-        subscriber: userService.getSubscriber()
-    });
+  ctx.$res.success({
+    sessionId,
+    puid,
+    policyVersion: 1,
+    fcmToken,
+    eventList,
+    mail: userService.getMailList(),
+    inventory: userService.getInventory(),
+    honeyHistory: userService.getHoneyHistory(),
+    productPurchase: userService.getProductPurhcase(),
+    isNewUser,
+    feedback: userService.getFeedback(),
+    subscriber: userService.getSubscriber(),
+  });
 
-    await next();
+  await next();
 };
 
 /**
