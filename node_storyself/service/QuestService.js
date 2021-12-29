@@ -20,6 +20,7 @@ const QuestCompleteLog = require("../models/apilog/QuestCompleteLog");
 const InventoryService = require("../service/InventoryService");
 
 const QuestStoryCache = require("../dbCache/QuestStoryCache");
+const StoryCache = require('@ss/dbCache/StoryCache');
 
 const Schema = {
   USER_QUEST_STORY_DAO: {
@@ -429,12 +430,20 @@ class QuestService extends Service {
     };
   }
 
-  getCommonMissionReward(questId) {
+  getCommonMissionReward(storyId, questId) {
     if (questId === 999) return 1;
-    if (questId === 1000) return 2;
+    if (questId === 1000) return this.getCommonVoiceReward(storyId, questId);
     if (questId === 1001) return 3;
     if (questId === 1002) return 4;
     return 1;
+  }
+
+  getCommonVoiceReward(storyId) {
+    const storyInfo = StoryCache.get(storyId);
+    const recordCount = storyInfo.getRecordCount();
+
+    let rewardCount = Math.round(recordCount / 20);
+    return rewardCount < 1 ? 1 : rewardCount;
   }
 
   getCommonRewardList(storyId, questId) {
@@ -444,7 +453,7 @@ class QuestService extends Service {
     const message = `mission_complete`;
     const message_en = `mission Complete`;
 
-    const itemQny = this.getCommonMissionReward(questId);
+    const itemQny = this.getCommonMissionReward(storyId, questId);
 
     const sender = MailSender.ADMIN;
     const itemList = [{ itemId: "honey", itemQny }];

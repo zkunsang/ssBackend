@@ -141,6 +141,10 @@ class Story extends Model {
   getFaceTag() {
     return this[Schema.FACE_TAG.key];
   }
+
+  getRecordCount() {
+    return this[Schema.RECORD_COUNT.key];
+  }
 }
 
 module.exports = Story;
