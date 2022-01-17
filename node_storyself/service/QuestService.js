@@ -434,7 +434,7 @@ class QuestService extends Service {
     if (questId === 999) return 1;
     if (questId === 1000) return this.getCommonVoiceReward(storyId, questId);
     if (questId === 1001) return 3;
-    if (questId === 1002) return 4;
+    if (questId === 1002) return 2;
     return 1;
   }
 
