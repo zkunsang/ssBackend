@@ -7,41 +7,41 @@ const ProductService = require('@ss/service/ProductService');
 const ArrayUtil = require('@ss/util/ArrayUtil');
 
 module.exports = async (ctx, next) => {
-    const purchaseDate = ctx.$date;
-    const userInfo = ctx.$userInfo;
-    const userDao = ctx.$userDao;
+  const purchaseDate = ctx.$date;
+  const userInfo = ctx.$userInfo;
+  const userDao = ctx.$userDao;
 
-    const reqCheatPurchase = new ReqCheatPurchase(ctx.request.body);
-    ReqCheatPurchase.validModel(reqCheatPurchase);
+  const reqCheatPurchase = new ReqCheatPurchase(ctx.request.body);
+  ReqCheatPurchase.validModel(reqCheatPurchase);
 
-    const productId = reqCheatPurchase.getProductId();
+  const productId = reqCheatPurchase.getProductId();
 
-    const productService = new ProductService(userInfo, purchaseDate);
-    const productRewardList = productService.getForceProductRewardList(productId);
-    productService.setProductId(productId);
+  const productService = new ProductService(userInfo, purchaseDate);
+  const productRewardList = productService.getForceProductRewardList(productId);
+  productService.setProductId(productId);
 
-    const inventoryService = new InventoryService(userInfo, purchaseDate);
+  const inventoryService = new InventoryService(userInfo, purchaseDate);
 
-    const inventoryList = ArrayUtil.map(productRewardList, (item) => item.makeInventoryObject());
+  const inventoryList = ArrayUtil.map(productRewardList, (item) => item.makeInventoryObject());
 
-    const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.CHEAT, {}, inventoryList);
-    const cheatPutHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.CHEAT);
+  const putItem = inventoryService.putItem(InventoryService.PUT_ACTION.CHEAT, {}, inventoryList);
+  const cheatPutHistory = inventoryService.createPutHoneyHistory(putItem, InventoryService.PUT_ACTION.CHEAT);
 
-    const inventory = inventoryService.finalize();
+  const inventory = inventoryService.finalize();
 
-    const userService = new UserService(userInfo, userDao, purchaseDate);
+  const userService = new UserService(userInfo, userDao, purchaseDate);
 
-    userService.addPurchaseInfo(productService.getPurchaseInfo());
-    userService.addHoneyHistory(cheatPutHistory);
-    userService.setInventory(inventory);
-    userService.finalize();
+  userService.addPurchaseInfo(productService.getPurchaseInfo());
+  userService.addHoneyHistory(cheatPutHistory);
+  userService.setInventory(inventory);
+  userService.finalize();
 
-    const honeyHistory = userService.getHoneyHistory();
-    const productPurchase = userService.getProductPurhcase();
+  const honeyHistory = userService.getHoneyHistory();
+  const productPurchase = userService.getProductPurhcase();
 
-    ctx.$res.success({ inventory, honeyHistory, productPurchase });
+  ctx.$res.success({ inventory, honeyHistory, productPurchase });
 
-    await next();
+  await next();
 }
 
 /**
