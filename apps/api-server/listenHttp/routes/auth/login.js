@@ -10,6 +10,7 @@ const AuthService = require("@ss/service/AuthService");
 const EventService = require("@ss/service/EventService");
 const MailService = require("@ss/service/MailService");
 const QuestService = require("@ss/service/QuestService");
+const ProductService = require('@ss/service/ProductService');
 
 const ReqAuthLogin = require("@ss/models/controller/ReqAuthLogin");
 const Inventory = require("@ss/models/mongo/Inventory");
@@ -37,6 +38,7 @@ module.exports = async (ctx, next) => {
 
   if (userInfo) {
     const oldSessionId = authService.login(userInfo, sessionId);
+    // 다른 디바이스에서 로그인 처리 이슈로 주석
     // await sessionDao.del(oldSessionId);
   } else {
     userInfo = await authService.signIn(sessionId);
@@ -80,6 +82,11 @@ module.exports = async (ctx, next) => {
   const userInventory = inventoryService.finalize();
   userService.setInventory(userInventory);
 
+  const productService = new ProductService(userInfo, loginDate);
+  const { subscribeInfo } = await productService.checkRenewReceipt();
+
+  userService.setSubscribeInfo(subscribeInfo);
+
   await eventService.finalize();
   await userService.finalize();
   authService.finalize(userInfo.uid);
@@ -105,6 +112,7 @@ module.exports = async (ctx, next) => {
     isNewUser,
     feedback: userService.getFeedback(),
     subscriber: userService.getSubscriber(),
+    subscribeInfo
   });
 
   await next();

@@ -17,25 +17,29 @@ module.exports = async (ctx, next) => {
 
   const itemList = reqStoryStart.getItemList();
   const faceList = reqStoryStart.getFaceList();
+  const isFree = reqStoryStart.getIsFree();
 
   if (!storyInfo) {
     ctx.$res.badRequest(SSError.Service.Code.storyNoExist);
     return;
   }
 
-  // if (true) {
-  //     const userInfo = ctx.$userInfo;
-  //     const storyService = new StoryService(userInfo, updateDate);
-  //     const startKey = storyService.generateStartKey();
-  //     ctx.$res.success({ startKey });
-  //     return await next();
-  // }
-
   const userInfo = ctx.$userInfo;
 
   const storyService = new StoryService(userInfo, updateDate);
 
-  // storyService.checkHasStory(storyId);
+  const hasStory = storyService.checkHasStory(storyId);
+
+  const subscribeInfo = userInfo.getSubscribeInfo();
+
+  const hasSubscribe = subscribeInfo.hasSubscribe(updateDate);
+
+  if (!(hasStory || hasSubscribe || isFree)) {
+    ctx.$res.badRequest(SSError.Service.Code.needPurchase);
+    await next();
+    return;
+  }
+
   const startKey = storyService.generateStartKey();
   storyService.startLog(storyId, startKey, faceList, itemList);
 

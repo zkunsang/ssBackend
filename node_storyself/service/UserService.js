@@ -181,6 +181,18 @@ class UserService extends Service {
     this[Schema.USER_INFO.key].setPageSticker(pageSticker);
   }
 
+  setSubscribeInfo(subscribeInfo) {
+    if (!subscribeInfo) return false;
+    const userInfo = this[Schema.USER_INFO.key];
+
+    if (userInfo.isSameSubscribeInfo(subscribeInfo)) return false;
+
+    this.setChange();
+    this[Schema.USER_INFO.key].setSubscribeInfo(subscribeInfo);
+
+    return true;
+  }
+
   getPageSticker(itemId) {
     if (!itemId) {
       return this[Schema.USER_INFO.key].getPageSticker();

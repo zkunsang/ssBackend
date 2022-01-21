@@ -1,5 +1,3 @@
-const ReqShopSubscribe = require('@ss/models/controller/ReqShopSubscribe');
-
 const SSError = require('@ss/error');
 const ValidateUtil = require('@ss/util/ValidateUtil')
 const PurchaseStatus = ValidateUtil.PurchaseStatus;
@@ -9,28 +7,18 @@ const ProductService = require('@ss/service/ProductService');
 
 module.exports = async (ctx, next) => {
   const purchaseDate = ctx.$date;
-  const userInfo = ctx.$userInfo
+  const userInfo = ctx.$userInfo;
   const userDao = ctx.$userDao;
-
-  const reqShopSubscribe = new ReqShopSubscribe(ctx.request.body);
-  ReqShopSubscribe.validModel(reqShopSubscribe);
 
   const productService = new ProductService(userInfo, purchaseDate);
 
-  const { receipt, subscribeInfo } = await productService.validateSubscription(reqShopSubscribe);
-
-  // TODO: purchaseState error
-  // if (receipt.purchaseState === PurchaseStatus.FAIL) {
-  //   ctx.$res.badRequest(SSError.Service.Code.shopReceiptFail);
-  //   return;
-  // }
+  const { subscribeInfo } = await productService.validateSubscription(subscribeInfo);
 
   const userService = new UserService(userInfo, userDao, purchaseDate);
 
   userService.setSubscribeInfo(subscribeInfo);
 
   userService.finalize();
-  productService.finalize();
 
   ctx.$res.success({
     purchaseState: 0,
