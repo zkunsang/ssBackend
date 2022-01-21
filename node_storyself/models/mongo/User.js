@@ -1,6 +1,7 @@
 const Model = require('../../models');
 
-const ValidateUtil = require('../../util/ValidateUtil')
+const ValidateUtil = require('../../util/ValidateUtil');
+const SubscribeInfo = require('./SubscribeInfo');
 const ValidType = ValidateUtil.ValidType;
 const UserStatus = ValidateUtil.UserStatus;
 const Provider = ValidateUtil.Provider;
@@ -80,7 +81,9 @@ class User extends Model {
     this[Schema.PRODUCT_PURCHASE.key] = productPurchase || [];
 
     this[Schema.PAGE_STICKER.key] = pageSticker || [];
-    this[Schema.SUBSCRIBE_INFO.key] = subscribeInfo;
+    if (subscribeInfo) {
+      this[Schema.SUBSCRIBE_INFO.key] = new SubscribeInfo(subscribeInfo);
+    }
   }
 
   getSessionId() {

@@ -16,6 +16,7 @@ const User = require('../models/mongo/User');
 const ProductLog = require('../models/apilog/ProductLog');
 
 const ReceiptDao = require('../daoMongo/ReceiptDao');
+const SubscribeReceiptDao = require('../daoMongo/SubscribeReceiptDao');
 const ProductLogDao = require('../daoMongo/ProductLogDao');
 
 const ProductCache = require('../dbCache/ProductCache');
@@ -86,7 +87,7 @@ class ProductService {
 
     if (subscribeInfo.isExpireAfterCheck()) return { subscribeInfo };
 
-    const expireDate = subscribeInfo.getExpireDate();
+    const expireDate = subscribeInfo.getExpireMillis();
     const now = this.getPurchaseDate();
 
     if (expireDate < now) {
@@ -240,9 +241,8 @@ class ProductService {
     // startTimeMillis: '1642735465074'
 
     // 영수증 검증 기록 저장(history)
-    const transactionId = reqShopSubscription.getTransactionId();
-    const purchaseDate = reqShopSubscription.getPurchaseDate();
-    const purchaseState = reqShopSubscription.getPurchaseState();
+    const purchaseDate = this.getPurchaseDate();
+    const purchaseState = result.paymentState;
     const appStore = reqShopSubscription.getAppStore();
     const updateDate = purchaseDate;
     const { expiryTimeMillis, autoRenewing, startTimeMillis, orderId } = result;
@@ -250,7 +250,6 @@ class ProductService {
     const receipt = new SubscribeReceipt({
       uid,
       productId,
-      transactionId,
       purchaseDate,
       purchaseState,
       purchaseToken,
@@ -349,8 +348,8 @@ class ProductService {
 
   async finalize() {
     // 영수증 처리
-    finalizeReceipt();
-    finalizeSubscribe();
+    this.finalizeReceipt();
+    this.finalizeSubscribe();
   }
 
   finalizeReceipt() {
@@ -376,7 +375,7 @@ class ProductService {
     if (!subscribeReceipt) return;
 
     const receiptDao = new SubscribeReceiptDao(dbMongo);
-    receiptDao.insertOne(receipt);
+    receiptDao.insertOne(subscribeReceipt);
   }
 
   throwNoExistProduct(productId) {

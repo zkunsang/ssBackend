@@ -6,7 +6,6 @@ const AppStore = ValidateUtil.AppStore;
 
 const Schema = {
   UID: { key: 'uid', required: true, type: ValidType.STRING },
-  TRANSACTION_ID: { key: 'transactionId', required: true, type: ValidType.STRING },
   PRODUCT_ID: { key: 'productId', required: true, type: ValidType.STRING },
   APPSTORE: { key: 'appStore', required: true, type: ValidType.STRING, validRange: Object.values(AppStore) },
   PURCHASE_DATE: { key: 'purchaseDate', required: true, type: ValidType.UNIX_TIMESTAMP },
@@ -26,7 +25,6 @@ class SubscribeReceipt extends Model {
   constructor({
     uid,
     appStore,
-    transactionId,
     productId,
     purchaseDate,
     purchaseState,
@@ -39,7 +37,6 @@ class SubscribeReceipt extends Model {
     orderId }) {
     super();
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
-    this[Schema.TRANSACTION_ID.key] = ValidateUtil.setNullUndefined(transactionId);
     this[Schema.PRODUCT_ID.key] = ValidateUtil.setNullUndefined(productId);
     this[Schema.APPSTORE.key] = ValidateUtil.setNullUndefined(appStore);
     this[Schema.PURCHASE_TOKEN.key] = ValidateUtil.setNullUndefined(purchaseToken);
@@ -56,10 +53,6 @@ class SubscribeReceipt extends Model {
 
   getAppStore() {
     return this[Schema.APPSTORE.key];
-  }
-
-  getTransactionId() {
-    return this[Schema.TRANSACTION_ID.key];
   }
 
   getProductId() {

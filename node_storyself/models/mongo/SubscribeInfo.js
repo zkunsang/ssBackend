@@ -55,6 +55,10 @@ class SubscribeInfo extends Model {
   hasSubscribe(now) {
     return this[Schema.EXPIRE_MILLIS.key] > now;
   }
+
+  getExpireMillis() {
+    return this[Schema.EXPIRE_MILLIS.key];
+  }
 }
 
 module.exports = SubscribeInfo;

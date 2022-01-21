@@ -1,4 +1,4 @@
-const Receipt = require("../models/mongo/Receipt");
+const SubscribeReceipt = require("../models/mongo/SubscribeReceipt");
 const Dao = require("./Dao");
 
 class SubscribeReceiptDao extends Dao {
@@ -8,25 +8,25 @@ class SubscribeReceiptDao extends Dao {
     this.collection = this.db.collection("subscribe_receipt");
   }
 
-  static model = Receipt;
+  static model = SubscribeReceipt;
 
   static requireInsertFieldList() {
     return [
-      Receipt.Schema.UID.key,
-      Receipt.Schema.APPSTORE.key,
-      Receipt.Schema.TRANSACTION_ID.key,
-      Receipt.Schema.PRODUCT_ID.key,
-      Receipt.Schema.PURCHASE_DATE.key,
-      Receipt.Schema.PURCHASE_STATE.key,
-      Receipt.Schema.UPDATE_DATE.key,
+      SubscribeReceipt.Schema.UID.key,
+      SubscribeReceipt.Schema.APPSTORE.key,
+      SubscribeReceipt.Schema.TRANSACTION_ID.key,
+      SubscribeReceipt.Schema.PRODUCT_ID.key,
+      SubscribeReceipt.Schema.PURCHASE_DATE.key,
+      SubscribeReceipt.Schema.PURCHASE_STATE.key,
+      SubscribeReceipt.Schema.UPDATE_DATE.key,
     ];
   }
 
   static allowWhereFieldList() {
     return [
-      Receipt.Schema.UID.key,
-      Receipt.Schema.TRANSACTION_ID.key,
-      Receipt.Schema.PRODUCT_ID.key,
+      SubscribeReceipt.Schema.UID.key,
+      SubscribeReceipt.Schema.TRANSACTION_ID.key,
+      SubscribeReceipt.Schema.PRODUCT_ID.key,
     ];
   }
 
