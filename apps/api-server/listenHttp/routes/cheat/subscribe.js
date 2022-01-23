@@ -1,21 +1,45 @@
-const ReqCheatPurchase = require('@ss/models/controller/ReqCheatPurchase');
+const ReqCheatPurchase = require("@ss/models/controller/ReqCheatPurchase");
+const SubscribeInfo = require("@ss/models/mongo/SubscribeInfo");
 
-const UserService = require('@ss/service/UserService');
+const UserService = require("@ss/service/UserService");
+const ProductService = require("@ss/service/ProductService");
 
 module.exports = async (ctx, next) => {
   const purchaseDate = ctx.$date;
-  const userInfo = ctx.$userInfo
+  const userInfo = ctx.$userInfo;
   const userDao = ctx.$userDao;
 
   const reqCheatPurchase = new ReqCheatPurchase(ctx.request.body);
   ReqCheatPurchase.validModel(reqCheatPurchase);
 
+  const appStore = "etc";
+  const productId = reqCheatPurchase.getProductId();
+  const packageName = reqCheatPurchase.getPackageName();
+
+  const productService = new ProductService(userInfo, purchaseDate);
+
+  const { subscribeInfo } = await productService.validateSubscription(
+    new SubscribeInfo({
+      appStore,
+      productId,
+      packageName,
+    })
+  );
+
+  const userService = new UserService(userInfo, userDao, purchaseDate);
+
+  userService.setSubscribeInfo(subscribeInfo);
+
+  userService.finalize();
+  productService.finalize();
+
   ctx.$res.success({
-    purchaseState: 0
+    purchaseState: 0,
+    subscribeInfo,
   });
 
   await next();
-}
+};
 
 /**
  * @swagger

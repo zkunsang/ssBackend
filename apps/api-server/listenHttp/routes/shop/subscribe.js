@@ -1,15 +1,15 @@
-const ReqShopSubscribe = require('@ss/models/controller/ReqShopSubscribe');
+const ReqShopSubscribe = require("@ss/models/controller/ReqShopSubscribe");
 
-const SSError = require('@ss/error');
-const ValidateUtil = require('@ss/util/ValidateUtil')
+const SSError = require("@ss/error");
+const ValidateUtil = require("@ss/util/ValidateUtil");
 const PurchaseStatus = ValidateUtil.PurchaseStatus;
 
-const UserService = require('@ss/service/UserService');
-const ProductService = require('@ss/service/ProductService');
+const UserService = require("@ss/service/UserService");
+const ProductService = require("@ss/service/ProductService");
 
 module.exports = async (ctx, next) => {
   const purchaseDate = ctx.$date;
-  const userInfo = ctx.$userInfo
+  const userInfo = ctx.$userInfo;
   const userDao = ctx.$userDao;
 
   const reqShopSubscribe = new ReqShopSubscribe(ctx.request.body);
@@ -17,13 +17,9 @@ module.exports = async (ctx, next) => {
 
   const productService = new ProductService(userInfo, purchaseDate);
 
-  const { receipt, subscribeInfo } = await productService.validateSubscription(reqShopSubscribe);
-
-  // TODO: purchaseState error
-  // if (receipt.purchaseState === PurchaseStatus.FAIL) {
-  //   ctx.$res.badRequest(SSError.Service.Code.shopReceiptFail);
-  //   return;
-  // }
+  const { receipt, subscribeInfo } = await productService.validateSubscription(
+    reqShopSubscribe
+  );
 
   const userService = new UserService(userInfo, userDao, purchaseDate);
 
@@ -34,11 +30,11 @@ module.exports = async (ctx, next) => {
 
   ctx.$res.success({
     purchaseState: 0,
-    subscribeInfo
+    subscribeInfo,
   });
 
   await next();
-}
+};
 
 /**
  * @swagger

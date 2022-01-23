@@ -12,7 +12,11 @@ module.exports = async (ctx, next) => {
 
   const productService = new ProductService(userInfo, purchaseDate);
 
-  const { subscribeInfo } = await productService.checkRenewReceipt();
+  const originSubscribeInfo = userInfo.getSubscribeInfo();
+
+  const { subscribeInfo } = await productService.validateSubscription(
+    originSubscribeInfo
+  );
 
   const userService = new UserService(userInfo, userDao, purchaseDate);
 

@@ -1,43 +1,54 @@
-const ValidateUtil = require('../util/ValidateUtil');
+const ValidateUtil = require("../util/ValidateUtil");
 
-const dbRedisPB = require('../dbRedisPB');
-const fetch = require('node-fetch');
+const dbRedisPB = require("../dbRedisPB");
+const fetch = require("node-fetch");
 
 const AppStore = ValidateUtil.AppStore;
 const ValidType = ValidateUtil.ValidType;
 
-const SSError = require('../error');
-const dbMongo = require('../dbMongo');
+const SSError = require("../error");
+const dbMongo = require("../dbMongo");
 
-const Receipt = require('../models/mongo/Receipt');
-const SubscribeReceipt = require('../models/mongo/SubscribeReceipt');
-const User = require('../models/mongo/User');
+const Receipt = require("../models/mongo/Receipt");
+const SubscribeReceipt = require("../models/mongo/SubscribeReceipt");
+const User = require("../models/mongo/User");
 
-const ProductLog = require('../models/apilog/ProductLog');
+const ProductLog = require("../models/apilog/ProductLog");
 
-const ReceiptDao = require('../daoMongo/ReceiptDao');
-const SubscribeReceiptDao = require('../daoMongo/SubscribeReceiptDao');
-const ProductLogDao = require('../daoMongo/ProductLogDao');
+const ReceiptDao = require("../daoMongo/ReceiptDao");
+const SubscribeReceiptDao = require("../daoMongo/SubscribeReceiptDao");
+const ProductLogDao = require("../daoMongo/ProductLogDao");
 
-const ProductCache = require('../dbCache/ProductCache');
-const ProductRewardCache = require('../dbCache/ProductRewardCache');
-const SubscribeInfo = require('@ss/models/mongo/SubscribeInfo');
-
+const ProductCache = require("../dbCache/ProductCache");
+const ProductRewardCache = require("../dbCache/ProductRewardCache");
+const SubscribeInfo = require("@ss/models/mongo/SubscribeInfo");
+const DateUtil = require("@ss/util/DateUtil");
 
 const Schema = {
-  USER_INFO: { key: 'userInfo', required: true, type: ValidType.OBJECT, validObject: User },
-  PURCHASE_DATE: { key: 'purchaseDate', required: true, type: ValidType.UNIX_TIMESTAMP },
+  USER_INFO: {
+    key: "userInfo",
+    required: true,
+    type: ValidType.OBJECT,
+    validObject: User,
+  },
+  PURCHASE_DATE: {
+    key: "purchaseDate",
+    required: true,
+    type: ValidType.UNIX_TIMESTAMP,
+  },
 
-  UID: { key: 'uid', required: false, type: ValidType.STRING },
-  RECEIPT: { key: 'receipt', required: false, type: ValidType.OBJECT },
-  SUBSCRIBE_RECEIPT: { key: 'subscribeReceipt', required: false, type: ValidType.OBJECT },
-  PRODUCT_ID: { key: 'productId', required: false, type: ValidType.STRING },
-}
-
+  UID: { key: "uid", required: false, type: ValidType.STRING },
+  RECEIPT: { key: "receipt", required: false, type: ValidType.OBJECT },
+  SUBSCRIBE_RECEIPT: {
+    key: "subscribeReceipt",
+    required: false,
+    type: ValidType.OBJECT,
+  },
+  PRODUCT_ID: { key: "productId", required: false, type: ValidType.STRING },
+};
 
 class ProductService {
   constructor(userInfo, purchaseDate) {
-
     const { uid } = userInfo;
     this[Schema.USER_INFO.key] = userInfo;
     this[Schema.PURCHASE_DATE.key] = purchaseDate;
@@ -75,8 +86,11 @@ class ProductService {
     return this[Schema.USER_INFO.key];
   }
 
-  async init() {
+  async init() {}
 
+  cancelSubscription(originSubscribeInfo) {
+    originSubscribeInfo.cancel();
+    return { subscribeInfo: originSubscribeInfo };
   }
 
   async checkRenewReceipt() {
@@ -152,7 +166,7 @@ class ProductService {
       packageName,
       appStore,
       purchaseDate,
-      updateDate
+      updateDate,
     });
 
     this.setReceipt(receipt);
@@ -190,18 +204,20 @@ class ProductService {
       packageName,
       appStore,
       updateDate,
-    })
+    });
 
     this.setReceipt(receipt);
     return receipt;
   }
 
-  async validateSubscription(subscribeInfo) {
+  async validateSubscription(originSubscribeInfo) {
     let receipt = null;
-    if (subscribeInfo.getAppStore() === AppStore.GOOGLE) {
-      receipt = await this.validateSubscriptionGoogle(subscribeInfo)
+    if (originSubscribeInfo.getAppStore() === AppStore.GOOGLE) {
+      receipt = await this.validateSubscriptionGoogle(originSubscribeInfo);
+    } else if (originSubscribeInfo.getAppStore() === AppStore.AppStore) {
+      receipt = await this.validateSubscriptionApple(originSubscribeInfo);
     } else {
-      receipt = await this.validateSubscriptionApple(subscribeInfo);
+      receipt = this.validateSubscriptionETC(originSubscribeInfo);
     }
 
     const newSubscribeInfo = new SubscribeInfo(receipt);
@@ -210,18 +226,60 @@ class ProductService {
     return { receipt, subscribeInfo: newSubscribeInfo };
   }
 
-  async validateSubscriptionGoogle(reqShopSubscription) {
+  validateSubscriptionETC(subscriptionInfo) {
+    const uid = this.getUID();
+    const { productId, purchaseToken, packageName } = subscriptionInfo;
+
+    // 영수증 검증 기록 저장(history)
+
+    const purchaseDate = this.getPurchaseDate();
+    const purchaseState = 0;
+    const appStore = subscriptionInfo.getAppStore();
+    const updateDate = purchaseDate;
+
+    const startTimeMillis = purchaseDate;
+    const expiryTimeMillis = DateUtil.addMinute(purchaseDate, 5);
+    const autoRenewing = true;
+
+    const orderId = "test order Id";
+
+    const receipt = new SubscribeReceipt({
+      uid,
+      productId,
+      purchaseDate,
+      purchaseState,
+      purchaseToken,
+      packageName,
+      appStore,
+      purchaseDate,
+      updateDate,
+
+      expiryTimeMillis,
+      autoRenewing,
+      startTimeMillis,
+      orderId,
+    });
+
+    this.setSubscribeReceipt(receipt);
+
+    return receipt;
+  }
+
+  async validateSubscriptionGoogle(originSubscription) {
     const uid = this.getUID();
     const accessToken = await this.getAccessToken();
-    const { productId, purchaseToken, packageName } = reqShopSubscription;
+    const { productId, purchaseToken, packageName } = originSubscription;
 
     let url = `https://www.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/subscriptions/${productId}/tokens/${purchaseToken}?access_token=${accessToken}`;
     console.log(`subscription url - ${url}`);
     const result = await this.checkValidate(url);
 
+    // packageName: com.illuni.Storyself
+    // productId: com.illuni.google.subscribe001
+
     // result.expiryTimeMillis // 만료 일자
     // result.startTimeMillis // 시작 일자
-    // result.autoRenewing //:true 
+    // result.autoRenewing //:true
     // result.orderId // GPA.3372-6633-5793-56601
     console.log(result);
 
@@ -243,7 +301,7 @@ class ProductService {
     // 영수증 검증 기록 저장(history)
     const purchaseDate = this.getPurchaseDate();
     const purchaseState = result.paymentState;
-    const appStore = reqShopSubscription.getAppStore();
+    const appStore = originSubscription.getAppStore();
     const updateDate = purchaseDate;
     const { expiryTimeMillis, autoRenewing, startTimeMillis, orderId } = result;
 
@@ -261,7 +319,7 @@ class ProductService {
       expiryTimeMillis,
       autoRenewing,
       startTimeMillis,
-      orderId
+      orderId,
     });
 
     this.setSubscribeReceipt(receipt);
@@ -269,12 +327,10 @@ class ProductService {
     return receipt;
   }
 
-  async validateSubscriptionApple(reqShopSubscription) {
-
-  }
+  async validateSubscriptionApple(originSubscription) {}
 
   parseProductId(productId) {
-    const splitProductList = productId.split('.');
+    const splitProductList = productId.split(".");
     return splitProductList[splitProductList.length - 1];
   }
 
@@ -290,7 +346,8 @@ class ProductService {
     const productId = this.getProductId();
     const purchaseDate = this.getPurchaseDate();
     const productInfo = ProductCache.get(productId);
-    if (productInfo.getProductType() === "package") return { productId, purchaseDate };
+    if (productInfo.getProductType() === "package")
+      return { productId, purchaseDate };
     return null;
   }
 
@@ -381,15 +438,17 @@ class ProductService {
   throwNoExistProduct(productId) {
     const uid = this.getUID();
     throw new SSError.Service(
-      SSError.Service.Code.shopNoExistProduct, `[${uid}]: productId(${productId})`
-    )
+      SSError.Service.Code.shopNoExistProduct,
+      `[${uid}]: productId(${productId})`
+    );
   }
 
   throwNoExistProductReward(productId) {
     const uid = this.getUID();
     throw new SSError.Service(
-      SSError.Service.Code.shopNoExistProductReward, `[${uid}]: productId(${productId})`
-    )
+      SSError.Service.Code.shopNoExistProductReward,
+      `[${uid}]: productId(${productId})`
+    );
   }
 }
 

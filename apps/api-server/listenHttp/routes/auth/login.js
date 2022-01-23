@@ -10,7 +10,7 @@ const AuthService = require("@ss/service/AuthService");
 const EventService = require("@ss/service/EventService");
 const MailService = require("@ss/service/MailService");
 const QuestService = require("@ss/service/QuestService");
-const ProductService = require('@ss/service/ProductService');
+const ProductService = require("@ss/service/ProductService");
 
 const ReqAuthLogin = require("@ss/models/controller/ReqAuthLogin");
 const Inventory = require("@ss/models/mongo/Inventory");
@@ -85,7 +85,9 @@ module.exports = async (ctx, next) => {
   const productService = new ProductService(userInfo, loginDate);
   const { subscribeInfo } = await productService.checkRenewReceipt();
 
-  userService.setSubscribeInfo(subscribeInfo);
+  if (userService.setSubscribeInfo(subscribeInfo)) {
+    productService.finalize();
+  }
 
   await eventService.finalize();
   await userService.finalize();
@@ -112,7 +114,7 @@ module.exports = async (ctx, next) => {
     isNewUser,
     feedback: userService.getFeedback(),
     subscriber: userService.getSubscriber(),
-    subscribeInfo
+    subscribeInfo,
   });
 
   await next();
