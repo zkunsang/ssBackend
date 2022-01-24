@@ -3,6 +3,9 @@ const ValidateUtil = require("../util/ValidateUtil");
 const dbRedisPB = require("../dbRedisPB");
 const fetch = require("node-fetch");
 
+const ss = require('@ss');
+const axios = require('axios');
+
 const AppStore = ValidateUtil.AppStore;
 const ValidType = ValidateUtil.ValidType;
 
@@ -86,7 +89,7 @@ class ProductService {
     return this[Schema.USER_INFO.key];
   }
 
-  async init() {}
+  async init() { }
 
   cancelSubscription(originSubscribeInfo) {
     originSubscribeInfo.cancel();
@@ -135,8 +138,6 @@ class ProductService {
     if (result.purchaseState !== 0) {
       // throw new SSError.Service(SSError.Service.Code.nonValidGoogleReceipt, `${uid} - ${purchaseToken}`);
     }
-
-    console.log(result);
 
     // 구글 영수증 샘플
     // acknowledgementState: 1
@@ -192,8 +193,6 @@ class ProductService {
     //const purchaseState = reqShopProduct.getPurchaseState();
     const purchaseState = 0;
 
-    console.log("reqShopProudct - ", reqShopProduct);
-
     const receipt = new Receipt({
       uid,
       productId,
@@ -214,11 +213,13 @@ class ProductService {
     let receipt = null;
     if (originSubscribeInfo.getAppStore() === AppStore.GOOGLE) {
       receipt = await this.validateSubscriptionGoogle(originSubscribeInfo);
-    } else if (originSubscribeInfo.getAppStore() === AppStore.AppStore) {
+    } else if (originSubscribeInfo.getAppStore() === AppStore.APPLE) {
       receipt = await this.validateSubscriptionApple(originSubscribeInfo);
     } else {
       receipt = this.validateSubscriptionETC(originSubscribeInfo);
     }
+
+    if (receipt === null) return {}
 
     const newSubscribeInfo = new SubscribeInfo(receipt);
     newSubscribeInfo.checkExpireDate(this.getPurchaseDate());
@@ -271,17 +272,10 @@ class ProductService {
     const { productId, purchaseToken, packageName } = originSubscription;
 
     let url = `https://www.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/subscriptions/${productId}/tokens/${purchaseToken}?access_token=${accessToken}`;
-    console.log(`subscription url - ${url}`);
     const result = await this.checkValidate(url);
 
     // packageName: com.illuni.Storyself
     // productId: com.illuni.google.subscribe001
-
-    // result.expiryTimeMillis // 만료 일자
-    // result.startTimeMillis // 시작 일자
-    // result.autoRenewing //:true
-    // result.orderId // GPA.3372-6633-5793-56601
-    console.log(result);
 
     // 구글 영수증 샘플
     // acknowledgementState: 0
@@ -316,9 +310,9 @@ class ProductService {
       purchaseDate,
       updateDate,
 
-      expiryTimeMillis,
+      expiryTimeMillis: Number(expiryTimeMillis),
       autoRenewing,
-      startTimeMillis,
+      startTimeMillis: Number(startTimeMillis),
       orderId,
     });
 
@@ -327,7 +321,101 @@ class ProductService {
     return receipt;
   }
 
-  async validateSubscriptionApple(originSubscription) {}
+  async validateSubscriptionApple(originSubscription) {
+    const u8 = new Uint8Array(originSubscription.receiptData);
+    const receiptData = Buffer.from(u8).toString('base64');
+
+    if (receiptData == null) return null;
+
+    const productResult = await this.sendAppleSubscriptionProduct(receiptData);
+    if (productResult.data.status === 0) {
+      return this.createAppleSubscribeReceiptReceipt(productResult.data, receiptData);
+    }
+
+    if (productResult.data.status === 21007) {
+      const sandboxResult = await this.sendAppleSubscriptionSandbox(receiptData);
+      return this.createAppleSubscribeReceiptReceipt(sandboxResult.data, receiptData);
+    }
+
+    return null;
+  }
+
+  createAppleSubscribeReceiptReceipt(validateResult, receiptData) {
+
+    // 샘플
+    // "latest_receipt_info": [
+    //   {
+    //     "quantity": "1",
+    //     "product_id": "com.illuni.live.apple.subscribe000",
+    //     "transaction_id": "1000000955266779",
+    //     "original_transaction_id": "1000000954921604",
+    //     "purchase_date": "2022-01-24 12:21:59 Etc/GMT",
+    //     "purchase_date_ms": "1643026919000",
+    //     "purchase_date_pst": "2022-01-24 04:21:59 America/Los_Angeles",
+    //     "original_purchase_date": "2022-01-24 06:27:02 Etc/GMT",
+    //     "original_purchase_date_ms": "1643005622000",
+    //     "original_purchase_date_pst": "2022-01-23 22:27:02 America/Los_Angeles",
+    //     "expires_date": "2022-01-24 12:26:59 Etc/GMT",
+    //     "expires_date_ms": "1643027219000",
+    //     "expires_date_pst": "2022-01-24 04:26:59 America/Los_Angeles",
+    //     "web_order_line_item_id": "1000000071618988",
+    //     "is_trial_period": "false",
+    //     "is_in_intro_offer_period": "false",
+    //     "in_app_ownership_type": "PURCHASED",
+    //     "subscription_group_identifier": "20912554"
+    //   }
+    // ],
+
+    const latestReceiptInfo = validateResult.latest_receipt_info[0];
+
+    const uid = this.getUID();
+    const productId = latestReceiptInfo.product_id;
+    const transactionId = latestReceiptInfo.transaction_id;
+    const purchaseDate = Number(latestReceiptInfo.purchase_date_ms);
+    const purchaseState = 0;
+    const appStore = AppStore.APPLE;
+    const updateDate = this.getPurchaseDate();
+    const expiryTimeMillis = Number(latestReceiptInfo.expires_date_ms);
+    const startTimeMillis = Number(latestReceiptInfo.purchase_date_ms);
+
+    const receipt = new SubscribeReceipt({
+      uid,
+      productId,
+      transactionId,
+      purchaseDate,
+      purchaseState,
+      appStore,
+      updateDate,
+
+      expiryTimeMillis: Number(expiryTimeMillis),
+      startTimeMillis: Number(startTimeMillis),
+      receiptData,
+    });
+
+    this.setSubscribeReceipt(receipt);
+
+    return receipt;
+  }
+
+
+
+  async sendAppleSubscriptionProduct(receiptData) {
+    const productUrl = "https://buy.itunes.apple.com/verifyReceipt";
+    return await this.checkValidatePost(productUrl, {
+      "receipt-data": receiptData,
+      "password": ss.configs.apiServer.sharedPassword,
+      'exclude-old-transactions': true
+    });
+  }
+
+  async sendAppleSubscriptionSandbox(receiptData) {
+    const sandboxUrl = "https://sandbox.itunes.apple.com/verifyReceipt";
+    return await this.checkValidatePost(sandboxUrl, {
+      "receipt-data": receiptData,
+      "password": ss.configs.apiServer.sharedPassword,
+      'exclude-old-transactions': true
+    });
+  }
 
   parseProductId(productId) {
     const splitProductList = productId.split(".");
@@ -354,6 +442,11 @@ class ProductService {
   async checkValidate(url) {
     const result = await fetch(url);
     return await result.json();
+  }
+
+  async checkValidatePost(url, postBody) {
+    const result = await axios.post(url, postBody);
+    return result;
   }
 
   getAccessToken() {
@@ -449,6 +542,12 @@ class ProductService {
       SSError.Service.Code.shopNoExistProductReward,
       `[${uid}]: productId(${productId})`
     );
+  }
+
+  removeUnusedParams(subscribeInfo) {
+    if (subscribeInfo == null);
+
+    delete subscribeInfo.receiptData
   }
 }
 

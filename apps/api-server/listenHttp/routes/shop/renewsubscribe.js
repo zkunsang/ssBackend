@@ -20,6 +20,8 @@ module.exports = async (ctx, next) => {
 
   userService.finalize();
 
+  productService.removeUnusedParams(subscribeInfo);
+
   ctx.$res.success({
     purchaseState: 0,
     subscribeInfo,

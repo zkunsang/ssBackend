@@ -46,8 +46,9 @@ const Schema = {
     required: true,
     type: ValidType.NUMBER,
   },
-  ORDER_ID: { key: "orderId", required: true, type: ValidType.STRING },
-  AUTO_RENEW: { key: "autoRenewing", required: true, type: ValidType.BOOLEAN },
+  ORDER_ID: { key: "orderId", required: false, type: ValidType.STRING },   // android
+  AUTO_RENEW: { key: "autoRenewing", required: false, type: ValidType.BOOLEAN }, // android
+  RECEIPT_DATA: { key: "receiptData", required: false, type: ValidType.STRING }
 };
 
 class SubscribeReceipt extends Model {
@@ -64,6 +65,7 @@ class SubscribeReceipt extends Model {
     autoRenewing,
     startTimeMillis,
     orderId,
+    receiptData
   }) {
     super();
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -84,6 +86,7 @@ class SubscribeReceipt extends Model {
       ValidateUtil.setNullUndefined(startTimeMillis);
     this[Schema.ORDER_ID.key] = ValidateUtil.setNullUndefined(orderId);
     this[Schema.AUTO_RENEW.key] = ValidateUtil.setNullUndefined(autoRenewing);
+    this[Schema.RECEIPT_DATA.key] = ValidateUtil.setNullUndefined(receiptData);
   }
 
   getAppStore() {

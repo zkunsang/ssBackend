@@ -14,7 +14,6 @@ class SubscribeReceiptDao extends Dao {
     return [
       SubscribeReceipt.Schema.UID.key,
       SubscribeReceipt.Schema.APPSTORE.key,
-      SubscribeReceipt.Schema.TRANSACTION_ID.key,
       SubscribeReceipt.Schema.PRODUCT_ID.key,
       SubscribeReceipt.Schema.PURCHASE_DATE.key,
       SubscribeReceipt.Schema.PURCHASE_STATE.key,
@@ -25,7 +24,6 @@ class SubscribeReceiptDao extends Dao {
   static allowWhereFieldList() {
     return [
       SubscribeReceipt.Schema.UID.key,
-      SubscribeReceipt.Schema.TRANSACTION_ID.key,
       SubscribeReceipt.Schema.PRODUCT_ID.key,
     ];
   }

@@ -35,6 +35,7 @@ const Schema = {
     required: false,
     type: ValidType.STRING,
   },
+  RECEIPT_DATA: { key: "receiptData", required: false, type: ValidType.ARRAY },
 };
 
 class SubscribeInfo extends Model {
@@ -47,6 +48,7 @@ class SubscribeInfo extends Model {
     packageName,
     purchaseToken,
     expireAfterCheck,
+    receiptData,
   }) {
     super();
 
@@ -60,6 +62,7 @@ class SubscribeInfo extends Model {
     this[Schema.PRODUCT_ID.key] = productId;
     this[Schema.PACKAGE_NAME.key] = packageName;
     this[Schema.PURCHASE_TOKEN.key] = purchaseToken;
+    this[Schema.RECEIPT_DATA.key] = receiptData;
   }
 
   checkExpireDate(now) {
