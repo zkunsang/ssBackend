@@ -85,11 +85,11 @@ module.exports = async (ctx, next) => {
   const productService = new ProductService(userInfo, loginDate);
   const { subscribeInfo } = await productService.checkRenewReceipt();
 
-  productService.removeUnusedParams(subscribeInfo);
-
   if (userService.setSubscribeInfo(subscribeInfo)) {
     productService.finalize();
   }
+
+  productService.removeUnusedParams(subscribeInfo);
 
   await eventService.finalize();
   await userService.finalize();

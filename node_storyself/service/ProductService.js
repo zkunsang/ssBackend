@@ -3,8 +3,8 @@ const ValidateUtil = require("../util/ValidateUtil");
 const dbRedisPB = require("../dbRedisPB");
 const fetch = require("node-fetch");
 
-const ss = require('@ss');
-const axios = require('axios');
+const ss = require("@ss");
+const axios = require("axios");
 
 const AppStore = ValidateUtil.AppStore;
 const ValidType = ValidateUtil.ValidType;
@@ -89,7 +89,7 @@ class ProductService {
     return this[Schema.USER_INFO.key];
   }
 
-  async init() { }
+  async init() {}
 
   cancelSubscription(originSubscribeInfo) {
     originSubscribeInfo.cancel();
@@ -219,7 +219,7 @@ class ProductService {
       receipt = this.validateSubscriptionETC(originSubscribeInfo);
     }
 
-    if (receipt === null) return {}
+    if (receipt === null) return {};
 
     const newSubscribeInfo = new SubscribeInfo(receipt);
     newSubscribeInfo.checkExpireDate(this.getPurchaseDate());
@@ -323,25 +323,36 @@ class ProductService {
 
   async validateSubscriptionApple(originSubscription) {
     const u8 = new Uint8Array(originSubscription.receiptData);
-    const receiptData = Buffer.from(u8).toString('base64');
+    const receiptData = Buffer.from(u8).toString("base64");
 
-    if (receiptData == null) return null;
+    if (receiptData === null) return null;
+    if (receiptData === "") return null;
 
     const productResult = await this.sendAppleSubscriptionProduct(receiptData);
     if (productResult.data.status === 0) {
-      return this.createAppleSubscribeReceiptReceipt(productResult.data, receiptData);
+      return this.createAppleSubscribeReceiptReceipt(
+        productResult.data,
+        originSubscription.receiptData
+      );
     }
 
     if (productResult.data.status === 21007) {
-      const sandboxResult = await this.sendAppleSubscriptionSandbox(receiptData);
-      return this.createAppleSubscribeReceiptReceipt(sandboxResult.data, receiptData);
+      const sandboxResult = await this.sendAppleSubscriptionSandbox(
+        receiptData
+      );
+
+      if (sandboxResult.data.status !== 0) return null;
+
+      return this.createAppleSubscribeReceiptReceipt(
+        sandboxResult.data,
+        originSubscription.receiptData
+      );
     }
 
     return null;
   }
 
   createAppleSubscribeReceiptReceipt(validateResult, receiptData) {
-
     // 샘플
     // "latest_receipt_info": [
     //   {
@@ -397,14 +408,12 @@ class ProductService {
     return receipt;
   }
 
-
-
   async sendAppleSubscriptionProduct(receiptData) {
     const productUrl = "https://buy.itunes.apple.com/verifyReceipt";
     return await this.checkValidatePost(productUrl, {
       "receipt-data": receiptData,
-      "password": ss.configs.apiServer.sharedPassword,
-      'exclude-old-transactions': true
+      password: ss.configs.apiServer.sharedPassword,
+      "exclude-old-transactions": true,
     });
   }
 
@@ -412,8 +421,8 @@ class ProductService {
     const sandboxUrl = "https://sandbox.itunes.apple.com/verifyReceipt";
     return await this.checkValidatePost(sandboxUrl, {
       "receipt-data": receiptData,
-      "password": ss.configs.apiServer.sharedPassword,
-      'exclude-old-transactions': true
+      password: ss.configs.apiServer.sharedPassword,
+      "exclude-old-transactions": true,
     });
   }
 
@@ -545,9 +554,9 @@ class ProductService {
   }
 
   removeUnusedParams(subscribeInfo) {
-    if (subscribeInfo == null);
+    if (subscribeInfo == null) return;
 
-    delete subscribeInfo.receiptData
+    delete subscribeInfo.receiptData;
   }
 }
 

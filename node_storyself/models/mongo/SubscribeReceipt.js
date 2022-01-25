@@ -46,9 +46,9 @@ const Schema = {
     required: true,
     type: ValidType.NUMBER,
   },
-  ORDER_ID: { key: "orderId", required: false, type: ValidType.STRING },   // android
+  ORDER_ID: { key: "orderId", required: false, type: ValidType.STRING }, // android
   AUTO_RENEW: { key: "autoRenewing", required: false, type: ValidType.BOOLEAN }, // android
-  RECEIPT_DATA: { key: "receiptData", required: false, type: ValidType.STRING }
+  RECEIPT_DATA: { key: "receiptData", required: false, type: ValidType.ARRAY },
 };
 
 class SubscribeReceipt extends Model {
@@ -65,7 +65,7 @@ class SubscribeReceipt extends Model {
     autoRenewing,
     startTimeMillis,
     orderId,
-    receiptData
+    receiptData,
   }) {
     super();
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
