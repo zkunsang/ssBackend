@@ -32,7 +32,8 @@ module.exports = async (ctx, next) => {
 
   const subscribeInfo = userInfo.getSubscribeInfo();
 
-  const hasSubscribe = subscribeInfo.hasSubscribe(updateDate);
+  const hasSubscribe =
+    !!subscribeInfo && subscribeInfo.hasSubscribe(updateDate);
 
   if (!(hasStory || hasSubscribe || isFree)) {
     ctx.$res.badRequest(SSError.Service.Code.needPurchase);
