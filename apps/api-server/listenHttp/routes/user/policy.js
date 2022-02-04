@@ -4,24 +4,24 @@ const DataTableCache = require('@ss/dbCache/DataTableCache');
 const ReqUserPolicy = require('@ss/models/controller/ReqUserPolicy');
 
 module.exports = async (ctx, next) => {
-    const reqUserPolicy = new ReqUserPolicy(ctx.request.body);
-    ReqUserPolicy.validModel(reqUserPolicy);
+  const reqUserPolicy = new ReqUserPolicy(ctx.request.body);
+  ReqUserPolicy.validModel(reqUserPolicy);
 
-    const userInfo = ctx.$userInfo;
+  const userInfo = ctx.$userInfo;
 
-    const policyVersion = DataTableCache.get('policy');;
-    const updatePolicyVersion = reqUserPolicy.getPolicyVersion();
-    if (policyVersion.version !== updatePolicyVersion) {
-        // TODO: different version
-        throw new Error({ errMessage: 'wrong policyVersion' });
-    }
+  const policyVersion = DataTableCache.get('policy');;
+  const updatePolicyVersion = reqUserPolicy.getPolicyVersion();
+  if (policyVersion.version !== updatePolicyVersion) {
+    // TODO: different version
+    throw new Error({ errMessage: 'wrong policyVersion' });
+  }
 
-    const userDao = new UserDao(ctx.$dbMongo);
-    await userDao.updateOne({ uid: userInfo.getUID() }, { policyVersion: policyVersion.version });
+  const userDao = new UserDao(ctx.$dbMongo);
+  await userDao.updateOne({ uid: userInfo.getUID() }, { policyVersion: policyVersion.version });
 
-    ctx.$res.success({});
+  ctx.$res.success({});
 
-    await next();
+  await next();
 };
 
 /**
