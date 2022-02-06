@@ -1,22 +1,22 @@
-const Model = require('../../models');
+const Model = require("../../models");
 
-const ValidateUtil = require('../../util/ValidateUtil');
+const ValidateUtil = require("../../util/ValidateUtil");
 const ValidType = ValidateUtil.ValidType;
 
 const Schema = {
-  RECORD_LIST: { key: 'recordList', required: true, type: ValidType.ARRAY },
-  STORY_ID: { key: 'storyId', required: true, type: ValidType.STRING },
-}
+  UPDATE_LIST: { key: "updateList", required: true, type: ValidType.ARRAY },
+  DELETE_LIST: { key: "deleteList", required: true, type: ValidType.ARRAY },
+  RESET_ALL: { key: "resetAll", required: true, type: ValidType.ARRAY },
+  STORY_ID: { key: "storyId", required: true, type: ValidType.STRING },
+};
 
 class ReqRecordUpdate extends Model {
-  constructor({ recordList, storyId }) {
+  constructor({ updateList, deleteList, resetAll, storyId }) {
     super();
-    this[Schema.RECORD_LIST.key] = recordList;
+    this[Schema.UPDATE_LIST.key] = updateList;
+    this[Schema.DELETE_LIST.key] = deleteList;
+    this[Schema.RESET_ALL.key] = resetAll;
     this[Schema.STORY_ID.key] = storyId;
-  }
-
-  getRecordList() {
-    return this[Schema.RECORD_LIST.key];
   }
 
   getStoryId() {

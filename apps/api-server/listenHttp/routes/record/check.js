@@ -1,19 +1,17 @@
-const ReqRecordUpdate = require("@ss/models/controller/ReqRecordUpdate");
+const ReqRecordCheck = require("@ss/models/controller/ReqRecordCheck");
 const UserResourceService = require("@ss/service/UserResourceService");
 
 module.exports = async (ctx, next) => {
-  const reqRecordUpdate = new ReqRecordUpdate(ctx.request.body);
+  const reqRecordCheck = new ReqRecordCheck(ctx.request.body);
+
+  const storyId = reqRecordCheck.getStoryId();
 
   const userInfo = ctx.$userInfo;
   const updateDate = ctx.$date;
 
   const userResourceService = new UserResourceService(userInfo, updateDate);
 
-  const finalRecordList = await userResourceService.updateRecord(
-    reqRecordUpdate
-  );
-
-  await userResourceService.finalize();
+  const finalRecordList = await userResourceService.checkRecord(storyId);
 
   ctx.$res.success({ recordList: finalRecordList });
 
