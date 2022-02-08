@@ -15,7 +15,7 @@ module.exports = async (ctx, next) => {
   );
 
   const s3Url = apiConfig.cdnUrl;
-  const s3UserUrl = apiConfig.cndUserUrl;
+  const s3UserUrl = apiConfig.cdnUserUrl;
   ctx.$res.success({ dataTableList, s3Url, couponEnable, s3UserUrl });
 
   await next();

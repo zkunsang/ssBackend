@@ -56,6 +56,29 @@ class UserResourceService extends Service {
     this[Schema.IS_NEW.key] = false;
   }
 
+  async updateModel({ updateList, deleteList }) {
+    const userModelList = await this.getUserModelInfo();
+    const userModelMap = ArrayUtil.keyBy(userModelList, "fileName");
+
+    for (const updateModel of updateList) {
+      if (userModelMap[updateModel.fileName]) {
+        userModelMap[updateModel.fileName].version += 1;
+        userModelMap[updateModel.fileName].deleted = false;
+        userModelMap[updateModel.fileName].updateDate = this.getUpdateDate()
+      } else {
+        updateModel.updateDate = this.getUpdateDate();
+        updateModel.deleted = false;
+        userModelList.push(updateModel);
+      }
+    }
+
+    for (const deleteModel of deleteList) {
+      if (userModelMap[deleteModel.fileName]) {
+        userModelMap[deleteModel.fileName].deleted = true;
+      }
+    }
+  }
+
   async checkRecord(storyId) {
     return await this.getUserRecordStoryInfo(storyId);
   }
@@ -106,17 +129,16 @@ class UserResourceService extends Service {
   getUserRecordInfo(storyId) {
     if (!this[Schema.USER_RESOURCE.key]) {
       this[Schema.IS_NEW.key] = true;
-      this[Schema.USER_RESOURCE.key] = {
-        record: {
-          [storyId]: [],
-        },
-      };
+      this[Schema.USER_RESOURCE.key] = {};
     }
 
+    if (!this[Schema.USER_RESOURCE.key]["record"]) {
+      this[Schema.USER_RESOURCE.key]["record"] = {};
+    }
+
+
     if (!this[Schema.USER_RESOURCE.key]["record"][storyId]) {
-      this[Schema.USER_RESOURCE.key]["record"] = {
-        [storyId]: [],
-      };
+      this[Schema.USER_RESOURCE.key]["record"][storyId] = [];
     }
 
     return this[Schema.USER_RESOURCE.key]["record"][storyId];
@@ -132,6 +154,21 @@ class UserResourceService extends Service {
   async getUserRecordStoryInfo(storyId) {
     await this.getUserResourceInfo();
     return this.getUserRecordInfo(storyId);
+  }
+
+  async getUserModelInfo() {
+    await this.getUserResourceInfo();
+
+    if (!this[Schema.USER_RESOURCE.key]) {
+      this[Schema.IS_NEW.key] = true;
+      this[Schema.USER_RESOURCE.key] = {}
+    }
+
+    if (!this[Schema.USER_RESOURCE.key]["model"]) {
+      this[Schema.USER_RESOURCE.key]["model"] = []
+    }
+
+    return this[Schema.USER_RESOURCE.key]["model"];
   }
 
   async finalize() {
