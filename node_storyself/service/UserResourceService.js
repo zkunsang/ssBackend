@@ -58,13 +58,13 @@ class UserResourceService extends Service {
 
   async updateModel({ updateList, deleteList }) {
     const userModelList = await this.getUserModelInfo();
-    const userModelMap = ArrayUtil.keyBy(userModelList, "fileName");
+    const userModelMap = ArrayUtil.keyBy(userModelList, "index");
 
     for (const updateModel of updateList) {
-      if (userModelMap[updateModel.fileName]) {
-        userModelMap[updateModel.fileName].version += 1;
-        userModelMap[updateModel.fileName].deleted = false;
-        userModelMap[updateModel.fileName].updateDate = this.getUpdateDate()
+      if (userModelMap[updateModel.index]) {
+        userModelMap[updateModel.index].version += 1;
+        userModelMap[updateModel.index].deleted = false;
+        userModelMap[updateModel.index].updateDate = this.getUpdateDate();
       } else {
         updateModel.updateDate = this.getUpdateDate();
         updateModel.deleted = false;
@@ -73,10 +73,12 @@ class UserResourceService extends Service {
     }
 
     for (const deleteModel of deleteList) {
-      if (userModelMap[deleteModel.fileName]) {
-        userModelMap[deleteModel.fileName].deleted = true;
+      if (userModelMap[deleteModel.index]) {
+        userModelMap[deleteModel.index].deleted = true;
       }
     }
+
+    return userModelList;
   }
 
   async checkRecord(storyId) {
@@ -136,7 +138,6 @@ class UserResourceService extends Service {
       this[Schema.USER_RESOURCE.key]["record"] = {};
     }
 
-
     if (!this[Schema.USER_RESOURCE.key]["record"][storyId]) {
       this[Schema.USER_RESOURCE.key]["record"][storyId] = [];
     }
@@ -161,11 +162,11 @@ class UserResourceService extends Service {
 
     if (!this[Schema.USER_RESOURCE.key]) {
       this[Schema.IS_NEW.key] = true;
-      this[Schema.USER_RESOURCE.key] = {}
+      this[Schema.USER_RESOURCE.key] = {};
     }
 
     if (!this[Schema.USER_RESOURCE.key]["model"]) {
-      this[Schema.USER_RESOURCE.key]["model"] = []
+      this[Schema.USER_RESOURCE.key]["model"] = [];
     }
 
     return this[Schema.USER_RESOURCE.key]["model"];

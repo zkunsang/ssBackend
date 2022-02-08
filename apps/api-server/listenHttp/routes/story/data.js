@@ -16,7 +16,15 @@ module.exports = async (ctx, next) => {
 
   const s3Url = apiConfig.cdnUrl;
   const s3UserUrl = apiConfig.cdnUserUrl;
-  ctx.$res.success({ dataTableList, s3Url, couponEnable, s3UserUrl });
+  const modelVersion = apiConfig.modelVersion;
+
+  ctx.$res.success({
+    dataTableList,
+    s3Url,
+    couponEnable,
+    s3UserUrl,
+    modelVersion,
+  });
 
   await next();
 };
