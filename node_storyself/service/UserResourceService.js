@@ -81,6 +81,10 @@ class UserResourceService extends Service {
     return userModelList;
   }
 
+  async checkModel() {
+    return await this.getUserModelInfo()
+  }
+
   async checkRecord(storyId) {
     return await this.getUserRecordStoryInfo(storyId);
   }

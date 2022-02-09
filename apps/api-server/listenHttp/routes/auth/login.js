@@ -11,6 +11,7 @@ const EventService = require("@ss/service/EventService");
 const MailService = require("@ss/service/MailService");
 const QuestService = require("@ss/service/QuestService");
 const ProductService = require("@ss/service/ProductService");
+const UserResourceService = require("@ss/service/UserResourceService");
 
 const ReqAuthLogin = require("@ss/models/controller/ReqAuthLogin");
 const Inventory = require("@ss/models/mongo/Inventory");
@@ -72,7 +73,6 @@ module.exports = async (ctx, next) => {
   const { eventItemList, eventMailList } = eventResult || {};
 
   // inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
-
   const mail = mailService.putEventMailList(eventMailList);
   if (mail) userService.setMail(mail);
 
@@ -94,6 +94,11 @@ module.exports = async (ctx, next) => {
   await eventService.finalize();
   await userService.finalize();
   authService.finalize(userInfo.uid);
+
+  const userResourceService = new UserResourceService(userInfo, loginDate);
+  const modelList = await userResourceService.checkModel();
+
+  await userResourceService.finalize();
 
   const { fcmToken } = userInfo;
   const eventList = [];
@@ -117,6 +122,7 @@ module.exports = async (ctx, next) => {
     feedback: userService.getFeedback(),
     subscriber: userService.getSubscriber(),
     subscribeInfo,
+    modelList
   });
 
   await next();
