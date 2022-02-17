@@ -5,7 +5,7 @@ const ValidType = ValidateUtil.ValidType;
 
 const Schema = {
   PRODUCT_ID: { key: "productId", required: true, type: ValidType.STRING },
-  PACKAGE_NAME: { key: "packageName", required: true, type: ValidType.STRING },
+  PACKAGE_NAME: { key: "packageName", required: false, type: ValidType.STRING },
 };
 
 class ReqCheatPurchase extends Model {
