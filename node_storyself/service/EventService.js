@@ -107,7 +107,7 @@ class EventService extends Service {
   eventDefaultItem(userEventInfo) {
     const eventId = "2";
 
-    // if (userEventInfo && userEventInfo.hasEventInfo(eventId)) return [[]];
+    if (userEventInfo && userEventInfo.hasEventInfo(eventId)) return [[]];
 
     const eventInfo = { eventId };
 
