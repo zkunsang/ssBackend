@@ -72,7 +72,7 @@ module.exports = async (ctx, next) => {
 
   const { eventItemList, eventMailList } = eventResult || {};
 
-  // inventoryService.putEventItemList(eventItemList, InventoryService.PUT_ACTION.EVENT.EVENT);
+  inventoryService.putEventItemList(eventItemList);
   const mail = mailService.putEventMailList(eventMailList);
   if (mail) userService.setMail(mail);
 

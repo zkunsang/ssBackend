@@ -42,6 +42,7 @@ const PUT_ACTION = {
     BETA_EVENT: [1006, 1],
     EVENT: [1006, 2],
     STORY_EVENT: [1006, 3],
+    DEFAULT_ITEM: [1006, 4],
   },
   STORY_QUEST: [1007, 1],
 
