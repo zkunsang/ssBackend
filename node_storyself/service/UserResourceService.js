@@ -113,7 +113,7 @@ class UserResourceService extends Service {
 
     for (const deleteRecord of deleteList) {
       if (userRecordMap[deleteRecord.fileName]) {
-        userRecordData.deleted = true;
+        userRecordMap[deleteRecord.fileName].deleted = true;
       }
     }
 
