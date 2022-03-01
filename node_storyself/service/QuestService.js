@@ -152,6 +152,7 @@ class QuestService extends Service {
   }
 
   parseClear(questClear) {
+    if (!questClear) return [];
     return Object.keys(questClear);
   }
 

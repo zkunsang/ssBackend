@@ -118,7 +118,7 @@ class EventService extends Service {
       { itemId: 'bookubooku1', itemQny: 1 },
       { itemId: 'star1', itemQny: 1 },
       { itemId: 'heartglasses0', itemQny: 1 },
-      { itemId: 'beard1', itemQny: 1 },
+      { itemId: 'reindeerband0', itemQny: 1 },
 
       { itemId: 'stk_Peterpan_tree_0', itemQny: 5 },
       { itemId: 'stk_AliceInWonderland_twitter_0', itemQny: 5 },
