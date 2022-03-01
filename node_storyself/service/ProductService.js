@@ -22,10 +22,14 @@ const ReceiptDao = require("../daoMongo/ReceiptDao");
 const SubscribeReceiptDao = require("../daoMongo/SubscribeReceiptDao");
 const ProductLogDao = require("../daoMongo/ProductLogDao");
 
+const ProductKeyDao = require("../daoMongo/ProductKeyDao");
+
 const ProductCache = require("../dbCache/ProductCache");
 const ProductRewardCache = require("../dbCache/ProductRewardCache");
 const SubscribeInfo = require("@ss/models/mongo/SubscribeInfo");
 const DateUtil = require("@ss/util/DateUtil");
+const ProductKey = require('@ss/models/mongo/ProductKey');
+const nanoid = require('nanoid');
 
 const Schema = {
   USER_INFO: {
@@ -89,7 +93,87 @@ class ProductService {
     return this[Schema.USER_INFO.key];
   }
 
-  async init() {}
+  async init() { }
+
+  async createProductKey(productId) {
+    const uid = this.getUID();
+    const productKeyDao = new ProductKeyDao(dbMongo);
+    const productKeyInfo = await productKeyDao.findOne({ uid });
+
+    const purchaseKey = nanoid(6);
+
+    const newProductKey = purchaseKey;
+    if (productKeyInfo) {
+      delete productKeyInfo.uid;
+      if (!productKeyInfo.productKeys[productId]) {
+        productKeyInfo.productKeys[productId] = { [newProductKey]: "" };
+      } else {
+        productKeyInfo.productKeys[productId][newProductKey] = "";
+      }
+
+      await productKeyDao.updateOne({ uid }, productKeyInfo);
+    }
+    else {
+      const productKeys = {
+        [productId]: { [purchaseKey]: "" }
+      };
+
+      await productKeyDao.insertOne(new ProductKey({ uid, productKeys }));
+    }
+    // const temp = {
+    //   "uid": "123", "products": [
+    //     {
+    //       "subscribe001": [
+    //         { "purchaseKey": "GPA.123123123123" },
+    //         { "purchaseKey": "" },
+    //         { "purchaseKey": "" },
+    //       ]
+    //     }
+    //   ]
+    // }
+
+    return purchaseKey;
+  }
+
+  async getProductKey(productId) {
+    const uid = this.getUID();
+
+    const productKeyDao = new ProductKeyDao(dbMongo);
+    const productKeyInfo = await productKeyDao.findOne({ uid });
+
+    if (!productKeyInfo) return null;
+    if (!productKeyInfo.productKeys) return null;
+    if (!productKeyInfo.productKeys[productId]) return null;
+
+    const keyList = Object.keys(productKeyInfo.productKeys[productId]);
+    for (const _productKey of keyList) {
+      if (productKeyInfo.productKeys[productId][_productKey].length > 0) continue;
+      return productKeyInfo.productKeys[productId][_productKey];
+    }
+
+    return null;
+  }
+
+  async updateProductKey(productId, purchaseKey, orderId) {
+    const uid = this.getUID();
+
+    const productKeyDao = new ProductKeyDao(dbMongo);
+    const productKeyInfo = await productKeyDao.findOne({ uid });
+
+    if (!productKeyInfo) return false;
+    if (!productKeyInfo.productKeys) return false;
+    if (!productKeyInfo.productKeys[productId]) return false;
+
+    productKeyInfo.productKeys[productId][purchaseKey] = orderId;
+
+    delete productKeyInfo.uid;
+
+    await productKeyDao.updateOne({ uid }, productKeyInfo);
+
+    return true;
+  }
+
+
 
   cancelSubscription(originSubscribeInfo) {
     originSubscribeInfo.cancel();
