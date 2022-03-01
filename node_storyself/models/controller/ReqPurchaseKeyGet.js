@@ -13,6 +13,9 @@ class ReqPurchaseKeyGet extends Model {
 
     this[Schema.PRODUCT_ID.key] = productId;
   }
+  getProductId() {
+    return this[Schema.PRODUCT_ID.key];
+  }
 }
 
 module.exports = ReqPurchaseKeyGet;
