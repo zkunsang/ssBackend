@@ -163,6 +163,7 @@ class ProductService {
     if (!productKeyInfo) return false;
     if (!productKeyInfo.productKeys) return false;
     if (!productKeyInfo.productKeys[productId]) return false;
+    if (!productKeyInfo.productKeys[productId][purchaseKey]) return false;
 
     productKeyInfo.productKeys[productId][purchaseKey] = orderId;
 

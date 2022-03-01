@@ -14,7 +14,7 @@ module.exports = async (ctx, next) => {
   const purchaseKey = reqPurchaseKeyUpdate.getPurchaseKey();
 
   const productService = new ProductService(userInfo, logDate);
-  const result = await productService.updateProductKey(productId, orderId, purchaseKey);
+  const result = await productService.updateProductKey(productId, purchaseKey, orderId);
 
   ctx.$res.success({ result });
 
