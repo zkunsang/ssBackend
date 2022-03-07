@@ -21,6 +21,7 @@ module.exports = async (ctx, next) => {
   userService.finalize();
 
   productService.removeUnusedParams(subscribeInfo);
+  productService.addSubscribeCheckDate(subscribeInfo);
 
   ctx.$res.success({
     purchaseState: 0,

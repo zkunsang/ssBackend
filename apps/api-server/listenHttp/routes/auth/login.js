@@ -108,6 +108,8 @@ module.exports = async (ctx, next) => {
   ctx.$userInfo = userInfo;
   const puid = userInfo.getPUID();
 
+  productService.addSubscribeCheckDate(subscribeInfo);
+
   ctx.$res.success({
     sessionId,
     puid,

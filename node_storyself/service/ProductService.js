@@ -163,7 +163,8 @@ class ProductService {
     if (!productKeyInfo) return false;
     if (!productKeyInfo.productKeys) return false;
     if (!productKeyInfo.productKeys[productId]) return false;
-    if (!productKeyInfo.productKeys[productId][purchaseKey]) return false;
+    if (productKeyInfo.productKeys[productId][purchaseKey] === undefined) return false;
+    if (productKeyInfo.productKeys[productId][purchaseKey] !== '') return false;
 
     productKeyInfo.productKeys[productId][purchaseKey] = orderId;
 
@@ -187,7 +188,7 @@ class ProductService {
 
     if (!subscribeInfo) return {};
 
-    if (subscribeInfo.isExpireAfterCheck()) return { subscribeInfo };
+    // if (subscribeInfo.isExpireAfterCheck()) return { subscribeInfo };
 
     const expireDate = subscribeInfo.getExpireMillis();
     const now = this.getPurchaseDate();
@@ -642,6 +643,13 @@ class ProductService {
     if (subscribeInfo == null) return;
 
     delete subscribeInfo.receiptData;
+  }
+
+  addSubscribeCheckDate(subscribeInfo) {
+    if (subscribeInfo == null) return;
+
+    const isDev = process.env.NODE_ENV === 'apiDev';
+    subscribeInfo.expiryTimeMillis += (isDev ? 180000 : 43200000);
   }
 }
 

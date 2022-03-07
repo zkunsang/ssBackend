@@ -29,6 +29,7 @@ module.exports = async (ctx, next) => {
   const userService = new UserService(userInfo, userDao, purchaseDate);
 
   userService.setSubscribeInfo(subscribeInfo);
+  productService.addSubscribeCheckDate(subscribeInfo);
 
   userService.finalize();
   productService.finalize();

@@ -22,7 +22,9 @@ module.exports = async (ctx, next) => {
 
   userService.setSubscribeInfo(subscribeInfo);
 
-  userService.finalize();
+  await userService.finalize();
+
+  productService.addSubscribeCheckDate(subscribeInfo);
 
   ctx.$res.success({
     purchaseState: 0,
