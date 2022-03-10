@@ -78,8 +78,9 @@ class SubscribeInfo extends Model {
   }
 
   hasSubscribe(now) {
-    const isDev = process.env.NODE_ENV === 'apiDev';
-    const expireDate = this[Schema.EXPIRE_MILLIS.key] + (isDev ? 180000 : 43200000);
+    const isDev = process.env.NODE_ENV === "apiDev";
+    const expireDate =
+      this[Schema.EXPIRE_MILLIS.key] + (isDev ? 180000 : 43200000 * 4);
     console.log(`${expireDate} - ${this[Schema.EXPIRE_MILLIS.key]}`);
     return expireDate > now;
   }

@@ -28,8 +28,8 @@ const ProductCache = require("../dbCache/ProductCache");
 const ProductRewardCache = require("../dbCache/ProductRewardCache");
 const SubscribeInfo = require("@ss/models/mongo/SubscribeInfo");
 const DateUtil = require("@ss/util/DateUtil");
-const ProductKey = require('@ss/models/mongo/ProductKey');
-const nanoid = require('nanoid');
+const ProductKey = require("@ss/models/mongo/ProductKey");
+const nanoid = require("nanoid");
 
 const Schema = {
   USER_INFO: {
@@ -93,7 +93,7 @@ class ProductService {
     return this[Schema.USER_INFO.key];
   }
 
-  async init() { }
+  async init() {}
 
   async createProductKey(productId) {
     const uid = this.getUID();
@@ -112,10 +112,9 @@ class ProductService {
       }
 
       await productKeyDao.updateOne({ uid }, productKeyInfo);
-    }
-    else {
+    } else {
       const productKeys = {
-        [productId]: { [purchaseKey]: "" }
+        [productId]: { [purchaseKey]: "" },
       };
 
       await productKeyDao.insertOne(new ProductKey({ uid, productKeys }));
@@ -147,7 +146,8 @@ class ProductService {
 
     const keyList = Object.keys(productKeyInfo.productKeys[productId]);
     for (const _productKey of keyList) {
-      if (productKeyInfo.productKeys[productId][_productKey].length > 0) continue;
+      if (productKeyInfo.productKeys[productId][_productKey].length > 0)
+        continue;
       return productKeyInfo.productKeys[productId][_productKey];
     }
 
@@ -163,8 +163,9 @@ class ProductService {
     if (!productKeyInfo) return false;
     if (!productKeyInfo.productKeys) return false;
     if (!productKeyInfo.productKeys[productId]) return false;
-    if (productKeyInfo.productKeys[productId][purchaseKey] === undefined) return false;
-    if (productKeyInfo.productKeys[productId][purchaseKey] !== '') return false;
+    if (productKeyInfo.productKeys[productId][purchaseKey] === undefined)
+      return false;
+    if (productKeyInfo.productKeys[productId][purchaseKey] !== "") return false;
 
     productKeyInfo.productKeys[productId][purchaseKey] = orderId;
 
@@ -174,8 +175,6 @@ class ProductService {
 
     return true;
   }
-
-
 
   cancelSubscription(originSubscribeInfo) {
     originSubscribeInfo.cancel();
@@ -648,8 +647,8 @@ class ProductService {
   addSubscribeCheckDate(subscribeInfo) {
     if (subscribeInfo == null) return;
 
-    const isDev = process.env.NODE_ENV === 'apiDev';
-    subscribeInfo.expiryTimeMillis += (isDev ? 180000 : 43200000);
+    const isDev = process.env.NODE_ENV === "apiDev";
+    subscribeInfo.expiryTimeMillis += isDev ? 180000 : 43200000 * 4;
   }
 }
 
