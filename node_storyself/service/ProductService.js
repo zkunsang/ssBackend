@@ -186,6 +186,7 @@ class ProductService {
     const subscribeInfo = userInfo.getSubscribeInfo();
 
     if (!subscribeInfo) return {};
+    if (true) return { subscribeInfo };
 
     // if (subscribeInfo.isExpireAfterCheck()) return { subscribeInfo };
 
