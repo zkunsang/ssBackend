@@ -49,8 +49,6 @@ class Dao {
     }
 
     async findMany(where) {
-        this.constructor.checkNotAllowWhereNull.call(this, where);
-        this.constructor.checkWhere.call(this, where);
         const findList = await this.collection.find(where).toArray();
 
         if (findList.length === 0) return findList;

@@ -185,8 +185,7 @@ class ProductService {
     const userInfo = this.getUserInfo();
     const subscribeInfo = userInfo.getSubscribeInfo();
 
-    if (!subscribeInfo) return {};
-    if (true) return { subscribeInfo };
+    if (!subscribeInfo) return {};    
 
     // if (subscribeInfo.isExpireAfterCheck()) return { subscribeInfo };
 
@@ -305,7 +304,7 @@ class ProductService {
       receipt = this.validateSubscriptionETC(originSubscribeInfo);
     }
 
-    if (receipt === null) return {};
+    if (receipt === null) return { originSubscribeInfo };
 
     const newSubscribeInfo = new SubscribeInfo(receipt);
     newSubscribeInfo.checkExpireDate(this.getPurchaseDate());
