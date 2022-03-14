@@ -189,6 +189,8 @@ class ProductService {
 
     // if (subscribeInfo.isExpireAfterCheck()) return { subscribeInfo };
 
+    if (subscribeInfo.isCancelled()) return { subscribeInfo };
+
     const expireDate = subscribeInfo.getExpireMillis();
     const now = this.getPurchaseDate();
 

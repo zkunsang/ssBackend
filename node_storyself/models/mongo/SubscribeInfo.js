@@ -36,6 +36,7 @@ const Schema = {
     type: ValidType.STRING,
   },
   RECEIPT_DATA: { key: "receiptData", required: false, type: ValidType.ARRAY },
+  CANCELLED: {key: "cancelled", required: false, type: ValidType.BOOLEAN}
 };
 
 class SubscribeInfo extends Model {
@@ -63,6 +64,8 @@ class SubscribeInfo extends Model {
     this[Schema.PACKAGE_NAME.key] = packageName;
     this[Schema.PURCHASE_TOKEN.key] = purchaseToken;
     this[Schema.RECEIPT_DATA.key] = receiptData;
+
+    this[Schema.CANCELLED.key] = false;
   }
 
   checkExpireDate(now) {
@@ -92,6 +95,11 @@ class SubscribeInfo extends Model {
   cancel() {
     this[Schema.EXPIRE_AFTER_CHECK.key] = true;
     this[Schema.AUTO_RENEW.key] = false;
+    this[Schema.CANCELLED.key] = true;
+  }
+
+  isCancelled() {
+    return this[Schema.CANCELLED.key];
   }
 }
 
