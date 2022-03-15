@@ -123,6 +123,7 @@ module.exports = async (ctx, next) => {
     isNewUser,
     feedback: userService.getFeedback(),
     subscriber: userService.getSubscriber(),
+    subscribeCoupon: userService.getSubscribeCoupon(),
     subscribeInfo,
     modelList
   });

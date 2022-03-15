@@ -15,6 +15,7 @@ const UserService = require('@ss/service/UserService');
 const SSError = require('@ss/error');
 const DateUtil = require('@ss/util/DateUtil');
 const CouponUse = require('@ss/models/mongo/CouponUse');
+const CouponService = require('@ss/service/CouponService');
 
 module.exports = async (ctx, next) => {
   const reqCouponCheck = new ReqCouponCheck(ctx.request.body);
@@ -72,6 +73,20 @@ module.exports = async (ctx, next) => {
   const couponId = couponInfo.couponId;
   const uid = userInfo.uid;
 
+  // 유저가 현재 구독을 사용중 일때
+  // 구독 쿠폰을 사용한다면
+  if(couponId.startsWith("SUBS_")) {
+    const userSubscribeInfo = userInfo.getSubscribeInfo();
+    if(userSubscribeInfo != null) {
+      if(userSubscribeInfo.hasSubscribe(updateDate)) {
+        ctx.$res.badRequest(SSError.Service.Code.subscriptionAlready);
+        await next();
+        return;
+      }
+      ;
+    }
+  }
+
   const couponUse = await couponUseDao.findOne({ uid, couponId })
   if (couponUse) {
     ctx.$res.badRequest(SSError.Service.Code.couponAlreadyUsed);
@@ -113,6 +128,14 @@ module.exports = async (ctx, next) => {
   if (couponId === "TSUBS_202110") {
     userService.setSubscriber("TSUBS_202110");
     ctx.$res.addData({ subscriber: "TSUBS_202110" });
+  }
+
+  if (couponId.startsWith("SUBS_")) {
+    const couponService = new CouponService(updateDate);
+    const subscribeCoupon = couponService.createSubscribeInfo(couponId);
+    userService.setSubscribeCoupon(subscribeCoupon);
+    
+    ctx.$res.addData({ subscribeCoupon });
   }
 
   await userService.finalize();

@@ -166,6 +166,7 @@ class InventoryService extends Service {
    * @param {Array.<Inventory>} putInvenList
    */
   putItem(action, addInfo, putInvenList) {
+    if (!putInvenList) return;
     if (putInvenList.length === 0) return;
 
     const putMap = {};
@@ -229,6 +230,8 @@ class InventoryService extends Service {
   }
 
   createPutHoneyHistory(putItem, action) {
+    if(!putItem) return;
+    
     const updateDate = this.getUpdateDate();
 
     return new HoneyHistory({ putItem, action, updateDate });
@@ -429,6 +432,7 @@ class InventoryService extends Service {
   }
 
   makeInventoryList(itemList) {
+    if(itemList == null) return;
     return ArrayUtil.map(itemList, (item) => new Inventory(item));
   }
 

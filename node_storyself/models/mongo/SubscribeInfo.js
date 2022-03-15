@@ -50,6 +50,7 @@ class SubscribeInfo extends Model {
     purchaseToken,
     expireAfterCheck,
     receiptData,
+    cancelled
   }) {
     super();
 
@@ -65,7 +66,7 @@ class SubscribeInfo extends Model {
     this[Schema.PURCHASE_TOKEN.key] = purchaseToken;
     this[Schema.RECEIPT_DATA.key] = receiptData;
 
-    this[Schema.CANCELLED.key] = false;
+    this[Schema.CANCELLED.key] = cancelled || false;
   }
 
   checkExpireDate(now) {
@@ -83,7 +84,7 @@ class SubscribeInfo extends Model {
   hasSubscribe(now) {
     const isDev = process.env.NODE_ENV === "apiDev";
     const expireDate =
-      this[Schema.EXPIRE_MILLIS.key] + (isDev ? 180000 : 43200000 * 4);
+      this[Schema.EXPIRE_MILLIS.key] + (isDev ? 60000 : (43200000 * 4));
     console.log(`${expireDate} - ${this[Schema.EXPIRE_MILLIS.key]}`);
     return expireDate > now;
   }

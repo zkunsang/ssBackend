@@ -107,6 +107,10 @@ class UserService extends Service {
     return this[Schema.USER_INFO.key].getSubscriber();
   }
 
+  getSubscribeCoupon() {
+    return this[Schema.USER_INFO.key].getSubscribeCoupon();
+  }
+
   addPurchaseInfo(productInfo) {
     if (!productInfo) return;
     this.setChange();
@@ -136,7 +140,13 @@ class UserService extends Service {
     this[Schema.USER_INFO.key].setSubscriber(subId);
   }
 
+  setSubscribeCoupon(subscribeCouponInfo) {
+    this.setChange();
+    this[Schema.USER_INFO.key].setSubscribeCoupon(subscribeCouponInfo);
+  }
+
   addHoneyHistory(honeyHistory) {
+    if(!honeyHistory) return;
     this.setChange();
     this[Schema.USER_INFO.key][Schema.HONEY_HISTORY.key].push(honeyHistory);
   }

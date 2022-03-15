@@ -2,9 +2,10 @@ const Model = require('../../models');
 
 const ValidateUtil = require('../../util/ValidateUtil');
 const SubscribeInfo = require('./SubscribeInfo');
+const SubscribeCoupon = require('./SubscribeCoupon');
+
 const ValidType = ValidateUtil.ValidType;
 const UserStatus = ValidateUtil.UserStatus;
-const Provider = ValidateUtil.Provider;
 
 const Schema = {
   UID: { key: 'uid', required: true, type: ValidType.STRING },
@@ -36,7 +37,9 @@ const Schema = {
   PAGE_STICKER: { key: 'pageSticker', required: false, type: ValidType.ARRAY },
 
   // 구독
-  SUBSCRIBE_INFO: { key: 'subscribeInfo', required: false, type: ValidType.OBJECT }
+  SUBSCRIBE_INFO: { key: 'subscribeInfo', required: false, type: ValidType.OBJECT }, 
+
+  SUBSCRIBE_COUPON: { key: 'subscribeCoupon', required: false, type: ValidType.OBJECT },
 }
 
 class User extends Model {
@@ -58,7 +61,8 @@ class User extends Model {
     feedback,
     subscriberId,
     pageSticker,
-    subscribeInfo }) {
+    subscribeInfo,
+    subscribeCoupon }) {
     super();
 
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -83,6 +87,10 @@ class User extends Model {
     this[Schema.PAGE_STICKER.key] = pageSticker || [];
     if (subscribeInfo) {
       this[Schema.SUBSCRIBE_INFO.key] = new SubscribeInfo(subscribeInfo);
+    }
+
+    if(subscribeCoupon) {
+      this[Schema.SUBSCRIBE_COUPON.key] = new SubscribeCoupon(subscribeCoupon);
     }
   }
 
@@ -150,8 +158,16 @@ class User extends Model {
     this[Schema.SUBSCRIBER_ID.key] = subId;
   }
 
+  setSubscribeCoupon(subscribeCouponInfo) {
+    this[Schema.SUBSCRIBE_COUPON.key] = subscribeCouponInfo;
+  }
+  
   getSubscriber() {
     return this[Schema.SUBSCRIBER_ID.key];
+  }
+
+  getSubscribeCoupon() {
+    return this[Schema.SUBSCRIBE_COUPON.key];
   }
 
   setPageSticker(pageSticker) {

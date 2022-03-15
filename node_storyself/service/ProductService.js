@@ -326,7 +326,7 @@ class ProductService {
     const updateDate = purchaseDate;
 
     const startTimeMillis = purchaseDate;
-    const expiryTimeMillis = DateUtil.addMinute(purchaseDate, 5);
+    const expiryTimeMillis = DateUtil.addMinute(purchaseDate, 2);
     const autoRenewing = true;
 
     const orderId = "test order Id";
@@ -650,7 +650,7 @@ class ProductService {
     if (subscribeInfo == null) return;
 
     const isDev = process.env.NODE_ENV === "apiDev";
-    subscribeInfo.expiryTimeMillis += isDev ? 180000 : 43200000 * 4;
+    subscribeInfo.expiryTimeMillis += isDev ? 60000 : (43200000 * 4);
   }
 }
 

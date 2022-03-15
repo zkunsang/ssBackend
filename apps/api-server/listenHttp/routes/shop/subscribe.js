@@ -22,7 +22,13 @@ module.exports = async (ctx, next) => {
   );
 
   const userService = new UserService(userInfo, userDao, purchaseDate);
-
+  const subsCoupon = userService.getSubscribeCoupon();
+  
+  if(subsCoupon) {
+    subsCoupon.cancel(purchaseDate);
+    userService.setSubscribeCoupon(subsCoupon);
+  }
+  
   userService.setSubscribeInfo(subscribeInfo);
 
   await userService.finalize();
@@ -34,6 +40,7 @@ module.exports = async (ctx, next) => {
   ctx.$res.success({
     purchaseState: 0,
     subscribeInfo,
+    subscribeCoupon: subsCoupon
   });
 
   await next();

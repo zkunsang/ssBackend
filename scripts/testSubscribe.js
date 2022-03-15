@@ -1,4 +1,5 @@
 // 스토리에 lang을 추가하는 작업 _kr을 붙여주는 작업
+// NODE_ENV=apiDev node ./scripts/testSubscribe.js
 
 process.on('uncaughtException', (err) => console.error(err));
 require('./startup');
@@ -37,8 +38,8 @@ async function test() {
   const productService = new ProductService(user, updateDate);
   user.subscribeInfo.receiptData = receiptData.receiptData;
   const { subscribeInfo } = await productService.checkRenewReceipt();
-  subscribeInfo.expiryTimeMillis = 1647258210000;
-  // subscribeInfo.expiryTimeMillis = updateDate;
+  // subscribeInfo.expiryTimeMillis = 1647258210000;
+  subscribeInfo.expiryTimeMillis = updateDate - 1000000;
   subscribeInfo.appStore = "google";
 
   const userService = new UserService(user, userDao, updateDate);
