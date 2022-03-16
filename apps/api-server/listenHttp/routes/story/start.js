@@ -31,11 +31,18 @@ module.exports = async (ctx, next) => {
   const hasStory = storyService.checkHasStory(storyId);
 
   const subscribeInfo = userInfo.getSubscribeInfo();
-
+  
   const hasSubscribe =
-    !!subscribeInfo && subscribeInfo.hasSubscribe(updateDate);
+    !!subscribeInfo && 
+    subscribeInfo.hasSubscribe(updateDate);
 
-  if (!(hasStory || hasSubscribe || isFree)) {
+
+  const subscribeCouponInfo = userInfo.getSubscribeCoupon();  
+
+  const hasSubscribeCoupon =
+    !!subscribeCouponInfo && subscribeCouponInfo.hasSubscribe(updateDate);
+
+  if (!(hasStory || hasSubscribe || isFree || hasSubscribeCoupon)) {
     ctx.$res.badRequest(SSError.Service.Code.needPurchase);
     await next();
     return;
