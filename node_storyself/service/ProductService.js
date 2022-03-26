@@ -361,6 +361,8 @@ class ProductService {
     let url = `https://www.googleapis.com/androidpublisher/v3/applications/${packageName}/purchases/subscriptions/${productId}/tokens/${purchaseToken}?access_token=${accessToken}`;
     const result = await this.checkValidate(url);
 
+    console.log("result - ", result);
+
     // packageName: com.illuni.Storyself
     // productId: com.illuni.google.subscribe001
 
