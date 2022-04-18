@@ -38,13 +38,13 @@ async function test() {
     action: InventoryService.PUT_ACTION.ADMIN,
   };
 
-  const title = "스토리 셀프 240꿀을 드립니다.";
-  const message = `스토리 셀프를 구매해 주셔서 감사합니다`;
-  const title_en = "스토리 셀프 240꿀을 드립니다.";
-  const message_en = `스토리 셀프를 구매해 주셔서 감사합니다`;
+  const title = "스토리 셀프 500꿀을 드립니다.";
+  const message = `서비스 이용에 불편을 드려 죄송합니다.`;
+  const title_en = "스토리 셀프 500꿀을 드립니다.";
+  const message_en = `서비스 이용에 불편을 드려 죄송합니다.`;
 
   const sender = MailSender.ADMIN;
-  const itemList = [{ itemId: "honey", itemQny: 240 }];
+  const itemList = [{ itemId: "honey", itemQny: 500 }];
 
   // const senderId = ''
   mailService.sendMail({
