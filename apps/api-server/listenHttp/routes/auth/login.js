@@ -89,12 +89,10 @@ module.exports = async (ctx, next) => {
     productService.finalize();
   }
 
-  productService.removeUnusedParams(subscribeInfo);
-
   await eventService.finalize();
   await userService.finalize();
   authService.finalize(userInfo.uid);
-
+  
   const userResourceService = new UserResourceService(userInfo, loginDate);
   const modelList = await userResourceService.checkModel();
 
@@ -109,6 +107,7 @@ module.exports = async (ctx, next) => {
   const puid = userInfo.getPUID();
 
   productService.addSubscribeCheckDate(subscribeInfo);
+  productService.removeUnusedParams(subscribeInfo);
 
   ctx.$res.success({
     sessionId,
