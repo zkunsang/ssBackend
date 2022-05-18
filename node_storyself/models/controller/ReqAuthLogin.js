@@ -10,7 +10,7 @@ const Schema = {
     EMAIL: { key: 'email', required: true, type: ValidType.EMAIL },
     PROVIDER: { key: 'provider', required: true, type: ValidType.STRING, validRange: Object.values(Provider) },
     PROVIDER_ID: { key: 'providerId', required: true, type: ValidType.STRING },
-    DEVICE_ID: { key: 'deviceId', required: true, type: ValidType.STRING },
+    DEVICE_ID: { key: 'deviceId', required: false, type: ValidType.STRING },
     PLATFORM: { key: 'platform', required: true, type: ValidType.STRING, validRange: Object.values(Platform) },
     CLIENT_VERSION: { key: 'clientVersion', required: true, type: ValidType.STRING },
     APPSTORE: { key: 'appStore', required: true, type: ValidType.STRING, validRange: Object.values(AppStore) },

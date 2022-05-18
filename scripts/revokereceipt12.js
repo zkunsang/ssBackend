@@ -30,7 +30,7 @@ async function test() {
   const updateDate = moment().valueOf();
   const userDao = new UserDao(dbMongo);
 
-  const user = await userDao.findOne({ uid: "12" });
+  const user = await userDao.findOne({ uid: "304" });
 
   console.log(user.uid, user.subscribeInfo);
 
