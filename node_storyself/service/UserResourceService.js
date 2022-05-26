@@ -81,12 +81,21 @@ class UserResourceService extends Service {
     return userModelList;
   }
 
-  async checkModel() {
-    return await this.getUserModelInfo()
-  }
+  async updateScript(scriptInfo) {
+    const userScriptList = await this.getUserScriptList();
+    const userScriptMap = ArrayUtil.keyBy(userScriptList, "storyId");
 
-  async checkRecord(storyId) {
-    return await this.getUserRecordStoryInfo(storyId);
+    if(userScriptMap[scriptInfo.storyId]) {
+      userScriptMap[scriptInfo.storyId].version += 1;
+      userScriptMap[scriptInfo.storyId].size = scriptInfo.size;
+    } 
+    else {
+      scriptInfo.version = 1;
+      
+      userScriptList.push(scriptInfo);
+    }
+    
+    return userScriptList;
   }
 
   async updateRecord({ storyId, updateList, deleteList, resetAll }) {
@@ -119,6 +128,20 @@ class UserResourceService extends Service {
 
     return userRecordList;
   }
+
+  async checkModel() {
+    return await this.getUserModelInfo()
+  }
+
+  async checkRecord(storyId) {
+    return await this.getUserRecordStoryInfo(storyId);
+  }
+
+  async checkScript() {
+    return await this.getUserScriptList();
+  }
+
+  
 
   getUpdateDate() {
     return this[Schema.UPDATE_DATE.key];
@@ -174,6 +197,21 @@ class UserResourceService extends Service {
     }
 
     return this[Schema.USER_RESOURCE.key]["model"];
+  }
+
+  async getUserScriptList() {
+    await this.getUserResourceInfo();
+
+    if (!this[Schema.USER_RESOURCE.key]) {
+      this[Schema.IS_NEW.key] = true;
+      this[Schema.USER_RESOURCE.key] = {};
+    }
+
+    if (!this[Schema.USER_RESOURCE.key]["script"]) {
+      this[Schema.USER_RESOURCE.key]["script"] = [];
+    }
+
+    return this[Schema.USER_RESOURCE.key]["script"];
   }
 
   async finalize() {

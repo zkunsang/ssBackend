@@ -1,19 +1,20 @@
-const ReqRecordCheck = require("@ss/models/controller/ReqRecordCheck");
+const ReqUserResource = require("@ss/models/controller/ReqUserResource");
 const UserResourceService = require("@ss/service/UserResourceService");
 
 module.exports = async (ctx, next) => {
-  const reqRecordCheck = new ReqRecordCheck(ctx.request.body);
+  const reqUserResource = new ReqUserResource(ctx.request.body);
 
-  const storyId = reqRecordCheck.getStoryId();
+  const storyId = reqUserResource.getStoryId();
 
   const userInfo = ctx.$userInfo;
   const updateDate = ctx.$date;
 
   const userResourceService = new UserResourceService(userInfo, updateDate);
 
-  const finalRecordList = await userResourceService.checkRecord(storyId);
+  const recordList = await userResourceService.checkRecord(storyId);
+  const scriptList = await userResourceService.checkScript();
 
-  ctx.$res.success({ recordList: finalRecordList });
+  ctx.$res.success({ recordList, scriptList });
 
   await next();
 };

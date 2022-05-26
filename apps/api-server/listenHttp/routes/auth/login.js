@@ -95,6 +95,7 @@ module.exports = async (ctx, next) => {
   
   const userResourceService = new UserResourceService(userInfo, loginDate);
   const modelList = await userResourceService.checkModel();
+  const scriptList = await userResourceService.checkScript();
 
   await userResourceService.finalize();
 
@@ -124,7 +125,8 @@ module.exports = async (ctx, next) => {
     subscriber: userService.getSubscriber(),
     subscribeCoupon: userService.getSubscribeCoupon(),
     subscribeInfo,
-    modelList
+    modelList,
+    scriptList
   });
 
   await next();
