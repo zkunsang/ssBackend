@@ -46,6 +46,10 @@ class ReqAuthLogin extends Model {
         return this[Schema.PROVIDER.key];
     }
 
+    getDeviceId() {
+      return this[Schema.DEVICE_ID.key];
+    }
+
     blockIOS() {
         if (this[Schema.PROVIDER.key] === Provider.APPLE) throw new Error({ errMessage: 'wrong login method' })
 

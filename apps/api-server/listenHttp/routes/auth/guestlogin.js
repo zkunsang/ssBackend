@@ -19,6 +19,7 @@ const Inventory = require("@ss/models/mongo/Inventory");
 const shortid = require("shortid");
 const ArrayUtil = require("@ss/util/ArrayUtil");
 
+// 
 module.exports = async (ctx, next) => {
   const loginDate = ctx.$date;
   const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
@@ -31,14 +32,25 @@ module.exports = async (ctx, next) => {
   const authService = new AuthService(reqAuthLogin, ip, loginDate);
 
   let userInfo = await authService.findUser(userDao);
-  const userService = new UserService(userInfo, userDao, loginDate);
-
+  
+  let userService = null;
+  if(userInfo == null) {
+    const deviceId = reqAuthLogin.getDeviceId();
+    userInfo = await authService.findUserByDeviceId(userDao, deviceId);
+    userService = new UserService(userInfo, userDao, loginDate);
+    if(!!userInfo) {
+      userService.setEtcUserMigration(reqAuthLogin.provider, reqAuthLogin.providerId);
+      // userService.setEtcUserMigration();
+    }
+  }
+  else {
+    userService = new UserService(userInfo, userDao, loginDate);
+  }
+  
   const sessionId = shortid.generate();
 
   if (userInfo) {
     const oldSessionId = authService.login(userInfo, sessionId);
-    // 다른 디바이스에서 로그인 처리 이슈로 주석
-    // await sessionDao.del(oldSessionId);
   } else {
     userInfo = await authService.signIn(sessionId);
     userService.setUserInfo(userInfo);

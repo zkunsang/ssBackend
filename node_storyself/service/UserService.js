@@ -156,6 +156,11 @@ class UserService extends Service {
     this[Schema.USER_INFO.key][Schema.MAIL.key] = mail;
   }
 
+  setEtcUserMigration(provider, providerId) {
+    this.setChange();
+    this[Schema.USER_INFO.key].setProvider(provider, providerId);
+  }
+
   setUserInfo(userInfo) {
     this.setChange();
     this.setIsNewUser();
