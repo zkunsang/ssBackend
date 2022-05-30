@@ -36,7 +36,10 @@ module.exports = async (ctx, next) => {
   let userService = null;
   if(userInfo == null) {
     const deviceId = reqAuthLogin.getDeviceId();
-    userInfo = await authService.findUserByDeviceId(userDao, deviceId);
+    if(!!deviceId) {
+      userInfo = await authService.findUserByDeviceId(userDao, deviceId);
+    }
+    
     userService = new UserService(userInfo, userDao, loginDate);
     if(!!userInfo) {
       userService.setEtcUserMigration(reqAuthLogin.provider, reqAuthLogin.providerId);
