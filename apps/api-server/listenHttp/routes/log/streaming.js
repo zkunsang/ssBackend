@@ -1,16 +1,16 @@
-const ReqLogVoice = require('@ss/models/controller/log/ReqLogVoice');
+const ReqLogStreaming = require('@ss/models/controller/log/ReqLogStreaming');
 
 const LogService = require('@ss/service/LogService');
 
 module.exports = async (ctx, next) => {
-    const reqLogVoice = new ReqLogVoice(ctx.request.body);
-    ReqLogVoice.validModel(reqLogVoice);
+    const reqLogStreaming = new ReqLogStreaming(ctx.request.body);
+    ReqLogStreaming.validModel(reqLogStreaming);
 
     const userInfo = ctx.$userInfo;
     const logDate = ctx.$date;
 
     const logService = new LogService(userInfo, logDate);
-    logService.sendVoiceLog(reqLogVoice);
+    logService.sendStreamingLog(reqLogStreaming);
 
     ctx.$res.success({});
     await next();

@@ -1,6 +1,6 @@
-const DateUtil = require('../util/DateUtil');
-const MailDelLog = require("../models/apilog/MailDelLog");
-const Dao = require('./Dao');
+const DateUtil = require('../../util/DateUtil');
+const MailDelLog = require("../../models/apilog/MailDelLog");
+const Dao = require('../Dao');
 
 class MailDelLogDao extends Dao {
     constructor(connection, date) {

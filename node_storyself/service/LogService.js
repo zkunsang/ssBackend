@@ -6,23 +6,29 @@ const SSError = require("../error");
 
 const User = require("../models/mongo/User");
 
-const VoiceLogDao = require("../daoMongo/VoiceLogDao");
+const VoiceLogDao = require("../daoMongo/log/VoiceLogDao");
 const VoiceLog = require("../models/apilog/VoiceLog");
 
-const PictureLogDao = require("../daoMongo/PictureLogDao");
+const PictureLogDao = require("../daoMongo/log/PictureLogDao");
 const PictureLog = require("../models/apilog/PictureLog");
 
-const PreviewLogDao = require("../daoMongo/PreviewLogDao");
+const PreviewLogDao = require("../daoMongo/log/PreviewLogDao");
 const PreviewLog = require("../models/apilog/PreviewLog");
 
-const FeedbackLogDao = require("../daoMongo/FeedbackLogDao");
+const FeedbackLogDao = require("../daoMongo/log/FeedbackLogDao");
 const FeedbackLog = require("../models/apilog/FeedbackLog");
 
-const SceneLogDao = require("../daoMongo/SceneLogDao");
+const SceneLogDao = require("../daoMongo/log/SceneLogDao");
 const SceneLog = require("../models/apilog/SceneLog");
 
-const UILogDao = require("../daoMongo/UILogDao");
+const UILogDao = require("../daoMongo/log/UILogDao");
 const UILog = require("../models/apilog/UILog");
+
+const StreamingLogDao = require("../daoMongo/log/StreamingLogDao");
+const StreamingLog = require("../models/apilog/StreamingLog");
+
+const CustomStickerLogDao = require("../daoMongo/log/CustomStickerLogDao");
+const CustomStickerLog = require("../models/apilog/CustomStickerLog");
 
 const dbMongo = require("../dbMongo");
 
@@ -68,6 +74,22 @@ class LogService extends Service {
 
   getUID() {
     return this[Schema.UID.key];
+  }
+
+  sendCustomStickerLog({contentsId, contentsCount}) {
+    const uid = this.getUID();
+    const logDate = this.getUpdateDate();
+
+    const customStickerLogDao = new CustomStickerLogDao(dbMongo, logDate);
+    customStickerLogDao.insertOne(new CustomStickerLog({uid, logDate, contentsId, contentsCount}));
+  }
+
+  sendStreamingLog({id, endType, elapsedTime}) {
+    const uid = this.getUID();
+    const logDate = this.getUpdateDate();
+
+    const streamingLogDao = new StreamingLogDao(dbMongo, logDate);
+    streamingLogDao.insertOne(new StreamingLog({uid, logDate, id, endType, elapsedTime}));
   }
 
   sendVoiceLog({ storyId, soundIndex, sceneIndex, length }) {

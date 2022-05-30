@@ -1,6 +1,6 @@
 const DateUtil = require("@ss/util/DateUtil");
-const QuestCompleteLog = require("../models/apilog/QuestCompleteLog");
-const Dao = require('./Dao');
+const QuestCompleteLog = require("../../models/apilog/QuestCompleteLog");
+const Dao = require('../Dao');
 
 class QuestCompleteLogDao extends Dao {
     constructor(connection, date) {

@@ -1,15 +1,15 @@
-const DateUtil = require('../util/DateUtil');
-const PreviewLog = require('../models/apilog/PreviewLog');
-const Dao = require('./Dao');
+const DateUtil = require('../../util/DateUtil');
+const LoginLog = require('../../models/apilog/LoginLog');
+const Dao = require('../Dao');
 
-class PreviewLogDao extends Dao {
+class LoginLogDao extends Dao {
     constructor(connection, date) {
         super();
         this.db = connection.logConnect.db('log');
-        this.collection = this.db.collection(`preview_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
+        this.collection = this.db.collection(`login_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
-    static model = PreviewLog;
+    static model = LoginLog;
 
     static requireInsertFieldList() {
         return [];
@@ -28,4 +28,4 @@ class PreviewLogDao extends Dao {
     };
 }
 
-module.exports = PreviewLogDao;
+module.exports = LoginLogDao;

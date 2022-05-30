@@ -2,7 +2,7 @@ const shortid = require("shortid");
 const dbMongo = require('@ss/dbMongo');
 
 const UserDao = require('@ss/daoMongo/UserDao');
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
+const InventoryLogDao = require('@ss/daoMongo/log/InventoryLogDao');
 const InventoryDao = require('@ss/daoMongo/InventoryDao');
 const UserQuestStoryDao = require('@ss/daoMongo/UserQuestStoryDao');
 const InventoryService = require('@ss/service/InventoryService');

@@ -1,6 +1,6 @@
 const moment = require('moment')
 const NetworkLog = require('@ss/models/apilog/NetworkLog.js')
-const NetworkLogDao = require('@ss/daoMongo/NetworkLogDao');
+const NetworkLogDao = require('@ss/daoMongo/log/NetworkLogDao');
 
 const helper = require('@ss/helper');
 const SSError = require('@ss/error');

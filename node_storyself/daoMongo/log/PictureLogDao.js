@@ -1,15 +1,15 @@
-const DateUtil = require('@ss/util/DateUtil');
-const ProductLog = require("../models/apilog/ProductLog");
-const Dao = require('./Dao');
+const DateUtil = require('../../util/DateUtil');
+const PictureLog = require('../../models/apilog/PictureLog');
+const Dao = require('../Dao');
 
-class ProductLogDao extends Dao {
+class PictureLogDao extends Dao {
     constructor(connection, date) {
         super();
         this.db = connection.logConnect.db('log');
-        this.collection = this.db.collection(`product_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
+        this.collection = this.db.collection(`picture_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
-    static model = ProductLog;
+    static model = PictureLog;
 
     static requireInsertFieldList() {
         return [];
@@ -28,4 +28,4 @@ class ProductLogDao extends Dao {
     };
 }
 
-module.exports = ProductLogDao;
+module.exports = PictureLogDao;

@@ -16,9 +16,9 @@ const MailSendLog = require('../models/apilog/MailSendLog');
 const MailReadLog = require('../models/apilog/MailReadLog');
 const MailDelLog = require('../models/apilog/MailDelLog');
 
-const MailSendLogDao = require('../daoMongo/MailSendLogDao');
-const MailReadLogDao = require('../daoMongo/MailReadLogDao');
-const MailDelLogDao = require('../daoMongo/MailDelLogDao');
+const MailSendLogDao = require('../daoMongo/log/MailSendLogDao');
+const MailReadLogDao = require('../daoMongo/log/MailReadLogDao');
+const MailDelLogDao = require('../daoMongo/log/MailDelLogDao');
 
 const dbMongo = require('../dbMongo');
 

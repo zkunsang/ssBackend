@@ -1,7 +1,7 @@
 const InventoryService = require('@ss/service/InventoryService');
 const UserService = require('@ss/service/UserService');
 
-const ReqLogFeedback = require('@ss/models/controller/ReqLogFeedback');
+const ReqLogFeedback = require('@ss/models/controller/log/ReqLogFeedback');
 const LogService = require("@ss/service/LogService");
 
 const Inventory = require('@ss/models/mongo/Inventory');

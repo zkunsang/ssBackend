@@ -5,7 +5,7 @@ const StoryCache = require('../dbCache/StoryCache');
 const { ValidType } = require('../util/ValidateUtil');
 
 const StoryLog = require('../models/mongo/StoryLog');
-const StoryLogDao = require('../daoMongo/StoryLogDao');
+const StoryLogDao = require('../daoMongo/log/StoryLogDao');
 const User = require('../models/mongo/User');
 
 const dbMongo = require('../dbMongo');

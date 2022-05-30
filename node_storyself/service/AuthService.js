@@ -12,7 +12,7 @@ const dbMongo = require('../dbMongo');
 const dbRedisSS = require('../dbRedisSS');
 
 const UserCountDao = require('../daoRedis/UserCountDao');
-const LoginLogDao = require('../daoMongo/LoginLogDao');
+const LoginLogDao = require('../daoMongo/log/LoginLogDao');
 const LoginLog = require('../models/apilog/LoginLog');
 
 const nanoid = require('nanoid');

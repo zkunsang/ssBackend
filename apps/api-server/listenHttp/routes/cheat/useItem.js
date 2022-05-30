@@ -1,5 +1,5 @@
 const ReqCheatUseItem = require('@ss/models/controller/ReqCheatUseItem');
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
+const InventoryLogDao = require('@ss/daoMongo/log/InventoryLogDao');
 
 const InventoryService = require('@ss/service/InventoryService');
 const UserService = require('@ss/service/UserService');

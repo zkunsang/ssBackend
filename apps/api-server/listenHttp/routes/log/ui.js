@@ -1,4 +1,4 @@
-const ReqLogUI = require("@ss/models/controller/ReqLogUI");
+const ReqLogUI = require("@ss/models/controller/log/ReqLogUI");
 const LogService = require("@ss/service/LogService");
 
 module.exports = async (ctx, next) => {

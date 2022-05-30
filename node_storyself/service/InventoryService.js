@@ -10,7 +10,7 @@ const InventoryPut = require("../models/service/InventoryPut");
 const InventoryUse = require("../models/service/InventoryUse");
 
 const InventoryLog = require("../models/apilog/InventoryLog");
-const InventoryLogDao = require("../daoMongo/InventoryLogDao");
+const InventoryLogDao = require("../daoMongo/log/InventoryLogDao");
 
 // const InventoryDao = require('../daoMongo/InventoryDao');
 

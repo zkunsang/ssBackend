@@ -1,6 +1,6 @@
-const DateUtil = require('../util/DateUtil');
-const StoryLog = require('../models/mongo/StoryLog');
-const Dao = require('./Dao');
+const DateUtil = require('../../util/DateUtil');
+const StoryLog = require('../../models/mongo/StoryLog');
+const Dao = require('../Dao');
 
 class StoryLogDao extends Dao {
     constructor(connection, date) {

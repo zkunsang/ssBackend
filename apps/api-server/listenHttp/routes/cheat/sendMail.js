@@ -1,5 +1,5 @@
 const ReqCheatSendMail = require('@ss/models/controller/ReqCheatSendMail');
-const MailSendLogDao = require('@ss/daoMongo/MailSendLogDao');
+const MailSendLogDao = require('@ss/daoMongo/log/MailSendLogDao');
 
 
 const InventoryService = require('@ss/service/InventoryService');

@@ -1,5 +1,4 @@
-const ReqLogScene = require('@ss/models/controller/ReqLogScene');
-
+const ReqLogScene = require('@ss/models/controller/log/ReqLogScene');
 const LogService = require('@ss/service/LogService');
 
 module.exports = async (ctx, next) => {

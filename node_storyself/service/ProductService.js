@@ -20,7 +20,7 @@ const ProductLog = require("../models/apilog/ProductLog");
 
 const ReceiptDao = require("../daoMongo/ReceiptDao");
 const SubscribeReceiptDao = require("../daoMongo/SubscribeReceiptDao");
-const ProductLogDao = require("../daoMongo/ProductLogDao");
+const ProductLogDao = require("../daoMongo/log/ProductLogDao");
 
 const ProductKeyDao = require("../daoMongo/ProductKeyDao");
 

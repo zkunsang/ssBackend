@@ -3,7 +3,7 @@ const dbMongo = require("../dbMongo");
 const Service = require("../service/Service");
 
 const UserQuestStoryDao = require("../daoMongo/UserQuestStoryDao");
-const QuestAcceptLogDao = require("../daoMongo/QuestAcceptLogDao");
+const QuestAcceptLogDao = require("../daoMongo/log/QuestAcceptLogDao");
 
 const ValidateUtil = require("../util/ValidateUtil");
 const ValidType = ValidateUtil.ValidType;
@@ -14,7 +14,7 @@ const QuestAcceptLog = require("../models/apilog/QuestAcceptLog");
 
 const SSError = require("../error");
 const ActionLog = require("../models/apilog/ActionLog");
-const ActionLogDao = require("../daoMongo/ActionLogDao");
+const ActionLogDao = require("../daoMongo/log/ActionLogDao");
 const QuestCompleteLog = require("../models/apilog/QuestCompleteLog");
 
 const InventoryService = require("../service/InventoryService");

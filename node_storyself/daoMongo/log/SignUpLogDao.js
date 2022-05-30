@@ -1,5 +1,5 @@
-const LoginLog = require("../models/apilog/LoginLog");
-const Dao = require('./Dao');
+const LoginLog = require("../../models/apilog/LoginLog");
+const Dao = require('../Dao');
 
 class SignUpLogDao extends Dao {
     constructor(connection) {

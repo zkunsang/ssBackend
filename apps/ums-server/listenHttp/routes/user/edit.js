@@ -5,7 +5,7 @@ const UserEdit = require('@ss/models/mongo/UserEdit');
 const UmsUserEditDao = require('@ss/daoMongo/UmsUserEditDao');
 
 const UserDao = require('@ss/daoMongo/UserDao');
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
+const InventoryLogDao = require('@ss/daoMongo/log/InventoryLogDao');
 const InventoryService = require('@ss/service/InventoryService');
 
 const ReqUserEdit = require('@ss/models/umsController/ReqUserEdit');

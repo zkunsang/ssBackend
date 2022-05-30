@@ -1,6 +1,6 @@
 const DateUtil = require("@ss/util/DateUtil");
-const ActionLog = require("../models/apilog/ActionLog");
-const Dao = require('./Dao');
+const ActionLog = require("../../models/apilog/ActionLog");
+const Dao = require('../Dao');
 
 class ActionLogDao extends Dao {
     constructor(connection, date) {

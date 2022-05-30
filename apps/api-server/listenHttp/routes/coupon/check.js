@@ -1,5 +1,5 @@
 const ReqCouponCheck = require('@ss/models/controller/ReqCouponCheck');
-const InventoryLogDao = require('@ss/daoMongo/InventoryLogDao');
+const InventoryLogDao = require('@ss/daoMongo/log/InventoryLogDao');
 
 const CouponUseDao = require('@ss/daoMongo/CouponUseDao');
 const CouponCodeDao = require('@ss/daoMongo/CouponCodeDao');

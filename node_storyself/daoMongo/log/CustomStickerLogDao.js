@@ -1,17 +1,17 @@
-const DateUtil = require("../util/DateUtil");
-const UILog = require("../models/apilog/UILog");
-const Dao = require("./Dao");
+const DateUtil = require("../../util/DateUtil");
+const CustomStickerLog = require("../../models/apilog/CustomStickerLog");
+const Dao = require("../Dao");
 
-class SceneLogDao extends Dao {
+class CustomStickerLogDao extends Dao {
   constructor(connection, date) {
     super();
     this.db = connection.logConnect.db("log");
     this.collection = this.db.collection(
-      `ui_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`
+      `customsticker_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`
     );
   }
 
-  static model = UILog;
+  static model = CustomStickerLog;
 
   static requireInsertFieldList() {
     return [];
@@ -30,4 +30,4 @@ class SceneLogDao extends Dao {
   }
 }
 
-module.exports = SceneLogDao;
+module.exports = CustomStickerLogDao;

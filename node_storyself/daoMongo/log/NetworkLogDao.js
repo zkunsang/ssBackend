@@ -1,15 +1,15 @@
-const DateUtil = require('../util/DateUtil');
-const UserLog = require('../models/apilog/UserLog');
-const Dao = require('./Dao');
+const DateUtil = require("@ss/util/DateUtil");
+const NetworkLog = require("../../models/apilog/NetworkLog");
+const Dao = require('../Dao');
 
-class UserLogDao extends Dao {
+class NetworkLogDao extends Dao {
     constructor(connection, date) {
         super();
         this.db = connection.logConnect.db('log');
-        this.collection = this.db.collection(`user_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
+        this.collection = this.db.collection(`network_${DateUtil.utsToDs(date, DateUtil.YYYYMMDD)}`);
     }
 
-    static model = UserLog;
+    static model = NetworkLog;
 
     static requireInsertFieldList() {
         return [];
@@ -28,4 +28,4 @@ class UserLogDao extends Dao {
     };
 }
 
-module.exports = UserLogDao;
+module.exports = NetworkLogDao;

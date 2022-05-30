@@ -1,16 +1,16 @@
-const ReqLogVoice = require('@ss/models/controller/log/ReqLogVoice');
+const ReqLogCustomSticker = require('@ss/models/controller/log/ReqLogCustomSticker');
 
 const LogService = require('@ss/service/LogService');
 
 module.exports = async (ctx, next) => {
-    const reqLogVoice = new ReqLogVoice(ctx.request.body);
-    ReqLogVoice.validModel(reqLogVoice);
+    const reqLogCustomSticker = new ReqLogCustomSticker(ctx.request.body);
+    ReqLogCustomSticker.validModel(reqLogCustomSticker);
 
     const userInfo = ctx.$userInfo;
     const logDate = ctx.$date;
 
     const logService = new LogService(userInfo, logDate);
-    logService.sendVoiceLog(reqLogVoice);
+    logService.sendCustomStickerLog(reqLogCustomSticker);
 
     ctx.$res.success({});
     await next();
