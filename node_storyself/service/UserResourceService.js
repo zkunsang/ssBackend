@@ -81,6 +81,34 @@ class UserResourceService extends Service {
     return userModelList;
   }
 
+  async updateCustomSticker({updateList, deleteList}) {
+    const userCustomStickerList = await this.getUserCustomStickerInfo();
+    const userCustomStickerMap = ArrayUtil.keyBy(userCustomStickerList, "fileid");
+
+    for(const updateCustomSticker of updateList) {
+      if(userCustomStickerMap[updateCustomSticker.fileid]) {
+        userCustomStickerMap[updateCustomSticker.fileid].version += 1;
+        userCustomStickerMap[updateCustomSticker.fileid].deleted = false;
+        userCustomStickerMap[updateCustomSticker.fileid].updateDate = this.getUpdateDate();
+      } else {
+        updateCustomSticker.updateDate = this.getUpdateDate();
+        updateCustomSticker.deleted = false;
+
+        userCustomStickerList.push(updateCustomSticker);
+      }
+    }
+
+    for(const deleteCustomSticker of deleteList) {
+      const delIndex = userCustomStickerList.findIndex(elm => 
+        elm.fileid === deleteCustomSticker.fileid
+      );
+
+      userCustomStickerList.splice(delIndex);
+    }
+
+    return userCustomStickerList;
+  }
+
   async updateScript(scriptInfo) {
     const userScriptList = await this.getUserScriptList();
     const userScriptMap = ArrayUtil.keyBy(userScriptList, "storyId");
@@ -141,6 +169,10 @@ class UserResourceService extends Service {
     return await this.getUserScriptList();
   }
 
+  async checkCustomSticker() {
+    return await this.getUserCustomStickerInfo();
+  }
+
   
 
   getUpdateDate() {
@@ -156,11 +188,6 @@ class UserResourceService extends Service {
   }
 
   getUserRecordInfo(storyId) {
-    if (!this[Schema.USER_RESOURCE.key]) {
-      this[Schema.IS_NEW.key] = true;
-      this[Schema.USER_RESOURCE.key] = {};
-    }
-
     if (!this[Schema.USER_RESOURCE.key]["record"]) {
       this[Schema.USER_RESOURCE.key]["record"] = {};
     }
@@ -177,6 +204,11 @@ class UserResourceService extends Service {
     if (this[Schema.USER_RESOURCE.key]) return this[Schema.USER_RESOURCE.key];
 
     this[Schema.USER_RESOURCE.key] = await this.getDao().findOne({ uid });
+
+    if(!this[Schema.USER_RESOURCE.key]) {
+      this[Schema.IS_NEW.key] = true;
+      this[Schema.USER_RESOURCE.key] = {};
+    }
   }
 
   async getUserRecordStoryInfo(storyId) {
@@ -186,11 +218,6 @@ class UserResourceService extends Service {
 
   async getUserModelInfo() {
     await this.getUserResourceInfo();
-
-    if (!this[Schema.USER_RESOURCE.key]) {
-      this[Schema.IS_NEW.key] = true;
-      this[Schema.USER_RESOURCE.key] = {};
-    }
 
     if (!this[Schema.USER_RESOURCE.key]["model"]) {
       this[Schema.USER_RESOURCE.key]["model"] = [];
@@ -202,16 +229,21 @@ class UserResourceService extends Service {
   async getUserScriptList() {
     await this.getUserResourceInfo();
 
-    if (!this[Schema.USER_RESOURCE.key]) {
-      this[Schema.IS_NEW.key] = true;
-      this[Schema.USER_RESOURCE.key] = {};
-    }
-
     if (!this[Schema.USER_RESOURCE.key]["script"]) {
       this[Schema.USER_RESOURCE.key]["script"] = [];
     }
 
     return this[Schema.USER_RESOURCE.key]["script"];
+  }
+
+  async getUserCustomStickerInfo() {
+    await this.getUserResourceInfo();
+
+    if (!this[Schema.USER_RESOURCE.key]["customsticker"]) {
+      this[Schema.USER_RESOURCE.key]["customsticker"] = [];
+    }
+
+    return this[Schema.USER_RESOURCE.key]["customsticker"];
   }
 
   async finalize() {
