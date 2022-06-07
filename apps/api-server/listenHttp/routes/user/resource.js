@@ -1,4 +1,4 @@
-const ReqUserResource = require("@ss/models/controller/ReqUserResource");
+const ReqUserResource = require("@ss/models/controller/user/ReqUserResource");
 const UserResourceService = require("@ss/service/UserResourceService");
 
 module.exports = async (ctx, next) => {

@@ -1,4 +1,4 @@
-const ReqUserInfo = require('@ss/models/controller/ReqUserInfo');
+const ReqUserInfo = require('@ss/models/controller/user/ReqUserInfo');
 
 module.exports = async (ctx, next) => {
     const reqUserInfo = new ReqUserInfo(ctx.request.body);

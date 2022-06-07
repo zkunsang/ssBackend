@@ -95,6 +95,7 @@ module.exports = async (ctx, next) => {
   const modelList = await userResourceService.checkModel();
   const scriptList = await userResourceService.checkScript();
   const stickerList = await userResourceService.checkCustomSticker();
+  const userPlayDataMeta = await userResourceService.checkUserPlayData();
 
   await userResourceService.finalize();
 
@@ -126,7 +127,8 @@ module.exports = async (ctx, next) => {
     subscribeInfo,
     modelList,
     scriptList,
-    stickerList
+    stickerList,
+    userPlayDataMeta
   });
 
   await next();

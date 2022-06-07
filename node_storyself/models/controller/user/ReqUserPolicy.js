@@ -1,6 +1,6 @@
-const Model = require('../../models');
+const Model = require('../../../models');
 
-const ValidateUtil = require('../../util/ValidateUtil')
+const ValidateUtil = require('../../../util/ValidateUtil')
 const ValidType = ValidateUtil.ValidType;
 
 const Schema = {

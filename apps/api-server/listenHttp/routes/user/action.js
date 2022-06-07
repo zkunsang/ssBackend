@@ -1,4 +1,4 @@
-const ReqUserAction = require('@ss/models/controller/ReqUserAction');
+const ReqUserAction = require('@ss/models/controller/user/ReqUserAction');
 
 const InventoryService = require('@ss/service/InventoryService');
 const QuestService = require('@ss/service/QuestService');

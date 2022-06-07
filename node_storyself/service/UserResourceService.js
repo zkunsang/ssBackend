@@ -157,6 +157,15 @@ class UserResourceService extends Service {
     return userRecordList;
   }
 
+  async updatePlaydata(playdata) {
+    const userPlayData = await this.getUserPlayData();
+
+    userPlayData.size = playdata.size;
+    userPlayData.version = this.parseNumber(userPlayData.version) + 1;
+
+    return userPlayData;
+  }
+
   async checkModel() {
     return await this.getUserModelInfo()
   }
@@ -171,6 +180,16 @@ class UserResourceService extends Service {
 
   async checkCustomSticker() {
     return await this.getUserCustomStickerInfo();
+  }
+
+  async checkUserPlayData() {
+    return await this.getUserPlayData();
+  }
+
+  parseNumber(x) {
+    const parsed = parseInt(x);
+    if (isNaN(parsed)) { return 0; }
+    return parsed;
   }
 
   
@@ -244,6 +263,16 @@ class UserResourceService extends Service {
     }
 
     return this[Schema.USER_RESOURCE.key]["customsticker"];
+  }
+
+  async getUserPlayData() {
+    await this.getUserResourceInfo();
+
+    if(!this[Schema.USER_RESOURCE.key]["playdata"]) {
+      this[Schema.USER_RESOURCE.key]["playdata"] = {};
+    }
+
+    return this[Schema.USER_RESOURCE.key]["playdata"];
   }
 
   async finalize() {

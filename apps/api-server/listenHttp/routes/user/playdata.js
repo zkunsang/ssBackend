@@ -1,25 +1,23 @@
 const ss = require('@ss');
-const UserDao = require('@ss/daoMongo/UserDao');
-const DataTableCache = require('@ss/dbCache/DataTableCache');
-const ReqUserPolicy = require('@ss/models/controller/user/ReqUserPolicy');
+const ReqUserPlaydata = require('@ss/models/controller/user/ReqUserPlaydata');
+const UserResourceService = require("@ss/service/UserResourceService");
 
 module.exports = async (ctx, next) => {
-  const reqUserPolicy = new ReqUserPolicy(ctx.request.body);
-  ReqUserPolicy.validModel(reqUserPolicy);
+  const reqUserPlaydata = new ReqUserPlaydata(ctx.request.body);
+  ReqUserPlaydata.validModel(reqUserPlaydata);
 
   const userInfo = ctx.$userInfo;
+  const updateDate = ctx.$date;
 
-  const policyVersion = DataTableCache.get('policy');;
-  const updatePolicyVersion = reqUserPolicy.getPolicyVersion();
-  if (policyVersion.version !== updatePolicyVersion) {
-    // TODO: different version
-    throw new Error({ errMessage: 'wrong policyVersion' });
-  }
+  const userResourceService = new UserResourceService(userInfo, updateDate);
 
-  const userDao = new UserDao(ctx.$dbMongo);
-  await userDao.updateOne({ uid: userInfo.getUID() }, { policyVersion: policyVersion.version });
+  const userPlayDataMeta = await userResourceService.updatePlaydata(
+    reqUserPlaydata
+  );
 
-  ctx.$res.success({});
+  await userResourceService.finalize();
+
+  ctx.$res.success({ userPlayDataMeta });
 
   await next();
 };
