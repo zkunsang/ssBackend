@@ -378,6 +378,7 @@ class QuestService extends Service {
     const completeLogList = [];
 
     for (const questId of questIds) {
+      if(!!userClearQuest[questId]) continue;
       userClearQuest[questId] = logDate;
       const completeType = userQuestAccept[questId] ? 1 : 0;
       const acceptDate = userQuestAccept[questId]
