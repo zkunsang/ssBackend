@@ -218,6 +218,11 @@ class UserService extends Service {
       .filter((item) => item.itemId === itemId);
   }
 
+  deleteUser() {
+    this.setChange();
+    this[Schema.USER_INFO.key].setDeleted();
+  }
+
   async finalize() {
     if (!this.isChange()) return false;
 

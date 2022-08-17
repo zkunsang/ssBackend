@@ -112,6 +112,7 @@ class AuthService extends Service {
 
     const providerInfo = {}
     providerInfo[provider] = providerId;
+    providerInfo["deleted"] = { $exists: false };
 
     return await userDao.findOne(providerInfo);
   }

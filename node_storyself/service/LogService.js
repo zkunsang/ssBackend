@@ -30,7 +30,11 @@ const StreamingLog = require("../models/apilog/StreamingLog");
 const CustomStickerLogDao = require("../daoMongo/log/CustomStickerLogDao");
 const CustomStickerLog = require("../models/apilog/CustomStickerLog");
 
+const UserDeleteLogDao = require('../daoMongo/log/UserDeleteLogDao');
+const UserDeleteLog = require('../models/apilog/UserDeleteLog');
+
 const dbMongo = require("../dbMongo");
+
 
 const Schema = {
   USER_INFO: {
@@ -157,6 +161,17 @@ class LogService extends Service {
     const sceneLogDao = new UILogDao(dbMongo, logDate);
     sceneLogDao.insertOne(
       new UILog({ uid, storyId, lang, uiName, etcData, logDate })
+    );
+  }
+
+  sendUserDeleteLog({ reasonId, reasonText }) {
+    const uid = this.getUID();
+    const logDate = this.getUpdateDate();
+
+    const userDeleteLogDao = new UserDeleteLogDao(dbMongo, logDate);
+    
+    userDeleteLogDao.insertOne(
+      new UserDeleteLog({ uid, reasonId, reasonText, logDate })
     );
   }
 

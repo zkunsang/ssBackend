@@ -40,6 +40,8 @@ const Schema = {
   SUBSCRIBE_INFO: { key: 'subscribeInfo', required: false, type: ValidType.OBJECT }, 
 
   SUBSCRIBE_COUPON: { key: 'subscribeCoupon', required: false, type: ValidType.OBJECT },
+
+  DELETED: { key: 'deleted', required: false, type: ValidType.BOOLEAN },
 }
 
 class User extends Model {
@@ -62,7 +64,8 @@ class User extends Model {
     subscriberId,
     pageSticker,
     subscribeInfo,
-    subscribeCoupon }) {
+    subscribeCoupon,
+    deleted }) {
     super();
 
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -92,6 +95,8 @@ class User extends Model {
     if(subscribeCoupon) {
       this[Schema.SUBSCRIBE_COUPON.key] = new SubscribeCoupon(subscribeCoupon);
     }
+
+    this[Schema.DELETED.key] = deleted;
   }
 
   getSessionId() {
@@ -188,6 +193,10 @@ class User extends Model {
 
   getPageSticker() {
     return this[Schema.PAGE_STICKER.key];
+  }
+
+  setDeleted() {
+    this[Schema.DELETED.key] = true;
   }
 };
 

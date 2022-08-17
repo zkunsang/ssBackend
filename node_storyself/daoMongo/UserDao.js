@@ -26,7 +26,8 @@ class UserDao extends Dao {
       User.Schema.GOOGLE.key,
       User.Schema.APPLE.key,
       User.Schema.ETC.key,
-      User.Schema.EMAIL.key
+      User.Schema.EMAIL.key,
+      User.Schema.DELETED.key
     ];
   }
 
@@ -40,7 +41,8 @@ class UserDao extends Dao {
       User.Schema.INVENTORY.key,
       User.Schema.MAIL.key,
       User.Schema.HONEY_HISTORY.key,
-      User.Schema.PUID.key
+      User.Schema.PUID.key,
+      User.Schema.DELETED.key,
     ]
   };
 
