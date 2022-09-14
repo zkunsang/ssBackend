@@ -33,6 +33,7 @@ const Provider = {
     FACEBOOK: 'facebook',
     EMAIL: 'email',
     ETC: 'etc',
+    KT: 'kt'
 }
 
 const Platform = {
@@ -46,6 +47,7 @@ const AppStore = {
     ONESTORE: 'onestore',
     APPLE: 'apple',
     ETC: 'etc',
+    KT: 'kt'
 }
 
 const StoryStatus = {

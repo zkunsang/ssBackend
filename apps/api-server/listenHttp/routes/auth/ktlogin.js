@@ -8,9 +8,9 @@ const UserService = require("@ss/service/UserService");
 const AuthService = require("@ss/service/AuthService");
 
 const ReqAuthLogin = require("@ss/models/controller/ReqAuthLogin");
-const { loginProcess } = require("@ss/helper/LoginHelper");
-
 const shortid = require("shortid");
+
+const {loginProcess} = require("@ss/helper/LoginHelper");
 
 module.exports = async (ctx, next) => {
   const loginDate = ctx.$date;
@@ -24,24 +24,29 @@ module.exports = async (ctx, next) => {
   const authService = new AuthService(reqAuthLogin, ip, loginDate);
 
   let userInfo = await authService.findUser(userDao);
+  
   const userService = new UserService(userInfo, userDao, loginDate);
-
   const sessionId = shortid.generate();
 
-  if (userInfo) {
-    const oldSessionId = authService.login(userInfo, sessionId);
-    // 다른 디바이스에서 로그인 처리 이슈로 주석
-    // await sessionDao.del(oldSessionId);
+  if (userInfo) {    
+    const linkedUID = userInfo.getLinkUID();
+
+    if(!!linkedUID) {
+      const userService = new UserService();
+      userInfo = await userService.findUserWithUID(linkedUID); 
+      userService.setUserInfo(userInfo);
+    } else {
+      authService.login(userInfo, sessionId);
+    }
   } else {
     userInfo = await authService.signIn(sessionId);
     userService.setUserInfo(userInfo);
   }
-
+  
   await loginProcess(userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx);
 
   await next();
 };
-
 /**
  * @swagger
  * resourcePath: /auth

@@ -20,6 +20,7 @@ const Schema = {
   GOOGLE: { key: 'google', required: false, type: ValidType.STRING },
   APPLE: { key: 'apple', required: false, type: ValidType.STRING },
   ETC: { key: 'etc', required: false, type: ValidType.STRING },
+  KT: { key: 'kt', required: false, type: ValidType.STRING },
 
   INVENTORY: { key: 'inventory', required: false, type: ValidType.ARRAY },
   MAIL: { key: 'mail', required: false, type: ValidType.OBJECT },
@@ -42,6 +43,7 @@ const Schema = {
   SUBSCRIBE_COUPON: { key: 'subscribeCoupon', required: false, type: ValidType.OBJECT },
 
   DELETED: { key: 'deleted', required: false, type: ValidType.BOOLEAN },
+  LINKED_UID: { key: 'linkedUID', required: false, type: ValidType.STRING },
 }
 
 class User extends Model {
@@ -65,7 +67,8 @@ class User extends Model {
     pageSticker,
     subscribeInfo,
     subscribeCoupon,
-    deleted }) {
+    deleted,
+    linkedUID }) {
     super();
 
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -97,6 +100,7 @@ class User extends Model {
     }
 
     this[Schema.DELETED.key] = deleted;
+    this[Schema.LINKED_UID.key] = linkedUID;
   }
 
   getSessionId() {
@@ -188,7 +192,7 @@ class User extends Model {
   }
 
   isSameSubscribeInfo(subscribeInfo) {
-    return this[Schema.SUBSCRIBE_INFO] === subscribeInfo;
+    return this[Schema.SUBSCRIBE_INFO.key] === subscribeInfo;
   }
 
   getPageSticker() {
@@ -197,6 +201,10 @@ class User extends Model {
 
   setDeleted() {
     this[Schema.DELETED.key] = true;
+  }
+
+  getLinkUID() {
+    return this[Schema.LINKED_UID.key];
   }
 };
 

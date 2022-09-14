@@ -4,22 +4,14 @@ const dbRedisSS = require("@ss/dbRedisSS");
 const SessionDao = require("@ss/daoRedis/SessionDao");
 const UserDao = require("@ss/daoMongo/UserDao");
 
-const InventoryService = require("@ss/service/InventoryService");
 const UserService = require("@ss/service/UserService");
 const AuthService = require("@ss/service/AuthService");
-const EventService = require("@ss/service/EventService");
-const MailService = require("@ss/service/MailService");
-const QuestService = require("@ss/service/QuestService");
-const ProductService = require("@ss/service/ProductService");
-const UserResourceService = require("@ss/service/UserResourceService");
-
 const ReqAuthLogin = require("@ss/models/controller/ReqAuthLogin");
-const Inventory = require("@ss/models/mongo/Inventory");
+
+const { loginProcess } = require("@ss/helper/LoginHelper");
 
 const shortid = require("shortid");
-const ArrayUtil = require("@ss/util/ArrayUtil");
 
-// 
 module.exports = async (ctx, next) => {
   const loginDate = ctx.$date;
   const reqAuthLogin = new ReqAuthLogin(ctx.request.body);
@@ -59,88 +51,7 @@ module.exports = async (ctx, next) => {
     userService.setUserInfo(userInfo);
   }
 
-  const eventService = new EventService(userInfo, loginDate);
-  const inventoryService = new InventoryService(userInfo, loginDate);
-  const mailService = new MailService(userInfo, loginDate);
-
-  let isNewUser = false;
-
-  if (userService.isNewUser()) {
-    const itemList = eventService.newUserEvent();
-    const putItem = inventoryService.putItem(
-      InventoryService.PUT_ACTION.USER_INIT,
-      {},
-      ArrayUtil.map(itemList, (item) => new Inventory(item))
-    );
-
-    const initHoneyHistory = inventoryService.createPutHoneyHistory(
-      putItem,
-      InventoryService.PUT_ACTION.USER_INIT
-    );
-    userService.addHoneyHistory(initHoneyHistory);
-    isNewUser = true;
-  }
-
-  const eventResult = await eventService.checkEvent();
-
-  const { eventItemList, eventMailList } = eventResult || {};
-
-  inventoryService.putEventItemList(eventItemList);
-  const mail = mailService.putEventMailList(eventMailList);
-  if (mail) userService.setMail(mail);
-
-  const smc = inventoryService.checkStoryMerge();
-  userService.setSMC(smc);
-
-  const userInventory = inventoryService.finalize();
-  userService.setInventory(userInventory);
-
-  const productService = new ProductService(userInfo, loginDate);
-  const { subscribeInfo } = await productService.checkRenewReceipt();
-
-  if (userService.setSubscribeInfo(subscribeInfo)) {
-    productService.finalize();
-  }
-
-  await eventService.finalize();
-  await userService.finalize();
-  authService.finalize(userInfo.uid);
-  
-  const userResourceService = new UserResourceService(userInfo, loginDate);
-  const modelList = await userResourceService.checkModel();
-  const scriptList = await userResourceService.checkScript();
-
-  await userResourceService.finalize();
-
-  const { fcmToken } = userInfo;
-  const eventList = [];
-
-  sessionDao.set(sessionId, userInfo);
-
-  ctx.$userInfo = userInfo;
-  const puid = userInfo.getPUID();
-
-  productService.addSubscribeCheckDate(subscribeInfo);
-  productService.removeUnusedParams(subscribeInfo);
-
-  ctx.$res.success({
-    sessionId,
-    puid,
-    policyVersion: 1,
-    fcmToken,
-    eventList,
-    mail: userService.getMailList(),
-    inventory: userService.getInventory(),
-    honeyHistory: userService.getHoneyHistory(),
-    productPurchase: userService.getProductPurhcase(),
-    isNewUser,
-    feedback: userService.getFeedback(),
-    subscriber: userService.getSubscriber(),
-    subscribeCoupon: userService.getSubscribeCoupon(),
-    subscribeInfo,
-    modelList,
-    scriptList
-  });
+  await loginProcess(userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx);
 
   await next();
 };

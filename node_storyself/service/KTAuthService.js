@@ -35,9 +35,10 @@ const Schema = {
 
   LOGIN_DATE: { key: 'loginDate', required: true, type: ValidType.UNIX_TIMESTAMP },
   IP: { key: "ip", required: true, type: ValidType.STRING },
+  KT_USER: { key: "ktUser", required: true, type: ValidType.BOOLEAN },
 }
 
-class AuthService extends Service {
+class KTAuthService extends Service {
   constructor(reqAuthLogin, ip, loginDate) {
     super();
 
@@ -69,6 +70,7 @@ class AuthService extends Service {
     this[Schema.FCM_TOKEN.key] = fcmToken;
     this[Schema.LOGIN_DATE.key] = loginDate;
     this[Schema.IP.key] = ip;
+    this[Schema.KT_USER.key] = true;
   }
 
   finalize(uid) {
@@ -134,10 +136,7 @@ class AuthService extends Service {
    */
   login(userInfo, sessionId) {
     const oldSessionId = userInfo.getSessionId();
-    const loginDate = this.getLoginDate();
-
-    userInfo.setSessionId(sessionId);
-    userInfo.setLastLoginDate(loginDate);
+    
 
     if (!userInfo.getPUID()) {
       const puid = nanoid(10);
@@ -161,6 +160,7 @@ class AuthService extends Service {
     const puid = nanoid(10);
     // 유저 shortId
 
+    userInfo.setKTUser();
     userInfo.setUID(uid);
     userInfo.setStatus(UserStatus.NONE);
     userInfo.setSessionId(sessionId);
@@ -173,6 +173,5 @@ class AuthService extends Service {
   }
 }
 
-
-module.exports = AuthService;
+module.exports = KTAuthService;
 module.exports.Schema = Schema;

@@ -27,7 +27,8 @@ class UserDao extends Dao {
       User.Schema.APPLE.key,
       User.Schema.ETC.key,
       User.Schema.EMAIL.key,
-      User.Schema.DELETED.key
+      User.Schema.DELETED.key,
+      User.Schema.LINKED_UID.key
     ];
   }
 

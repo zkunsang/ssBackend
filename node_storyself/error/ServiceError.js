@@ -43,6 +43,10 @@ const code = {
     alreadyReadMail: { code: 38002, name: 'alreadyReadMail', message: 'alreadyReadMail' },
     throwAlreadNotReadMail: { code: 38003, name: 'throwAlreadNotReadMail', message: 'throwAlreadNotReadMail' },
 
+    notValidConfirmKey: { code: 38101, name: 'notValidConfirmKey', message: 'notValidConfirmKey' },
+    noExistConfirmKey: { code: 38102, name: 'noExistConfirmKey', message: 'noExistConfirmKey' },
+    noLinkedUID: { code: 38103, name: 'noLinkedUID', message: 'noLinkedUID' },
+
     noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' },
 
     noExistPageSticker: { code: 39101, name: 'noExistSPageSticker', message: 'noExistSPageSticker' }

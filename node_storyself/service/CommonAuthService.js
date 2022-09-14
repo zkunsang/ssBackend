@@ -32,10 +32,13 @@ module.exports = async (ctx, next) => {
     const userDao = new UserDao(dbMongo);
     const userInfo = await userDao.findOne({ uid: userSessionInfo.getUID() });
 
-    if (userInfo.sessionId !== userSessionInfo.sessionId) {
+    if(!userSessionInfo.ktUser) {
+      if (userInfo.sessionId !== userSessionInfo.sessionId) {
         ctx.$res.unauthorized(SSError.Service.Code.loginFromOtherDevice);
         return;
+      }
     }
+    
 
 
     ctx.$dbMongo = dbMongo;

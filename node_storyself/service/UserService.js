@@ -70,6 +70,11 @@ class UserService extends Service {
     return userInfo;
   }
 
+  async findUserWithUID(uid) {
+    const userInfo = this[Schema.USER_DAO.key].findOne({ uid });
+    return userInfo;
+  }
+
   getInventory() {
     return this[Schema.USER_INFO.key][Schema.INVENTORY.key];
   }
@@ -146,7 +151,7 @@ class UserService extends Service {
   }
 
   addHoneyHistory(honeyHistory) {
-    if(!honeyHistory) return;
+    if (!honeyHistory) return;
     this.setChange();
     this[Schema.USER_INFO.key][Schema.HONEY_HISTORY.key].push(honeyHistory);
   }
@@ -223,6 +228,35 @@ class UserService extends Service {
     this[Schema.USER_INFO.key].setDeleted();
   }
 
+  async linkUser(ktUserInfo) {
+    const linkedUID = this[Schema.USER_INFO.key].uid;
+
+    // 다른곳에서 연결 정보가 있다고 하면
+    await this.unlinkProcess(linkedUID);
+
+    const copyUserInfo = Object.assign({ ...ktUserInfo, linkedUID });
+    const { uid } = copyUserInfo;
+
+    delete copyUserInfo.uid;
+    delete copyUserInfo.email;
+    delete copyUserInfo.createDate;
+
+    await this.getUserDao().updateOne({ uid }, copyUserInfo);
+  }
+
+  async unlinkProcess(linkedUID) {
+    const linkedUserInfo = await this.getUserDao().findOne({ linkedUID });
+    if (!linkedUserInfo) return;
+
+    const uid = linkedUserInfo.uid;
+    delete linkedUserInfo.uid;
+    delete linkedUserInfo.email;
+    delete linkedUserInfo.createDate;
+    linkedUserInfo.linkedUID = null;
+    
+    await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+  }
+
   async finalize() {
     if (!this.isChange()) return false;
 
@@ -240,6 +274,8 @@ class UserService extends Service {
       await this.getUserDao().insertOne(userInfo);
     }
   }
+
+
 }
 
 module.exports = UserService;
