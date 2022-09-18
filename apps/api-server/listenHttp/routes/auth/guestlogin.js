@@ -45,14 +45,24 @@ module.exports = async (ctx, next) => {
   const sessionId = shortid.generate();
 
   if (userInfo) {
-    const oldSessionId = authService.login(userInfo, sessionId);
+    authService.login(userInfo, sessionId);
   } else {
     userInfo = await authService.signIn(sessionId);
     userService.setUserInfo(userInfo);
   }
 
-  await loginProcess(userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx);
+  const result = await loginProcess(
+    userInfo, 
+    loginDate, 
+    userService, 
+    authService, 
+    sessionDao, 
+    sessionId, 
+    ctx,
+    () => {sessionDao.set(sessionId, userInfo)}
+    );
 
+  ctx.$res.success(result);
   await next();
 };
 

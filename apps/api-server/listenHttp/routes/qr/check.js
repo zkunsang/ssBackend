@@ -1,4 +1,5 @@
 const SSError = require('@ss/error');
+const dbRedisSS = require('@ss/dbRedisSS');
 const UserService = require('@ss/service/UserService');
 const ProductService = require('@ss/service/ProductService');
 const UserResourceService = require('@ss/service/UserResourceService');
@@ -16,6 +17,7 @@ module.exports = async (ctx, next) => {
 
   const userService = new UserService(userInfo, userDao, updateDate);
   const linkedUserInfo = await userService.findUserWithUID(userInfo.linkedUID);
+  const sessionDao = new SessionDao(dbRedisSS);
 
   sessionDao.set(sessionId, {...linkedUserInfo, ktUser: true});
 

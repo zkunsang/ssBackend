@@ -37,7 +37,18 @@ module.exports = async (ctx, next) => {
     userService.setUserInfo(userInfo);
   }
 
-  await loginProcess(userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx);
+  const result = await loginProcess(
+    userInfo, 
+    loginDate, 
+    userService, 
+    authService, 
+    sessionDao, 
+    sessionId, 
+    ctx,
+    () => { sessionDao.set(sessionId, userInfo) }
+    );
+
+  ctx.$res.success(result);
 
   await next();
 };

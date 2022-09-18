@@ -4,12 +4,19 @@ const ServiceVariableCache = require('@ss/dbCache/ServiceVariableCache');
 const ServiceVariable = require('@ss/models/mongo/ServiceVariable');
 const VariableKey = ServiceVariable.VariableKey;
 
+const ReqCommonData = require("@ss/models/controller/ReqCommonData");
+
 const ss = require("@ss");
 const apiConfig = ss.configs.apiServer;
 
 module.exports = async (ctx, next) => {
+  const reqCommonData = new ReqCommonData(ctx.request.body);
+  ReqCommonData.validModel(reqCommonData);
+  
   const userInfo = ctx.$userInfo;
   const updateDate = ctx.$date;
+
+  const storyId = reqCommonData.getStoryId();
 
   const userResourceService = new UserResourceService(userInfo, updateDate);
   const modelList = await userResourceService.checkModel();
@@ -17,6 +24,11 @@ module.exports = async (ctx, next) => {
   const stickerList = await userResourceService.checkCustomSticker();
   const userPlayDataMeta = await userResourceService.checkUserPlayData();
 
+  let recordList = null;
+  if(!!storyId) {
+    recordList = await userResourceService.checkRecord(storyId);
+  }
+  
   const dataTableList = DataTableCache.getList();
   const couponEnable = JSON.parse(
     ServiceVariableCache.get(VariableKey.couponEnable).value
@@ -35,7 +47,9 @@ module.exports = async (ctx, next) => {
     modelList,
     scriptList,
     stickerList,
-    userPlayDataMeta
+    userPlayDataMeta,
+    recordList,
+    storyId
   });
 
   await next();

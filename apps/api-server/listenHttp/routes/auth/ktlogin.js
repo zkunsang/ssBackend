@@ -28,10 +28,12 @@ module.exports = async (ctx, next) => {
   const userService = new UserService(userInfo, userDao, loginDate);
   const sessionId = shortid.generate();
 
+  let linkedUser = false;
   if (userInfo) {    
     const linkedUID = userInfo.getLinkUID();
 
     if(!!linkedUID) {
+      linkedUser = true;
       const userService = new UserService();
       userInfo = await userService.findUserWithUID(linkedUID); 
       userService.setUserInfo(userInfo);
@@ -43,8 +45,17 @@ module.exports = async (ctx, next) => {
     userService.setUserInfo(userInfo);
   }
   
-  await loginProcess(userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx);
+  const result = await loginProcess(
+    userInfo, 
+    loginDate, 
+    userService, 
+    authService, 
+    sessionDao, 
+    sessionId, 
+    ctx, 
+    () => {sessionDao.set(sessionId, {...userInfo, ktUser: true})});
 
+  ctx.$res.success({...result, linkedUser});
   await next();
 };
 /**

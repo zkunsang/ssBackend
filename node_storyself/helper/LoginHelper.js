@@ -8,7 +8,7 @@ const UserResourceService = require("@ss/service/UserResourceService");
 const Inventory = require("@ss/models/mongo/Inventory");
 const ArrayUtil = require("@ss/util/ArrayUtil");
 
-const loginProcess = async (userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx) => {
+const loginProcess = async (userInfo, loginDate, userService, authService, sessionDao, sessionId, ctx, setSession) => {
   const eventService = new EventService(userInfo, loginDate);
   const inventoryService = new InventoryService(userInfo, loginDate);
   const mailService = new MailService(userInfo, loginDate);
@@ -67,15 +67,15 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
   const { fcmToken } = userInfo;
   const eventList = [];
 
-  sessionDao.set(sessionId, userInfo);
-
+  setSession();
+  
   ctx.$userInfo = userInfo;
   const puid = userInfo.getPUID();
 
   productService.addSubscribeCheckDate(subscribeInfo);
   productService.removeUnusedParams(subscribeInfo);
 
-  ctx.$res.success({
+  return {
     sessionId,
     puid,
     policyVersion: 1,
@@ -94,7 +94,7 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
     scriptList,
     stickerList,
     userPlayDataMeta
-  });
+  };
 }
 
 module.exports.loginProcess = loginProcess;
