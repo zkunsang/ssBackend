@@ -3,6 +3,7 @@ const dbRedisSS = require('@ss/dbRedisSS');
 const UserService = require('@ss/service/UserService');
 const ProductService = require('@ss/service/ProductService');
 const UserResourceService = require('@ss/service/UserResourceService');
+const SessionDao = require('@ss/daoRedis/SessionDao');
 
 module.exports = async (ctx, next) => {
   const updateDate = ctx.$date;
@@ -19,6 +20,8 @@ module.exports = async (ctx, next) => {
   const linkedUserInfo = await userService.findUserWithUID(userInfo.linkedUID);
   const sessionDao = new SessionDao(dbRedisSS);
 
+  const sessionId = userInfo.sessionId;
+
   sessionDao.set(sessionId, {...linkedUserInfo, ktUser: true});
 
   const productService = new ProductService(linkedUserInfo, updateDate);
@@ -30,21 +33,26 @@ module.exports = async (ctx, next) => {
   const stickerList = await userResourceService.checkCustomSticker();
   const userPlayDataMeta = await userResourceService.checkUserPlayData();
 
+  const linkedUserService = new UserService(linkedUserInfo, userDao, updateDate);
+
+  const linkedUser = true;
+
   ctx.$res.success({
     sessionId,
     puid: linkedUserInfo.puid,
-    mail: linkedUserInfo.getMailList(),
-    inventory: linkedUserInfo.getInventory(),
-    honeyHistory: linkedUserInfo.getHoneyHistory(),
-    productPurchase: linkedUserInfo.getProductPurhcase(),
-    feedback: linkedUserInfo.getFeedback(),
-    subscriber: linkedUserInfo.getSubscriber(),
-    subscribeCoupon: linkedUserInfo.getSubscribeCoupon(),
+    mail: linkedUserService.getMailList(),
+    inventory: linkedUserService.getInventory(),
+    honeyHistory: linkedUserService.getHoneyHistory(),
+    productPurchase: linkedUserService.getProductPurhcase(),
+    feedback: linkedUserService.getFeedback(),
+    subscriber: linkedUserService.getSubscriber(),
+    subscribeCoupon: linkedUserService.getSubscribeCoupon(),
     subscribeInfo,
     modelList,
     scriptList,
     stickerList,
-    userPlayDataMeta
+    userPlayDataMeta,
+    linkedUser
   });
   await next();
 
