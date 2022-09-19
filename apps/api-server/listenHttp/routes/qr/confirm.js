@@ -1,11 +1,7 @@
-const ReqQRConfirm = require('@ss/models/controller/QR/ReqQRConfirm');
-
-const InventoryService = require('@ss/service/InventoryService');
+const ReqQRConfirm = require('@ss/models/controller/qr/ReqQRConfirm');
 const UserService = require('@ss/service/UserService');
-const MailService = require('@ss/service/MailService');
 
 const SSError = require('@ss/error');
-
 const dbRedisSS = require('@ss/dbRedisSS');
 const QRDao = require("@ss/daoRedis/QRDao");
 
