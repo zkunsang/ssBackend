@@ -10,7 +10,7 @@ const ss = require("@ss");
 const apiConfig = ss.configs.apiServer;
 
 module.exports = async (ctx, next) => {
-  const reqCommonData = new ReqCommonData(ctx.request.body);
+  const reqCommonData = new ReqCommonData(ctx.request1.body);
   ReqCommonData.validModel(reqCommonData);
   
   const userInfo = ctx.$userInfo;
@@ -63,7 +63,7 @@ module.exports = async (ctx, next) => {
 
 /**
  * @swagger
- * path: /auth/logout
+ * path: /auth/data
  * operations:
  *   -  httpMethod: POST
  *      summary: 로그아웃

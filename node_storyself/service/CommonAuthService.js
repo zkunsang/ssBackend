@@ -37,9 +37,9 @@ module.exports = async (ctx, next) => {
         ctx.$res.unauthorized(SSError.Service.Code.loginFromOtherDevice);
         return;
       }
+    } else {
+      userInfo.ktUser = userSessionInfo.ktUser;
     }
-    
-
 
     ctx.$dbMongo = dbMongo;
     ctx.$dbRedis = dbRedis;

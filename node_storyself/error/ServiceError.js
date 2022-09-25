@@ -46,6 +46,7 @@ const code = {
     notValidConfirmKey: { code: 38101, name: 'notValidConfirmKey', message: 'notValidConfirmKey' },
     noExistConfirmKey: { code: 38102, name: 'noExistConfirmKey', message: 'noExistConfirmKey' },
     noLinkedUID: { code: 38103, name: 'noLinkedUID', message: 'noLinkedUID' },
+    notConfirmYet: { code: 38104, name: 'notConfirmYet', message: 'notConfirmYet' },
 
     noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' },
 

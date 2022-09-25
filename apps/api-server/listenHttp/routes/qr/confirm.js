@@ -31,14 +31,6 @@ module.exports = async (ctx, next) => {
     return;
   }
 
-  // kt에서 가입된 유저 정보
-  // link를 해야 함
-  // kt유저 정보에는 linked된 puid를 입력
-  // 만약 
-  
-  // confirmKey에 대한 것에 flag를 걸어줘서 
-  // kt앱에서 check를 통해 어떤 제대로 동작했는지를 판단.
-
   const userService = new UserService(userInfo, userDao, updateDate);
   await userService.linkUser(ktUserInfo);
   await qrDao.del(confirmKey);

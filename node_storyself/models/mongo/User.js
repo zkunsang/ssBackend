@@ -44,8 +44,8 @@ const Schema = {
 
   DELETED: { key: 'deleted', required: false, type: ValidType.BOOLEAN },
   LINKED_UID: { key: 'linkedUID', required: false, type: ValidType.STRING },
+  KT_UID: { key: 'ktUID', required: false, type: ValidType.STRING },
   KT_USER: { key: 'ktUser', required: false, type: ValidType.BOOLEAN },
-  
 }
 
 class User extends Model {
@@ -71,7 +71,8 @@ class User extends Model {
     subscribeCoupon,
     deleted,
     linkedUID,
-    ktUser }) {
+    ktUser,
+    ktUID }) {
     super();
 
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -105,6 +106,7 @@ class User extends Model {
     this[Schema.DELETED.key] = deleted;
     this[Schema.LINKED_UID.key] = linkedUID;
     this[Schema.KT_USER.key] = ktUser;
+    this[Schema.KT_UID.key] = ktUID;
   }
 
   getSessionId() {
@@ -125,6 +127,10 @@ class User extends Model {
 
   getPUID() {
     return this[Schema.PUID.key];
+  }
+
+  getEmail() {
+    return this[Schema.EMAIL.key];
   }
 
   setSessionId(sessionId) {

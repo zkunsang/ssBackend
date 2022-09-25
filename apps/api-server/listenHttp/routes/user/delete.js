@@ -29,7 +29,7 @@ module.exports = async (ctx, next) => {
 
 /**
  * @swagger
- * path: /auth/logout
+ * path: /auth/delete
  * operations:
  *   -  httpMethod: POST
  *      summary: 로그아웃

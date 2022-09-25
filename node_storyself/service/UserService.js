@@ -233,28 +233,76 @@ class UserService extends Service {
 
     // 다른곳에서 연결 정보가 있다고 하면
     await this.unlinkProcess(linkedUID);
+    await this.unlinkKtUser(ktUserInfo);
 
-    const copyUserInfo = Object.assign({ ...ktUserInfo, linkedUID });
-    const { uid } = copyUserInfo;
+    const copyKTUserInfo = Object.assign({ ...ktUserInfo, linkedUID });
+    const { uid: ktUID } = copyKTUserInfo;
 
-    delete copyUserInfo.uid;
-    delete copyUserInfo.email;
-    delete copyUserInfo.createDate;
+    delete copyKTUserInfo.uid;
+    delete copyKTUserInfo.email;
+    delete copyKTUserInfo.createDate;
 
-    await this.getUserDao().updateOne({ uid }, copyUserInfo);
+    await this.getUserDao().updateOne({ uid: ktUID }, copyKTUserInfo);
+
+    const sourceUserInfo = this[Schema.USER_INFO.key];
+
+    const {uid: sourceUID} = sourceUserInfo;
+    const copySourceUserInfo = Object.assign({ ...sourceUserInfo, ktUID });
+
+    delete copySourceUserInfo.uid;
+    delete copySourceUserInfo.email;
+    delete copySourceUserInfo.createDate;
+
+    await this.getUserDao().updateOne({ uid: sourceUID }, copySourceUserInfo);
   }
 
   async unlinkProcess(linkedUID) {
     const linkedUserInfo = await this.getUserDao().findOne({ linkedUID });
-    if (!linkedUserInfo) return;
+    if (!!linkedUserInfo) {
+      const uid = linkedUserInfo.uid;
+      delete linkedUserInfo.uid;
+      delete linkedUserInfo.email;
+      delete linkedUserInfo.createDate;
+      linkedUserInfo.linkedUID = null;
+      
+      await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+    }
 
-    const uid = linkedUserInfo.uid;
-    delete linkedUserInfo.uid;
-    delete linkedUserInfo.email;
-    delete linkedUserInfo.createDate;
-    linkedUserInfo.linkedUID = null;
-    
-    await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+    const sourceUserInfo = Object.assign({...this[Schema.USER_INFO.key]});
+
+    if(!!sourceUserInfo.ktUID) {
+      const sourceUID = sourceUserInfo.uid;
+      delete sourceUserInfo.uid;
+      delete sourceUserInfo.email;
+      delete sourceUserInfo.createDate;
+      sourceUserInfo.ktUID = null;
+  
+      await this.getUserDao().updateOne({ uid: sourceUID }, sourceUserInfo);
+    }
+  }
+
+  async unlinkKtUser(ktUserInfo) {
+    if (ktUserInfo.linkedUID) {
+      const copyKtUserInfo = Object.assign({ ...ktUserInfo });
+      const uid = copyKtUserInfo.uid;
+      delete copyKtUserInfo.uid;
+      delete copyKtUserInfo.email;
+      delete copyKtUserInfo.createDate;
+      copyKtUserInfo.linkedUID = null;
+
+      await this.getUserDao().updateOne({ uid }, copyKtUserInfo);
+    }
+
+    const linkedUserInfo = await this.getUserDao().findOne({ linkedUID: ktUserInfo.linkedUID });
+    if (!!linkedUserInfo) {
+      const uid = linkedUserInfo.uid;
+      delete linkedUserInfo.uid;
+      delete linkedUserInfo.email;
+      delete linkedUserInfo.createDate;
+      linkedUserInfo.linkedUID = null;
+
+      await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+    }
   }
 
   async finalize() {

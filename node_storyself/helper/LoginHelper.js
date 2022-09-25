@@ -71,6 +71,7 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
   
   ctx.$userInfo = userInfo;
   const puid = userInfo.getPUID();
+  const email = userInfo.getEmail();
 
   productService.addSubscribeCheckDate(subscribeInfo);
   productService.removeUnusedParams(subscribeInfo);
@@ -78,6 +79,7 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
   return {
     sessionId,
     puid,
+    email, 
     policyVersion: 1,
     fcmToken,
     eventList,
