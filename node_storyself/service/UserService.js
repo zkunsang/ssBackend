@@ -257,15 +257,17 @@ class UserService extends Service {
   }
 
   async unlinkProcess(linkedUID) {
-    const linkedUserInfo = await this.getUserDao().findOne({ linkedUID });
-    if (!!linkedUserInfo) {
-      const uid = linkedUserInfo.uid;
-      delete linkedUserInfo.uid;
-      delete linkedUserInfo.email;
-      delete linkedUserInfo.createDate;
-      linkedUserInfo.linkedUID = null;
-      
-      await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+    if(!!linkedUID) {
+      const linkedUserInfo = await this.getUserDao().findOne({ linkedUID });
+      if (!!linkedUserInfo) {
+        const uid = linkedUserInfo.uid;
+        delete linkedUserInfo.uid;
+        delete linkedUserInfo.email;
+        delete linkedUserInfo.createDate;
+        linkedUserInfo.linkedUID = null;
+        
+        await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+      }
     }
 
     const sourceUserInfo = Object.assign({...this[Schema.USER_INFO.key]});
@@ -282,16 +284,16 @@ class UserService extends Service {
   }
 
   async unlinkKtUser(ktUserInfo) {
-    if (ktUserInfo.linkedUID) {
-      const copyKtUserInfo = Object.assign({ ...ktUserInfo });
-      const uid = copyKtUserInfo.uid;
-      delete copyKtUserInfo.uid;
-      delete copyKtUserInfo.email;
-      delete copyKtUserInfo.createDate;
-      copyKtUserInfo.linkedUID = null;
+    if(!ktUserInfo.linkedUID) return;
+    
+    const copyKtUserInfo = Object.assign({ ...ktUserInfo });
+    const uid = copyKtUserInfo.uid;
+    delete copyKtUserInfo.uid;
+    delete copyKtUserInfo.email;
+    delete copyKtUserInfo.createDate;
+    copyKtUserInfo.linkedUID = null;
 
-      await this.getUserDao().updateOne({ uid }, copyKtUserInfo);
-    }
+    await this.getUserDao().updateOne({ uid }, copyKtUserInfo);
 
     const linkedUserInfo = await this.getUserDao().findOne({ linkedUID: ktUserInfo.linkedUID });
     if (!!linkedUserInfo) {
