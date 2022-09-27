@@ -1,4 +1,4 @@
-const sessionExpire = 60 * 2;
+const sessionExpire = 60 * 3;
 
 class QRDao {
   constructor(connection) {

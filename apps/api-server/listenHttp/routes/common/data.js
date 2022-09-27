@@ -10,7 +10,7 @@ const ss = require("@ss");
 const apiConfig = ss.configs.apiServer;
 
 module.exports = async (ctx, next) => {
-  const reqCommonData = new ReqCommonData(ctx.request1.body);
+  const reqCommonData = new ReqCommonData(ctx.request.body);
   ReqCommonData.validModel(reqCommonData);
   
   const userInfo = ctx.$userInfo;
