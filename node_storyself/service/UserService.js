@@ -228,14 +228,42 @@ class UserService extends Service {
     this[Schema.USER_INFO.key].setDeleted();
   }
 
+  async unlinkUser() {
+    const ktUID = this[Schema.USER_INFO.key].ktUID;
+    if(!!ktUID) {
+      const { uid } = this[Schema.USER_INFO.key];
+      const copySourceUserInfo = JSON.parse(JSON.stringify({ ...this[Schema.USER_INFO.key] }));
+
+      delete copySourceUserInfo.uid;
+      delete copySourceUserInfo.email;
+      delete copySourceUserInfo.createDate;
+      copySourceUserInfo.ktUID = null;
+
+      await this.getUserDao().updateOne({ uid }, copySourceUserInfo);
+
+      const linkedUserInfo = await this.getUserDao().findOne({ uid: ktUID });
+      if(!!linkedUserInfo) {
+        const { uid } = linkedUserInfo;
+        delete linkedUserInfo.uid;
+        delete linkedUserInfo.email;
+        delete linkedUserInfo.createDate;
+        linkedUserInfo.linkedUID = null;
+
+        await this.getUserDao().updateOne({ uid }, linkedUserInfo);
+      }
+    }
+  }
+
   async linkUser(ktUserInfo) {
     const linkedUID = this[Schema.USER_INFO.key].uid;
 
     // 다른곳에서 연결 정보가 있다고 하면
+    // linkedUID는 KT유저에 붙는 값
+    // ktUID는 모바일 앱 유저에게 붙틑 값 
     await this.unlinkProcess(linkedUID);
     await this.unlinkKtUser(ktUserInfo);
 
-    const copyKTUserInfo = Object.assign({ ...ktUserInfo, linkedUID });
+    const copyKTUserInfo = JSON.parse(JSON.stringify({ ...ktUserInfo, linkedUID }));
     const { uid: ktUID } = copyKTUserInfo;
 
     delete copyKTUserInfo.uid;
@@ -247,7 +275,7 @@ class UserService extends Service {
     const sourceUserInfo = this[Schema.USER_INFO.key];
 
     const {uid: sourceUID} = sourceUserInfo;
-    const copySourceUserInfo = Object.assign({ ...sourceUserInfo, ktUID });
+    const copySourceUserInfo = JSON.parse(JSON.stringify({ ...sourceUserInfo, ktUID }));
 
     delete copySourceUserInfo.uid;
     delete copySourceUserInfo.email;
@@ -270,7 +298,7 @@ class UserService extends Service {
       }
     }
 
-    const sourceUserInfo = Object.assign({...this[Schema.USER_INFO.key]});
+    const sourceUserInfo = JSON.parse(JSON.stringify({...this[Schema.USER_INFO.key]}));
 
     if(!!sourceUserInfo.ktUID) {
       const sourceUID = sourceUserInfo.uid;
@@ -286,7 +314,7 @@ class UserService extends Service {
   async unlinkKtUser(ktUserInfo) {
     if(!ktUserInfo.linkedUID) return;
     
-    const copyKtUserInfo = Object.assign({ ...ktUserInfo });
+    const copyKtUserInfo = JSON.parse(JSON.stringify({ ...ktUserInfo }));
     const uid = copyKtUserInfo.uid;
     delete copyKtUserInfo.uid;
     delete copyKtUserInfo.email;
