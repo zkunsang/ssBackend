@@ -13,7 +13,7 @@ module.exports = async (ctx, next) => {
     const reqVersionUpdate = new ReqVersionUpdate(ctx.request.body);
     ReqVersionUpdate.validModel(reqVersionUpdate);
     
-    const key = reqVersionUpdate.getOSType() == "aos" ? VariableKey.aosAppVersion : VariableKey.iosAppVersion;
+    const key = getOSType(reqVersionUpdate.getOSType());
     const value = reqVersionUpdate.getVersion();
 
     const serviceVaraibleDao = new ServiceVariableDao(ctx.$dbMongo);
@@ -27,4 +27,21 @@ module.exports = async (ctx, next) => {
     ctx.body.data = {};
 
     await next();
+}
+
+const getOSType = (reqVersionUpdate) => {
+  
+  if(reqVersionUpdate.getOSType() == "aos") {
+    return VariableKey.aosAppVersion;
+  }
+  
+  if(reqVersionUpdate.getOSType() == "ios") {
+    return VariableKey.iosAppVersion;
+  }
+
+  if(reqVersionUpdate.getOSType() == "kt") {
+    return VariableKey.ktAppVersion;
+  }
+
+  throw new Error("Get os type Error");
 }

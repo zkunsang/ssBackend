@@ -6,6 +6,7 @@ const ValidType = ValidateUtil.ValidType;
 const VariableKey = {
     aosAppVersion: 'aosAppVersion',
     iosAppVersion: 'iosAppVersion',
+    ktAppVersion: 'ktAppVersion',
     couponEnable: 'couponEnable'
 }
 
