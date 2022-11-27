@@ -29,17 +29,17 @@ module.exports = async (ctx, next) => {
     await next();
 }
 
-const getOSType = (reqVersionUpdate) => {
+const getOSType = (osType) => {
   
-  if(reqVersionUpdate.getOSType() == "aos") {
+  if(osType === "aos") {
     return VariableKey.aosAppVersion;
   }
   
-  if(reqVersionUpdate.getOSType() == "ios") {
+  if(osType === "ios") {
     return VariableKey.iosAppVersion;
   }
 
-  if(reqVersionUpdate.getOSType() == "kt") {
+  if(osType === "kt") {
     return VariableKey.ktAppVersion;
   }
 
