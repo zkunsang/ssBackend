@@ -7,9 +7,10 @@ module.exports = async (ctx, next) => {
 
     const aosAppVersion = await serviceVariableDao.findOne({key: VariableKey.aosAppVersion});
     const iosAppVersion = await serviceVariableDao.findOne({key: VariableKey.iosAppVersion});
+    const ktAppVersion = await serviceVariableDao.findOne({key: VariableKey.ktAppVersion});
 
     ctx.status = 200;
-    ctx.body.data = { aosAppVersion, iosAppVersion };
+    ctx.body.data = { aosAppVersion, iosAppVersion, ktAppVersion };
 
     await next();
 }
