@@ -25,7 +25,7 @@ module.exports = async (ctx, next) => {
 
   let userInfo = await authService.findUser(userDao);
   
-  const userService = new UserService(userInfo, userDao, loginDate);
+  let userService = new UserService(userInfo, userDao, loginDate);
   const sessionId = shortid.generate();
 
   let linkedUser = false;
@@ -34,9 +34,8 @@ module.exports = async (ctx, next) => {
 
     if(!!linkedUID) {
       linkedUser = true;
-      const userService = new UserService();
       userInfo = await userService.findUserWithUID(linkedUID); 
-      userService.setUserInfo(userInfo);
+      userService = new UserService(userInfo, userDao, loginDate);
     } else {
       authService.login(userInfo, sessionId);
     }
