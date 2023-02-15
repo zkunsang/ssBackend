@@ -95,7 +95,8 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
     modelList,
     scriptList,
     stickerList,
-    userPlayDataMeta
+    userPlayDataMeta,
+    ktUID: userService.getKTUID()
   };
 }
 

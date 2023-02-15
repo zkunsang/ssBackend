@@ -216,6 +216,10 @@ class User extends Model {
   getLinkUID() {
     return this[Schema.LINKED_UID.key];
   }
+
+  getKTUID() {
+    return this[Schema.KT_UID.key];
+  }
 };
 
 module.exports = User;

@@ -116,6 +116,10 @@ class UserService extends Service {
     return this[Schema.USER_INFO.key].getSubscribeCoupon();
   }
 
+  getKTUID() {
+    return this[Schema.USER_INFO.key].getKTUID();
+  }
+
   addPurchaseInfo(productInfo) {
     if (!productInfo) return;
     this.setChange();
