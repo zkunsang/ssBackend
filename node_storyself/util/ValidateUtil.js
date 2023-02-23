@@ -33,7 +33,8 @@ const Provider = {
     FACEBOOK: 'facebook',
     EMAIL: 'email',
     ETC: 'etc',
-    KT: 'kt'
+    KT: 'kt',
+    l4box: 'l4box'
 }
 
 const Platform = {
@@ -47,7 +48,8 @@ const AppStore = {
     ONESTORE: 'onestore',
     APPLE: 'apple',
     ETC: 'etc',
-    KT: 'kt'
+    KT: 'kt',
+    l4box: 'l4box'
 }
 
 const StoryStatus = {
