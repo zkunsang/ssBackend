@@ -24,7 +24,7 @@ const Schema = {
     },
     PURCHASE_STATE: {
         key: "purchaseState",
-        required: true,
+        required: false,
         type: ValidType.NUMBER,
     },
     PURCHASE_TOKEN: {

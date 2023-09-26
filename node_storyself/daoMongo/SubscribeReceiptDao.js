@@ -16,7 +16,6 @@ class SubscribeReceiptDao extends Dao {
       SubscribeReceipt.Schema.APPSTORE.key,
       SubscribeReceipt.Schema.PRODUCT_ID.key,
       SubscribeReceipt.Schema.PURCHASE_DATE.key,
-      SubscribeReceipt.Schema.PURCHASE_STATE.key,
       SubscribeReceipt.Schema.UPDATE_DATE.key,
     ];
   }
