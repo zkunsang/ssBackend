@@ -9,11 +9,12 @@ const Schema = {
   MODEL: { key: 'model', required: false, type: ValidType.OBJECT },
   SCRIPT: { key: 'script', required: false, type: ValidType.OBJECT },
   CUSTOM_STICKER: { key: 'customsticker', required: false, type: ValidType.OBJECT },
+  AI_STICKER: { key: 'aiSticker', required: false, type: ValidType.ARRAY },
   PLAY_DATA: { key: 'playdata', required: false, type: ValidType.OBJECT },
 }
 
 class UserResource extends Model {
-  constructor({ uid, record, model, script, customsticker, playdata }) {
+  constructor({ uid, record, model, script, customsticker, playdata, aiSticker }) {
     super();
 
     this[Schema.UID.key] = ValidateUtil.setNullUndefined(uid);
@@ -21,6 +22,7 @@ class UserResource extends Model {
     this[Schema.MODEL.key] = ValidateUtil.setNullUndefined(model);
     this[Schema.SCRIPT.key] = ValidateUtil.setNullUndefined(script);
     this[Schema.CUSTOM_STICKER.key] = ValidateUtil.setNullUndefined(customsticker);
+    this[Schema.AI_STICKER.key] = ValidateUtil.setNullUndefined(customsticker);
     this[Schema.PLAY_DATA.key] = ValidateUtil.setNullUndefined(playdata);
   }
 

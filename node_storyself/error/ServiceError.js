@@ -50,7 +50,11 @@ const code = {
 
     noExistStoryQuest: { code: 39001, name: 'noExistStoryQuest', message: 'noExistStoryQuest' },
 
-    noExistPageSticker: { code: 39101, name: 'noExistSPageSticker', message: 'noExistSPageSticker' }
+    noExistPageSticker: { code: 39101, name: 'noExistSPageSticker', message: 'noExistSPageSticker' },
+
+    aiGenerateAlreadyStarted: { code: 39201, name: 'aiGenerateAlreadyStarted', message: 'aiGenerateAlreadyStarted' },
+    aiGenerateInvalidItem: { code: 39202, name: 'aiGenerateInvalidItem', message: 'aiGenerateInvalidItem' },
+    aiGenerateNotFinished: { code: 39203, name: 'aiGenerateNotFinished', message: 'aiGenerateNotFinished' }
 }
 
 class ServiceError extends RuntimeError {

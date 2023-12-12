@@ -109,6 +109,13 @@ class UserResourceService extends Service {
     return userCustomStickerList;
   }
 
+  async updateAiSticker(itemList) {
+    const userAiStickerList = await this.getUserAiStickerInfo();
+    userAiStickerList.push(...itemList);
+
+    return userAiStickerList;
+  }
+
   async updateScript(scriptInfo) {
     const userScriptList = await this.getUserScriptList();
     const userScriptMap = ArrayUtil.keyBy(userScriptList, "storyId");
@@ -168,6 +175,10 @@ class UserResourceService extends Service {
 
   async checkModel() {
     return await this.getUserModelInfo()
+  }
+
+  async checkAISticker() {
+    return await this.getUserAiStickerInfo()
   }
 
   async checkRecord(storyId) {
@@ -264,6 +275,18 @@ class UserResourceService extends Service {
 
     return this[Schema.USER_RESOURCE.key]["customsticker"];
   }
+
+  async getUserAiStickerInfo() {
+    await this.getUserResourceInfo();
+
+    if (!this[Schema.USER_RESOURCE.key]["aiSticker"]) {
+      this[Schema.USER_RESOURCE.key]["aiSticker"] = [];
+    }
+
+    return this[Schema.USER_RESOURCE.key]["aiSticker"];
+  }
+
+  
 
   async getUserPlayData() {
     await this.getUserResourceInfo();

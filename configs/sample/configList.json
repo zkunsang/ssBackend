@@ -1,1 +1,10 @@
-["apiServer", "fluent", "slack","dbMongoData","dbMongoUser", "dbRedisSS", "dbRedisGA"]
+[
+  "apiServer",
+  "fluent",
+  "slack",
+  "dbMongoData",
+  "dbMongoUser",
+  "dbRedisSS",
+  "dbRedisGA",
+  "dbRedisAI"
+]

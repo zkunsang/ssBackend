@@ -6,6 +6,7 @@ const wrapper = require('@ss/wrapper');
 const dbRedisSS = require('@ss/dbRedisSS');
 const dbRedisPB = require('@ss/dbRedisPB');
 const cache = require('@ss/dbCache');
+const dbRedisAI = require('@ss/dbRedisAI');
 
 
 module.exports = async () => {
@@ -14,6 +15,7 @@ module.exports = async () => {
     await dbMongo.ready();
     await dbRedisSS.ready();
     await dbRedisPB.ready();
+    await dbRedisAI.ready();
     await wrapper.ready();
     await cache.ready();
 };
