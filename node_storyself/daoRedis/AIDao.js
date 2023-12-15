@@ -15,22 +15,22 @@ class AIDao {
         this.connection = connection.redis;
     }
 
-    async getUserStatus(puid) {
-        const result = await this.connection.get(`ai:status:${puid}`)
+    async getUserStatus(uid) {
+        const result = await this.connection.get(`ai:status:${uid}`)
         if(!result) return undefined;
         return JSON.parse(result);
     }
 
-    async setUserStatus(puid, status) {
-        await this.connection.set(`ai:status:${puid}`, JSON.stringify(status))
+    async setUserStatus(uid, status) {
+        await this.connection.set(`ai:status:${uid}`, JSON.stringify(status))
     }
 
-    async delUserStatus(puid) {
-        await this.connection.del(`ai:status:${puid}`);
+    async delUserStatus(uid) {
+        await this.connection.del(`ai:status:${uid}`);
     }
 
-    async pushAIGenerate(prompt, fileName, seedId, puid) {
-        await this.connection.lpush("ai:generate", JSON.stringify({ messageType: MESSAGE_TYPE_GENERATE, prompt, fileName, seedId, puid }))
+    async pushAIGenerate(prompt, fileName, seedId, uid, language) {
+        await this.connection.lpush("ai:generate", JSON.stringify({ messageType: MESSAGE_TYPE_GENERATE, prompt, fileName, seedId, uid, language }))
     }
 }
 

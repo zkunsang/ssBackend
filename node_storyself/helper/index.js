@@ -1,5 +1,6 @@
 const SlackHelper = require('./SlackHelper');
 const FluentdHelper = require('./FluentdHelper');
+const FCMUtil = require('./../../node_storyself/util/FcmUtil')
 
 class Helper {
     constructor() {
@@ -10,7 +11,7 @@ class Helper {
     async ready() {
         await this.slack.ready();
         await this.fluent.ready();
-        
+        FCMUtil.init();
     }
 };
 

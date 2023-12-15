@@ -220,6 +220,10 @@ class User extends Model {
   getKTUID() {
     return this[Schema.KT_UID.key];
   }
+
+  getFCMToken() {
+    return this[Schema.FCM_TOKEN.key];
+  }
 };
 
 module.exports = User;

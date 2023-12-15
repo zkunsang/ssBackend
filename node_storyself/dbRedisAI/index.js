@@ -1,7 +1,23 @@
+const ss = require('@ss');
+
+const dbMongo = require("@ss/dbMongo");
 const ioredis = require('ioredis');
 
-const ss = require('../index.js');
 const helper = require('../helper/index.js');
+const UserDao = require('@ss/daoMongo/UserDao.js');
+const FcmUtil = require('@ss/util/FcmUtil.js');
+
+const generateMessage = (language) => {
+    if(language == "kr") {
+        const body = "어서 들어오세요"
+        const title = "스티커 생성이 완료되었습니다."
+        return [body, title];
+    }
+
+    const body = "come on"
+    const title = "generate finished"
+    return [body, title];
+}
 
 class RedisAI {
     constructor() {
@@ -30,11 +46,19 @@ class RedisAI {
         const [key, message] = await this.redisFetch.blpop(["ai:done"], 0);
         
         const jsonMessage = JSON.parse(message);
-        const { prompt, fileName, puid, seedId } = jsonMessage;
+        const { prompt, fileName, uid, seedId, language } = jsonMessage;
         const imageLength = 3;
 
-        await this.redis.set(`ai:status:${puid}`, JSON.stringify({ status: 2, prompt, fileName, puid, seedId, imageLength }));
-        console.log(message);
+        await this.redis.set(`ai:status:${uid}`, JSON.stringify({ status: 2, prompt, fileName, uid, seedId, imageLength }));
+
+        const userDao = new UserDao(dbMongo);
+        const userInfo = await userDao.findOne({});
+        const fcmToken = userInfo.getFCMToken();
+        if(!!fcmToken) {
+            const [body, title] = generateMessage("kr")
+            FcmUtil.pushMessage(fcmToken, title, body);
+        }
+        
         this.aiRedisFetch();
     }
 }

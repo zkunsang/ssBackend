@@ -16,11 +16,12 @@ module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
 
     const reqAIGenerate = new ReqAIGenerate(ctx.request.body);
+    
     ReqAIGenerate.validModel(reqAIGenerate);
 
     const aiDao = new AIDao(dbRedisAI);
-    const puid = userInfo.getPUID();
-    const userStatus = await aiDao.getUserStatus(puid);
+    const uid = userInfo.getUID();
+    const userStatus = await aiDao.getUserStatus(uid);
 
     if (userStatus) {
         ctx.$res.badRequest(SSError.Service.Code.aiGenerateAlreadyStarted);
@@ -28,12 +29,14 @@ module.exports = async (ctx, next) => {
     }
 
     const prompt = reqAIGenerate.getPrompt();
+    const language = reqAIGenerate.getLanguage();
+    
     const fileName = createHash(prompt, 10);
     const seedId = 1;
 
-    await aiDao.setUserStatus(puid, { status: 1, fileName, seedId, prompt });
+    await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, prompt, language });
     
-    await aiDao.pushAIGenerate(prompt, fileName, seedId, puid);
+    await aiDao.pushAIGenerate(prompt, fileName, seedId, uid, language);
 
     ctx.$res.success({
         userStatus

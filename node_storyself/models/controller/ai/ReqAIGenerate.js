@@ -5,18 +5,24 @@ const ValidType = ValidateUtil.ValidType;
 
 // TODO: file prefix 정의하기
 const Schema = {
-    PROMPT: { key: 'prompt', required: true, type: ValidType.STRING }
+    PROMPT: { key: 'prompt', required: true, type: ValidType.STRING },
+    LANGUAGE: { key: 'language', required: true, type: ValidType.STRING }
 }
 
 class ReqAIGenerate extends Model {
-    constructor({ prompt }) {
+    constructor({ prompt, language }) {
         super();
 
         this[Schema.PROMPT.key] = prompt;
+        this[Schema.LANGUAGE.key] = language;
     }
 
     getPrompt() {
-        return this[Schema.PROMPT.key]
+        return this[Schema.PROMPT.key];
+    }
+
+    getLanguage() {
+        return this[Schema.LANGUAGE.key];
     }
 }
 

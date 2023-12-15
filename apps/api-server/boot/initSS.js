@@ -8,7 +8,6 @@ const dbRedisPB = require('@ss/dbRedisPB');
 const cache = require('@ss/dbCache');
 const dbRedisAI = require('@ss/dbRedisAI');
 
-
 module.exports = async () => {
     await ss.configs.ready();
     await helper.ready();

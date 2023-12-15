@@ -1,5 +1,3 @@
-const path = require('path');
-
 
 module.exports = class Config {
     constructor(configPath) {
@@ -21,6 +19,7 @@ module.exports = class Config {
     setConfig(configList) {
         for (const config of configList) {
             this[config] = require(`@cf/${this.configPath}/${config}.json`)
+            console.log(config);
         }
     }
 }

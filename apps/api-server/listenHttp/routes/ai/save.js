@@ -35,9 +35,10 @@ module.exports = async (ctx, next) => {
     ReqAISave.validModel(reqAiSave);
 
     const itemList = reqAiSave.getItemList();
+    const uid = userInfo.getUID();
 
     if (itemList.length == 0) {
-        await aiDao.delUserStatus(puid);
+        await aiDao.delUserStatus(uid);
         const userResourceService = new UserResourceService(userInfo, updateDate);
         const aiStickers = await userResourceService.checkAISticker();
         ctx.$res.success({ aiStickers });
@@ -45,9 +46,8 @@ module.exports = async (ctx, next) => {
     } 
 
     const aiDao = new AIDao(dbRedisAI);
-    const puid = userInfo.getPUID();
-    const userStatus = await aiDao.getUserStatus(puid);
-
+    const userStatus = await aiDao.getUserStatus(uid);
+    
     const { status } = userStatus;
     if (status !== 2) {
         ctx.$res.badRequest(SSError.Service.Code.aiGenerateNotFinished);
@@ -65,7 +65,7 @@ module.exports = async (ctx, next) => {
     const aiStickers = await userResourceService.updateAiSticker(itemList);
 
     await userResourceService.finalize();
-    await aiDao.delUserStatus(puid);
+    await aiDao.delUserStatus(uid);
 
     ctx.$res.success({ aiStickers });
 
