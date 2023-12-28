@@ -51,15 +51,22 @@ class RedisAI {
 
         await this.redis.set(`ai:status:${uid}`, JSON.stringify({ status: 2, prompt, fileName, uid, seedId, imageLength }));
 
-        const userDao = new UserDao(dbMongo);
-        const userInfo = await userDao.findOne({});
-        const fcmToken = userInfo.getFCMToken();
-        if(!!fcmToken) {
-            const [body, title] = generateMessage("kr")
-            FcmUtil.pushMessage(fcmToken, title, body);
+        try {
+            const userDao = new UserDao(dbMongo);
+            const userInfo = await userDao.findOne({uid});
+            const fcmToken = userInfo.getFCMToken();
+            if(!!fcmToken) {
+                const [body, title] = generateMessage("kr")
+                FcmUtil.pushMessage(fcmToken, title, body);
+            }
+        } catch(err) {
+            console.error(err);
+        }
+        finally {
+            this.aiRedisFetch();
         }
         
-        this.aiRedisFetch();
+        
     }
 }
 
