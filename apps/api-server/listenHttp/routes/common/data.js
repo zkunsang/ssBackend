@@ -23,6 +23,7 @@ module.exports = async (ctx, next) => {
   const scriptList = await userResourceService.checkScript();
   const stickerList = await userResourceService.checkCustomSticker();
   const userPlayDataMeta = await userResourceService.checkUserPlayData();
+  const aiStickerList = await userResourceService.checkAISticker();
 
   let recordList = null;
   if(!!storyId) {
@@ -47,6 +48,7 @@ module.exports = async (ctx, next) => {
     modelList,
     scriptList,
     stickerList,
+    aiStickerList,
     userPlayDataMeta,
     recordList,
     storyId

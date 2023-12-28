@@ -22,7 +22,7 @@ class UserResource extends Model {
     this[Schema.MODEL.key] = ValidateUtil.setNullUndefined(model);
     this[Schema.SCRIPT.key] = ValidateUtil.setNullUndefined(script);
     this[Schema.CUSTOM_STICKER.key] = ValidateUtil.setNullUndefined(customsticker);
-    this[Schema.AI_STICKER.key] = ValidateUtil.setNullUndefined(customsticker);
+    this[Schema.AI_STICKER.key] = ValidateUtil.setNullUndefined(aiSticker);
     this[Schema.PLAY_DATA.key] = ValidateUtil.setNullUndefined(playdata);
   }
 

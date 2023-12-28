@@ -61,6 +61,7 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
   const scriptList = await userResourceService.checkScript();
   const stickerList = await userResourceService.checkCustomSticker();
   const userPlayDataMeta = await userResourceService.checkUserPlayData();
+  const aiStickerList = await userResourceService.checkAISticker();
 
   await userResourceService.finalize();
 
@@ -95,6 +96,7 @@ const loginProcess = async (userInfo, loginDate, userService, authService, sessi
     modelList,
     scriptList,
     stickerList,
+    aiStickerList,
     userPlayDataMeta,
     ktUID: userService.getKTUID()
   };
