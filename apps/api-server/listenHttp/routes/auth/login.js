@@ -19,12 +19,15 @@ module.exports = async (ctx, next) => {
 
   ReqAuthLogin.validModel(reqAuthLogin);
 
+  const { fcmToken } = reqAuthLogin;
+
   const userDao = new UserDao(dbMongo);
   const sessionDao = new SessionDao(dbRedisSS);
   const authService = new AuthService(reqAuthLogin, ip, loginDate);
 
   let userInfo = await authService.findUser(userDao);
   const userService = new UserService(userInfo, userDao, loginDate);
+  userService.setFcmToken(fcmToken);
 
   const sessionId = shortid.generate();
 

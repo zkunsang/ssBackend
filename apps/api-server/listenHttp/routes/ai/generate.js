@@ -25,6 +25,7 @@ module.exports = async (ctx, next) => {
 
     if (userStatus) {
         ctx.$res.badRequest(SSError.Service.Code.aiGenerateAlreadyStarted);
+        await next();
         return;
     }
 

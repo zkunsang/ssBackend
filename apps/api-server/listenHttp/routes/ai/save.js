@@ -8,7 +8,7 @@ const UserResourceService = require('@ss/service/UserResourceService');
 
 const checkValidItemList = (userStatus, itemList) => {
     // 아이템 개수가 0개 에러 발생
-    const { status, prompt, fileName, seedId, imageLength } = userStatus
+    const { status, prompt, fileName, seedId, imageLength } = userStatus;
 
     for (let i = 0; i < itemList.length; i++) {
         const s3key = itemList[i];
@@ -37,20 +37,23 @@ module.exports = async (ctx, next) => {
     const itemList = reqAiSave.getItemList();
     const uid = userInfo.getUID();
 
+    const aiDao = new AIDao(dbRedisAI);
+
     if (itemList.length == 0) {
         await aiDao.delUserStatus(uid);
         const userResourceService = new UserResourceService(userInfo, updateDate);
         const aiStickers = await userResourceService.checkAISticker();
         ctx.$res.success({ aiStickers });
+        await next();
         return
     } 
-
-    const aiDao = new AIDao(dbRedisAI);
+    
     const userStatus = await aiDao.getUserStatus(uid);
     
     const { status } = userStatus;
     if (status !== 2) {
         ctx.$res.badRequest(SSError.Service.Code.aiGenerateNotFinished);
+        await next();
         return;
     }
     
@@ -58,6 +61,7 @@ module.exports = async (ctx, next) => {
         checkValidItemList(userStatus, itemList)
     } catch {
         ctx.$res.badRequest(SSError.Service.Code.aiGenerateInvalidItem);
+        await next();
         return;
     }
     

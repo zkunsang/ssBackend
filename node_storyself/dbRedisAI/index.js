@@ -56,7 +56,7 @@ class RedisAI {
             const userInfo = await userDao.findOne({uid});
             const fcmToken = userInfo.getFCMToken();
             if(!!fcmToken) {
-                const [body, title] = generateMessage("kr")
+                const [body, title] = generateMessage(language)
                 FcmUtil.pushMessage(fcmToken, title, body);
             }
         } catch(err) {

@@ -116,6 +116,15 @@ class UserResourceService extends Service {
     return userAiStickerList;
   }
 
+  async deleteAiStickers(itemList) {
+    let aiStickers = await this.getUserAiStickerInfo();
+    const newAiStickers = aiStickers.filter((item) => !itemList.includes(item));
+
+    this.setUserAiStickerInfo(newAiStickers);
+
+    return newAiStickers;
+  }
+
   async updateScript(scriptInfo) {
     const userScriptList = await this.getUserScriptList();
     const userScriptMap = ArrayUtil.keyBy(userScriptList, "storyId");
@@ -286,7 +295,9 @@ class UserResourceService extends Service {
     return this[Schema.USER_RESOURCE.key]["aiSticker"];
   }
 
-  
+  async setUserAiStickerInfo(aiSticker) {
+    this[Schema.USER_RESOURCE.key]["aiSticker"] = aiSticker;
+  }
 
   async getUserPlayData() {
     await this.getUserResourceInfo();

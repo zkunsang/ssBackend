@@ -7,7 +7,7 @@ module.exports = async (ctx, next) => {
     const userResourceService = new UserResourceService(userInfo, updateDate);
     const aiStickers = await userResourceService.checkAISticker();
     
-    ctx.$res.success({aiStickers});
+    ctx.$res.success({ aiStickers });
 
     await next();
 }

@@ -205,6 +205,12 @@ class UserService extends Service {
     this[Schema.USER_INFO.key].setPageSticker(pageSticker);
   }
 
+  setFcmToken(fcmToken) {
+    if(this[Schema.USER_INFO.key].getFCMToken() === fcmToken) return;
+    this.setChange();
+    this[Schema.USER_INFO.key].setFCMToken(fcmToken);
+  }
+
   setSubscribeInfo(subscribeInfo) {
     if (!subscribeInfo) return false;
     const userInfo = this[Schema.USER_INFO.key];

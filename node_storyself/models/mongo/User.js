@@ -224,6 +224,10 @@ class User extends Model {
   getFCMToken() {
     return this[Schema.FCM_TOKEN.key];
   }
+
+  setFCMToken(fcmToken) {
+    this[Schema.FCM_TOKEN.key] = fcmToken;
+  }
 };
 
 module.exports = User;
