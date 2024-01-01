@@ -33,7 +33,7 @@ module.exports = async (ctx, next) => {
     const language = reqAIGenerate.getLanguage();
     
     const fileName = createHash(prompt, 10);
-    const seedId = 1;
+    const seedId = Math.floor(1 + Math.random() * 900000);
 
     await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, prompt, language });
     
