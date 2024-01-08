@@ -206,6 +206,7 @@ class UserService extends Service {
   }
 
   setFcmToken(fcmToken) {
+    if(!this[Schema.USER_INFO.key]) return;
     if(this[Schema.USER_INFO.key].getFCMToken() === fcmToken) return;
     this.setChange();
     this[Schema.USER_INFO.key].setFCMToken(fcmToken);

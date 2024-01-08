@@ -27,8 +27,7 @@ module.exports = async (ctx, next) => {
 
   let userInfo = await authService.findUser(userDao);
   const userService = new UserService(userInfo, userDao, loginDate);
-  userService.setFcmToken(fcmToken);
-
+  
   const sessionId = shortid.generate();
 
   if (userInfo) {
@@ -39,6 +38,8 @@ module.exports = async (ctx, next) => {
     userInfo = await authService.signIn(sessionId);
     userService.setUserInfo(userInfo);
   }
+  
+  userService.setFcmToken(fcmToken);
 
   const result = await loginProcess(
     userInfo, 
