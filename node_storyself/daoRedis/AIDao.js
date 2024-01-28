@@ -1,6 +1,6 @@
 const ioredis = require('ioredis');
 
-const statusExpire = 60 * 3;
+const statusExpire = 60 * 60 * 3;
 //const sessionExpireMs = 1000 * 60 * 60 * 2;
 
 MESSAGE_TYPE_GENERATE = 1
@@ -22,7 +22,9 @@ class AIDao {
     }
 
     async setUserStatus(uid, status) {
-        await this.connection.set(`ai:status:${uid}`, JSON.stringify(status))
+        const key = `ai:status:${uid}`;
+        await this.connection.set(key, JSON.stringify(status))
+        await this.connection.expire(key, statusExpire);
     }
 
     async delUserStatus(uid) {

@@ -49,6 +49,13 @@ class RedisAI {
         const { prompt, fileName, uid, seedId, language } = jsonMessage;
         const imageLength = 3;
 
+        const aiStatus = await this.redis.get(`ai:status:${uid}`);
+        
+        if(!aiStatus) {
+            this.aiRedisFetch();
+            return;
+        }
+
         await this.redis.set(`ai:status:${uid}`, JSON.stringify({ status: 2, prompt, fileName, uid, seedId, imageLength }));
 
         try {
