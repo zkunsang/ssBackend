@@ -13,17 +13,24 @@ class FCMUtil {
     }
   }
 
-  pushMessage = async (to, title, body) => {
+  pushMessage = async (to, title, body, tag) => {
+    const topic = "topic"
+    
+    // const condition = '\'stock-GOOG\' in topics || \'industry-tech\' in topics';
+
     const _body = {
       to,
       "notification": {
         title,
         body,
+        tag
       },
       "data": {
         title,
-        body
-      }
+        body,
+        tag
+      },
+      topic,
     }
 
     const result = await fetch("https://fcm.googleapis.com/fcm/send", { method: 'post', body: JSON.stringify(_body), headers: this.headers });

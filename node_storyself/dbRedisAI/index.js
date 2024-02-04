@@ -64,7 +64,8 @@ class RedisAI {
             const fcmToken = userInfo.getFCMToken();
             if(!!fcmToken) {
                 const [body, title] = generateMessage(language)
-                FcmUtil.pushMessage(fcmToken, title, body);
+                const tag = "ai_finish"
+                FcmUtil.pushMessage(fcmToken, title, body, tag);
             }
         } catch(err) {
             console.error(err);
