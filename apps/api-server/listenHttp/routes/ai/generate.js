@@ -5,6 +5,7 @@ const AIDao = require('@ss/daoRedis/AIDao');
 const dbRedisAI = require('@ss/dbRedisAI');
 
 const crypto = require("crypto");
+const { ask } = require('@ss/util/chatGPTUtil');
 
 const createHash = (data, len) => {
     return crypto.createHash("shake256", { outputLength: len })
@@ -29,15 +30,18 @@ module.exports = async (ctx, next) => {
         return;
     }
 
+    const keyword = reqAIGenerate.getKeyword()
+    const _keyword = await ask(keyword);
     const prompt = reqAIGenerate.getPrompt();
+    const _prompt = prompt.replace("{0}", _keyword);
     const language = reqAIGenerate.getLanguage();
     
-    const fileName = createHash(prompt, 10);
+    const fileName = createHash(_prompt, 10);
     const seedId = Math.floor(1 + Math.random() * 900000);
 
-    await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, prompt, language });
+    await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, _prompt, language });
     
-    await aiDao.pushAIGenerate(prompt, fileName, seedId, uid, language);
+    await aiDao.pushAIGenerate(_prompt, fileName, seedId, uid, language);
 
     ctx.$res.success({
         userStatus

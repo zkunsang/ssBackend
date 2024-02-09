@@ -31,10 +31,7 @@
     "nanoid": "^2.1.11",
     "node-fetch": "^2.6.1",
     "shortid": "^2.2.15",
-    "swagger-jsdoc": "^4.0.0",
-    "swagger-koa": "^2.1.0",
-    "swagger2": "^2.0.0",
-    "swagger2-koa": "^2.0.0"
+    "openai": "^4.26.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
