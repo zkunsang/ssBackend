@@ -32,7 +32,7 @@ module.exports = async (ctx, next) => {
   userService.setSubscribeInfo(subscribeInfo);
 
   await userService.finalize();
-  productService.finalize();
+  await productService.finalize();
 
   productService.removeUnusedParams(subscribeInfo);
   productService.addSubscribeCheckDate(subscribeInfo);

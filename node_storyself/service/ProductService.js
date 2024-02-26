@@ -596,17 +596,17 @@ class ProductService {
 
   async finalize() {
     // 영수증 처리
-    this.finalizeReceipt();
-    this.finalizeSubscribe();
+    await this.finalizeReceipt();
+    await this.finalizeSubscribe();
   }
 
-  finalizeReceipt() {
+  async finalizeReceipt() {
     const receipt = this.getReceipt();
     const purchaseDate = this.getPurchaseDate();
 
     if (!receipt) return;
     const receiptDao = new ReceiptDao(dbMongo);
-    receiptDao.insertOne(receipt);
+    await receiptDao.insertOne(receipt);
 
     const { productId } = receipt;
 
@@ -615,15 +615,15 @@ class ProductService {
     const productLog = this.createProductLog(productInfo);
 
     const productLogDao = new ProductLogDao(dbMongo, purchaseDate);
-    productLogDao.insertOne(productLog);
+    await productLogDao.insertOne(productLog);
   }
 
-  finalizeSubscribe() {
+  async finalizeSubscribe() {
     const subscribeReceipt = this.getSubscribeReceipt();
     if (!subscribeReceipt) return;
 
     const receiptDao = new SubscribeReceiptDao(dbMongo);
-    receiptDao.insertOne(subscribeReceipt);
+    await receiptDao.insertOne(subscribeReceipt);
   }
 
   throwNoExistProduct(productId) {
