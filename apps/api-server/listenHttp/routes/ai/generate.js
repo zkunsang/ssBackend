@@ -1,3 +1,4 @@
+const ss = require('@ss');
 const SSError = require('@ss/error');
 const ReqAIGenerate = require('@ss/models/controller/ai/ReqAIGenerate');
 

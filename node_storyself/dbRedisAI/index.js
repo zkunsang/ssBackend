@@ -43,7 +43,7 @@ class RedisAI {
     }
 
     fetchProcess = async () => {
-        const [key, message] = await this.redisFetch.blpop(["ai:done"], 0);
+        const [key, message] = await this.redisFetch.blpop([`ai:done:${ss.configs.apiServer.mode}`], 0);
         
         const jsonMessage = JSON.parse(message);
         const { prompt, fileName, uid, seedId, language } = jsonMessage;
