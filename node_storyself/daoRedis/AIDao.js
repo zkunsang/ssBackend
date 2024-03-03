@@ -31,8 +31,8 @@ class AIDao {
         await this.connection.del(`ai:status:${uid}`);
     }
 
-    async pushAIGenerate(prompt, fileName, seedId, uid, language) {
-        await this.connection.lpush("ai:generate", JSON.stringify({ messageType: MESSAGE_TYPE_GENERATE, prompt, fileName, seedId, uid, language }))
+    async pushAIGenerate(prompt, fileName, seedId, uid, language, s3BucketName, mode) {
+        await this.connection.lpush("ai:generate", JSON.stringify({ messageType: MESSAGE_TYPE_GENERATE, prompt, fileName, seedId, uid, language, s3BucketName, mode }))
     }
 }
 

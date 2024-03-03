@@ -35,13 +35,15 @@ module.exports = async (ctx, next) => {
     const prompt = reqAIGenerate.getPrompt();
     const _prompt = prompt.replace("{0}", _keyword);
     const language = reqAIGenerate.getLanguage();
+    const s3BucketName = ss.configs.apiServer.s3BucketName;
+    const mode = ss.configs.apiServer.mode;
     
     const fileName = createHash(_prompt, 10);
     const seedId = Math.floor(1 + Math.random() * 900000);
 
     await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, _prompt, language });
     
-    await aiDao.pushAIGenerate(_prompt, fileName, seedId, uid, language);
+    await aiDao.pushAIGenerate(_prompt, fileName, seedId, uid, language, s3BucketName, mode);
 
     ctx.$res.success({
         userStatus
