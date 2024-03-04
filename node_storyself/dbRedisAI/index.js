@@ -46,9 +46,8 @@ class RedisAI {
         const [key, message] = await this.redisFetch.blpop([`ai:done:${ss.configs.apiServer.mode}`], 0);
         
         const jsonMessage = JSON.parse(message);
-        const { prompt, fileName, uid, seedId, language } = jsonMessage;
-        const imageLength = 3;
-
+        const { prompt, fileName, uid, seedId, language, image_length: imageLength } = jsonMessage;
+        
         const aiStatus = await this.redis.get(`ai:status:${uid}`);
         
         if(!aiStatus) {
