@@ -179,7 +179,7 @@ class LogService extends Service {
 
   sendUserAIStickerLog({ uid, prompt, keyword, lastKeyword }) {
     const logDate = this.getUpdateDate();
-    const aiStickerLogDao = new AIStickerLogDao();
+    const aiStickerLogDao = new AIStickerLogDao(dbMongo, logDate);
 
     aiStickerLogDao.insertOne(
       new AIStickerLog({ uid, prompt, keyword, lastKeyword }, logDate)
