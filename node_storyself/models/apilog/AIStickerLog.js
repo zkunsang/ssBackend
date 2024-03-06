@@ -13,7 +13,7 @@ const Schema = {
 
 class AIStickerLog extends Model {
     constructor(
-        { uid, prompt, keyword, lastKeyword }, logDate) {
+        { uid, prompt, keyword, lastKeyword, fileName, seedId, mode, language }, logDate) {
         super();
         
         this.uid = uid;
@@ -21,6 +21,10 @@ class AIStickerLog extends Model {
         this.keyword = keyword;
         this.lastKeyword = lastKeyword;
         this.loginDateTZ = DateUtil.utsToDs(logDate);
+        this.fileName = fileName;
+        this.seedId = seedId;
+        this.mode = mode;
+        this.language = language;
     }
 }
 

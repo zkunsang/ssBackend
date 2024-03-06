@@ -48,7 +48,7 @@ module.exports = async (ctx, next) => {
         const seedId = Math.floor(1 + Math.random() * 900000);
 
         const logService = new LogService(userInfo, updateDate);
-        logService.sendUserAIStickerLog({ uid, prompt: _prompt, keyword, lastKeyword: _keyword })
+        logService.sendUserAIStickerLog({ uid, prompt: _prompt, keyword, lastKeyword: _keyword, fileName, seedId, mode, language })
 
         await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, _prompt, language });
         await aiDao.pushAIGenerate(_prompt, fileName, seedId, uid, language, s3BucketName, mode);
