@@ -7,6 +7,7 @@ const dbRedisAI = require('@ss/dbRedisAI');
 
 const crypto = require("crypto");
 const { ask } = require('@ss/util/chatGPTUtil');
+const LogService = require('@ss/service/LogService');
 
 const createHash = (data, len) => {
     return crypto.createHash("shake256", { outputLength: len })
@@ -16,6 +17,7 @@ const createHash = (data, len) => {
 
 module.exports = async (ctx, next) => {
     const userInfo = ctx.$userInfo;
+    const updateDate = ctx.$date;
 
     const reqAIGenerate = new ReqAIGenerate(ctx.request.body);
     
@@ -31,24 +33,28 @@ module.exports = async (ctx, next) => {
         return;
     }
 
-    const keyword = reqAIGenerate.getKeyword()
-    const _keyword = await ask(keyword);
-    const prompt = reqAIGenerate.getPrompt();
-    const _prompt = prompt.replace("{0}", _keyword);
-    const language = reqAIGenerate.getLanguage();
-    const s3BucketName = ss.configs.apiServer.s3BucketName;
-    const mode = ss.configs.apiServer.mode;
-    
-    const fileName = createHash(_prompt, 10);
-    const seedId = Math.floor(1 + Math.random() * 900000);
+    setTimeout(async() => {
+        const keyword = reqAIGenerate.getKeyword()
+        const _keyword = await ask(keyword);
 
-    await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, _prompt, language });
-    
-    await aiDao.pushAIGenerate(_prompt, fileName, seedId, uid, language, s3BucketName, mode);
+        const prompt = reqAIGenerate.getPrompt();
+        const _prompt = prompt.replace("{0}", _keyword);
 
-    ctx.$res.success({
-        userStatus
-    });
+        const language = reqAIGenerate.getLanguage();
+        const s3BucketName = ss.configs.apiServer.s3BucketName;
+        const mode = ss.configs.apiServer.mode;
+        
+        const fileName = createHash(_prompt, 10);
+        const seedId = Math.floor(1 + Math.random() * 900000);
+
+        const logService = new LogService(userInfo, updateDate);
+        logService.sendUserAIStickerLog({ uid, prompt: _prompt, keyword, lastKeyword: _keyword })
+
+        await aiDao.setUserStatus(uid, { status: 1, fileName, seedId, _prompt, language });
+        await aiDao.pushAIGenerate(_prompt, fileName, seedId, uid, language, s3BucketName, mode);
+    }, 10);
+
+    ctx.$res.success({});
 
     await next();
 }

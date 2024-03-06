@@ -34,6 +34,8 @@ const UserDeleteLogDao = require('../daoMongo/log/UserDeleteLogDao');
 const UserDeleteLog = require('../models/apilog/UserDeleteLog');
 
 const dbMongo = require("../dbMongo");
+const AIStickerLogDao = require("@ss/daoMongo/log/AIStickerLogDao");
+const AIStickerLog = require("@ss/models/apilog/AIStickerLog");
 
 
 const Schema = {
@@ -173,6 +175,15 @@ class LogService extends Service {
     userDeleteLogDao.insertOne(
       new UserDeleteLog({ uid, reasonId, reasonText, logDate })
     );
+  }
+
+  sendUserAIStickerLog({ uid, prompt, keyword, lastKeyword }) {
+    const logDate = this.getUpdateDate();
+    const aiStickerLogDao = new AIStickerLogDao();
+
+    aiStickerLogDao.insertOne(
+      new AIStickerLog({ uid, prompt, keyword, lastKeyword }, logDate)
+    )
   }
 
   throwNoExitMail(uid, mailId) {

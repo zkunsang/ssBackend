@@ -1,13 +1,18 @@
 const ss = require("@ss");
 const { OpenAI } = require("openai");
+const fs = require("fs");
+var pattern3 = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; //한글
 
 const openai = new OpenAI({
   apiKey: ss.configs.apiServer.openaiApiKey
 });
 
 const ask = async (content) => {
+  if(!pattern3.test(content)) return content;
+  const system = JSON.parse(fs.readFileSync(`${__dirname}/../data/chatgpt.json`));
+  
   const messages = [
-    { role: 'system', content: "You should translate Korean to English. If it English just repeat. It can be wrote by child so it could be mistaken words. please translate into the English word that sounds most similar to the Korean pronunciation and is most similar in meaning.  If there is only one consonant in a specific position, it might be a final consonant on the preceding character." },
+    system,
     { role: 'user', content },
   ]
 
@@ -18,12 +23,10 @@ const ask = async (content) => {
   
   try {
     const { role, content } = response.choices[0].message;
-    return content
+    return content;
   } catch {
     return "error"
   }
-  
-  
 }
 
 module.exports = { ask }
